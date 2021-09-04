@@ -1,0 +1,74 @@
+* Stowage
+
+Needed information for generation:
+- short option
+- long option
+- short description (for usage ouput)
+- long description (for manpage output)
+
+* Option Parsing
+
+Parsed from left to right.
+
+** Types
+
+- Short option
+- Long option
+- Argument to option
+- Non-option parameter (default argument)
+
+*** Short Option
+
+'-' followed by short option character.
+If option has required argument, directly after OR separated by white-space.
+Optional argument must be directly after the option character.
+
+Possible to write several short options after one '-',
+if all (except last) do not have *required* or *optional* arguments.
+
+*** Long Option
+
+'--' followed by long option name.
+If option has a required argument, directly after, separated by '=' OR white-space.
+Optional argument must be directly after the option, separated by '='.
+
+*** Non-option Parameter
+
+Each parameter not starting with '-' and not a required argument of a previous option,
+is a non-option parameter.
+
+Each parameter after a '--' parameter is always interpreted as a non-option parameter.
+
+* Examples
+
+#+BEGIN_SRC shell-script
+./stowage -Fals
+./stowage -F -a -l -s
+
+./stowage --file --add --pull --push
+
+./stowage -r filename
+./stowage -rfilename
+./stowage --remove=filename
+./stowage --remove filename
+
+./stowage --remove filename other stuff
+./stowage --remove filename -- other stuff
+#+END_SRC
+
+** Multiple of the same options
+
+#+BEGIN_SRC shell-script
+./stowage -e pattern1 -epattern2 --regexp=pattern3 --regexp pattern4
+#+END_SRC
+
+* TODO
+
+- after first non option, go into no-option mode
+- support '--' to go into no-option mode
+- add multi-option support, vectors!
+- support argument parsing + storing
+- add addOption overloads
+- generate usage string
+- generate man page string
+- parse() function to return bool true if any error has occured
