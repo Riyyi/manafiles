@@ -34,7 +34,7 @@ void TestSuite::run()
 	Util::Timer totalTimer;
 
 	size_t caseFailedCount = 0;
-	for (std::vector<TestCase>::size_type i = 0; i < m_cases.size(); ++i) {
+	for (size_t i = 0; i < m_cases.size(); ++i) {
 
 		printf(" START  %s (%zu/%zu)\n", m_cases.at(i).name(), i + 1, m_cases.size());
 		m_currentTestCasePassed = true;

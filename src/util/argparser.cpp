@@ -57,7 +57,7 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 
 	char c;
 	std::string_view value;
-	for (std::string_view::size_type i = 0; i < option.size(); ++i) {
+	for (size_t i = 0; i < option.size(); ++i) {
 		c = option.at(i);
 		printf("short '%c'\n", c);
 
