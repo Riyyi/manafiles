@@ -293,4 +293,21 @@ void ArgParser::addOption(std::string& value, char shortName, const char* longNa
 	addOption(std::move(option));
 }
 
+void ArgParser::addOption(std::vector<std::string>& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			value.push_back(a);
+			return true;
+		}
+	};
+	addOption(std::move(option));
+}
+
 } // namespace Util

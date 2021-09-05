@@ -47,6 +47,7 @@ public:
 	void addOption(Option&& option);
 	void addOption(bool& value, char shortName, const char* longName, const char* usageString, const char* manString);
 	void addOption(std::string& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
+	void addOption(std::vector<std::string>& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 
 	void setOptionIndex(int index) { m_optionIndex = index; }
 	void setExitOnFirstError(bool state) { m_exitOnFirstError = state; }

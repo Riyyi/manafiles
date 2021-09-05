@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 #include "macro.h"
 #include "testcase.h"
@@ -299,6 +300,105 @@ TEST_CASE(SingleNonRequiredStringOptions)
 
 // -----------------------------------------
 
+TEST_CASE(VectorStringOptions)
+{
+	// Required vector string short option, not given
+	std::vector<std::string> vectorOpt1 = {};
+	auto result = runParser({}, [&](auto& parser) {
+		parser.addOption(vectorOpt1, 'v', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 0);
+
+	// Required vector string short option, empty given
+	vectorOpt1 = {};
+	result = runParser({ "-v" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, 'v', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(vectorOpt1.size(), 0);
+
+	// Required vector string short option, one given
+	vectorOpt1 = {};
+	result = runParser({ "-v", "a vector argument!" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, 'v', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 1);
+	if (vectorOpt1.size() == 1) {
+		EXPECT_EQ(vectorOpt1[0], "a vector argument!");
+	}
+
+	// Required vector string short option, two given
+	vectorOpt1 = {};
+	result = runParser({ "-v", "hello", "-v", "world" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, 'v', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 2);
+	if (vectorOpt1.size() == 2) {
+		EXPECT_EQ(vectorOpt1[0], "hello");
+		EXPECT_EQ(vectorOpt1[1], "world");
+	}
+
+	// Required vector string short option, two given directly after
+	vectorOpt1 = {};
+	result = runParser({ "-vhello", "-vworld" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, 'v', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 2);
+	if (vectorOpt1.size() == 2) {
+		EXPECT_EQ(vectorOpt1[0], "hello");
+		EXPECT_EQ(vectorOpt1[1], "world");
+	}
+
+	// Required vector string long option, empty given
+	vectorOpt1 = {};
+	result = runParser({ "--vector" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, '\0', "vector", nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(vectorOpt1.size(), 0);
+
+	// Required vector string long option, one given
+	vectorOpt1 = {};
+	result = runParser({ "--vector", "a vector argument!" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, '\0', "vector", nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 1);
+	if (vectorOpt1.size() == 1) {
+		EXPECT_EQ(vectorOpt1[0], "a vector argument!");
+	}
+
+	// Required vector string long option, two given
+	vectorOpt1 = {};
+	result = runParser({ "--vector", "hello", "--vector", "world" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, '\0', "vector", nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 2);
+	if (vectorOpt1.size() == 2) {
+		EXPECT_EQ(vectorOpt1[0], "hello");
+		EXPECT_EQ(vectorOpt1[1], "world");
+	}
+
+	// Required vector string long option, two given directly after
+	vectorOpt1 = {};
+	result = runParser({ "--vector=hello", "--vector=world" }, [&](auto& parser) {
+		parser.addOption(vectorOpt1, '\0', "vector", nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorOpt1.size(), 2);
+	if (vectorOpt1.size() == 2) {
+		EXPECT_EQ(vectorOpt1[0], "hello");
+		EXPECT_EQ(vectorOpt1[1], "world");
+	}
+}
+
+// -----------------------------------------
+
 TEST_CASE(MultipleOptions)
 {
 	// Both short options, second is required, with a non-option argument in-between
@@ -312,6 +412,8 @@ TEST_CASE(MultipleOptions)
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(stringOpt1, "a-string-value");
 }
+
+// -----------------------------------------
 
 TEST_CASE(NonOptionMode)
 {
