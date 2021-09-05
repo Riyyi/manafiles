@@ -1,6 +1,6 @@
-#include <algorithm> // max, min
-#include <chrono>  // high_resolution_clock seconds, milliseconds, microseconds, nanoseconds
+#include <chrono>  // high_resolution_clock, seconds, milliseconds, microseconds, nanoseconds
 #include <cstdint> // uint64_t
+#include <cstdio> // printf
 
 #include "util/timer.h"
 
@@ -67,6 +67,22 @@ uint64_t Timer::elapsedMicroseconds()
 uint64_t Timer::elapsedNanoseconds()
 {
 	return elapsed<std::chrono::nanoseconds>();
+}
+
+void Timer::fancyPrint(uint64_t nanoseconds)
+{
+	if (nanoseconds > 999999999) {
+		printf("%.3fs", nanoseconds / 1000000000.0);
+	}
+	else if (nanoseconds > 999999) {
+		printf("%.0fms", nanoseconds / 1000000.0);
+	}
+	else if (nanoseconds > 999) {
+		printf("%.0fμs", nanoseconds / 1000.0);
+	}
+	else {
+		printf("%luns", nanoseconds);
+	}
 }
 
 } // namespace Util

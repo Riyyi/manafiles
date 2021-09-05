@@ -32,6 +32,8 @@ public:
 	uint64_t elapsedMicroseconds();
 	uint64_t elapsedNanoseconds();
 
+	static void fancyPrint(uint64_t nanoseconds);
+
 	const TimePoint& start() const { return m_start; }
 
 private:
