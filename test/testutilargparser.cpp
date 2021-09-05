@@ -312,3 +312,54 @@ TEST_CASE(MultipleOptions)
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(stringOpt1, "a-string-value");
 }
+
+TEST_CASE(NonOptionMode)
+{
+	// Bool short options, missing
+	// Expected: The bool options are interpreted as non-option parameters
+	bool boolOpt1 = false;
+	bool boolOpt2 = false;
+	auto result = runParser({ "--", "-b", "-c" }, [&](auto& parser) {
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, false);
+	EXPECT_EQ(boolOpt2, false);
+
+	// Bool short options, one given
+	// Expected: boolOpt1 is set, one non-option parameter
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "-b", "--", "-c" }, [&](auto& parser) {
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, false);
+
+	// Bool long options, missing
+	// Expected: The bool options are interpreted as non-option parameters
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "--", "--bool", "--cool" }, [&](auto& parser) {
+		parser.addOption(boolOpt1, '\0', "bool", nullptr, nullptr);
+		parser.addOption(boolOpt2, '\0', "cool", nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, false);
+	EXPECT_EQ(boolOpt2, false);
+
+	// Bool long options, one given
+	// Expected: boolOpt1 is set, one non-option parameter
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "--bool", "--", "--cool" }, [&](auto& parser) {
+		parser.addOption(boolOpt1, '\0', "bool", nullptr, nullptr);
+		parser.addOption(boolOpt2, '\0', "cool", nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, false);
+}

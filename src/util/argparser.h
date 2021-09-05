@@ -60,6 +60,7 @@ private:
 	bool parseLongOption(std::string_view option, std::string_view next);
 
 	int m_optionIndex { 1 };
+	bool m_nonOptionMode { false };
 	bool m_exitOnFirstError { true };
 	bool m_errorMessages { true };
 	// TODO: Implement this, maybe combine with error messages flag, enum class? or bitfield
