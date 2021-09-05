@@ -11,7 +11,7 @@
 
 #define EXPECT_EQ(a, b)                                                       \
 	if (a != b) {                                                             \
-		std::cout << "FAIL: " << __FILE__ << ":" << __LINE__                  \
+		std::cout << "\033[31;1mFAIL\033[0m: " << __FILE__ << ":" << __LINE__ \
 				  << ": EXPECT_EQ(" << #a << ", " << #b ") failed with"       \
 				  << " lhs='" << a << "' and rhs='" << b << "'" << std::endl; \
 		Test::TestSuite::the().currentTestCaseFailed();                       \
