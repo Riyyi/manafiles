@@ -22,22 +22,22 @@
 
 namespace Test {
 
-using testFunction = std::function<void()>;
+using TestFunction = std::function<void()>;
 
 class TestCase {
 public:
-	TestCase(const char* name, testFunction&& function)
+	TestCase(const char* name, TestFunction&& function)
 		: m_name(name)
 		, m_function(function)
 	{
 	}
 
 	const char* name() const { return m_name; }
-	const testFunction& function() const { return m_function; }
+	const TestFunction& function() const { return m_function; }
 
 private:
 	const char* m_name { nullptr };
-	testFunction m_function;
+	TestFunction m_function;
 };
 
 } // namespace Test
