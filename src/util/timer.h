@@ -23,7 +23,7 @@ public:
 	uint64_t toSeconds();
 	uint64_t toMilliseconds();
 	uint64_t toMicroseconds();
-	uint64_t toNaneseconds();
+	uint64_t toNanoseconds();
 
 	template<typename T>
 	uint64_t elapsed();

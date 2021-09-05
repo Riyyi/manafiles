@@ -37,7 +37,7 @@ uint64_t Timer::toMicroseconds()
 	return to<std::chrono::microseconds>(m_start.time_since_epoch()).count();
 }
 
-uint64_t Timer::toNaneseconds()
+uint64_t Timer::toNanoseconds()
 {
 	return to<std::chrono::nanoseconds>(m_start.time_since_epoch()).count();
 }
