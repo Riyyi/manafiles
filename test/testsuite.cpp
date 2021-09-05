@@ -1,7 +1,9 @@
 #include <cstddef> // size_t
+#include <cstdint> // uint32_t
 #include <cstdio> // fclose, fopen, printf, stdout
 
 #include "testsuite.h"
+#include "util/timer.h"
 
 namespace Test {
 
@@ -22,19 +24,26 @@ void TestSuite::run()
 
 	size_t caseFailedCount = 0;
 
-	for(auto& testCase : m_cases) {
-		printf("%s\n", testCase.name());
+	Util::Timer totalTimer;
+
+	for (auto& testCase : m_cases) {
+		printf("Start %s\n", testCase.name());
 		m_currentTestCasePassed = true;
 
+		Util::Timer caseTimer;
 		testCase.function()();
+		printf("      %s, %luns\n", testCase.name(), caseTimer.elapsedNanoseconds());
 
 		if (!m_currentTestCasePassed) {
 			caseFailedCount++;
 		}
 	}
 
-	int percentagePassed = (1 - caseFailedCount / (float)m_cases.size()) * 100;
+	uint32_t percentagePassed = (1 - caseFailedCount / (float)m_cases.size()) * 100;
 	printf("Passed %d%% of tests\n", percentagePassed);
+
+	float elapsed = totalTimer.elapsedNanoseconds() / 1000000.0;
+	printf("Elapsed: %.3f milliseconds\n", elapsed);
 }
 
 } // namespace Test
