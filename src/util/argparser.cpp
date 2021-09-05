@@ -202,6 +202,8 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 
 bool ArgParser::parse(int argc, const char* argv[])
 {
+	bool result = true;
+
 	// Get program name
 	m_name = argv[0] + std::string_view(argv[0]).find_last_of('/') + 1;
 
@@ -223,12 +225,16 @@ bool ArgParser::parse(int argc, const char* argv[])
 		// Long Option
 		if (argument[0] == '-' && argument[1] == '-') {
 			argument = argument.substr(argument.find_first_not_of('-'));
-			parseLongOption(argument, next);
+			if (!parseLongOption(argument, next)) {
+				result = false;
+			}
 		}
 		// Short Option
 		else if (argument[0] == '-') {
 			argument = argument.substr(argument.find_first_not_of('-'));
-			parseShortOption(argument, next);
+			if (!parseShortOption(argument, next)) {
+				result = false;
+			}
 		}
 		// Argument
 		else {
@@ -236,7 +242,7 @@ bool ArgParser::parse(int argc, const char* argv[])
 		}
 	}
 
-	return true;
+	return result;
 }
 
 void ArgParser::addOption(Option&& option)
