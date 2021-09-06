@@ -76,8 +76,7 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 				return result;
 			}
 		}
-
-		if (foundOption->requiresArgument == Required::No) {
+		else if (foundOption->requiresArgument == Required::No) {
 			// FIXME: Figure out why providing a nullptr breaks the lambda here.
 			result = foundOption->acceptValue("");
 		}
@@ -144,24 +143,16 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 	});
 
 	if (foundOption == m_options.cend()) {
-		foundOption->error = Error::UnrecognizedOption;
 		printOptionError(name.data(), Error::UnrecognizedOption);
 
 		result = false;
-		if (m_exitOnFirstError) {
-			return result;
-		}
 	}
-
-	if (argumentProvided) {
+	else if (argumentProvided) {
 		if (foundOption->requiresArgument == Required::No) {
 			foundOption->error = Error::DoesntAllowArgument;
 			printOptionError(name.data(), Error::DoesntAllowArgument);
 
 			result = false;
-			if (m_exitOnFirstError) {
-				return result;
-			}
 		}
 		else if (foundOption->requiresArgument == Required::Yes) {
 			result = foundOption->acceptValue(value.data());
@@ -176,9 +167,6 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 			printOptionError(name.data(), Error::RequiresArgument);
 
 			result = false;
-			if (m_exitOnFirstError) {
-				return result;
-			}
 		}
 		else {
 			result = foundOption->acceptValue(next.data());
@@ -190,9 +178,6 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 		printOptionError(name.data(), Error::RequiresArgument);
 
 		result = false;
-		if (m_exitOnFirstError) {
-			return result;
-		}
 	}
 	else {
 		// FIXME: Figure out why providing a nullptr breaks the lambda here.
