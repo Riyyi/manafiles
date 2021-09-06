@@ -1,5 +1,7 @@
-#include <algorithm> // std::find_if
+#include <algorithm> // find_if
 #include <cstdio> // printf
+#include <limits> // numeric_limits
+#include <string> // stod, stoi, stoul
 #include <string_view>
 
 #include "util/argparser.h"
@@ -276,6 +278,23 @@ void ArgParser::addOption(bool& value, char shortName, const char* longName, con
 	addOption(std::move(option));
 }
 
+void ArgParser::addOption(const char*& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			value = a;
+			return true;
+		}
+	};
+	addOption(std::move(option));
+}
+
 void ArgParser::addOption(std::string& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
 	Option option {
@@ -288,6 +307,97 @@ void ArgParser::addOption(std::string& value, char shortName, const char* longNa
 		[&value](const char* a) -> bool {
 			value = a;
 			return true;
+		}
+	};
+	addOption(std::move(option));
+}
+
+void ArgParser::addOption(std::string_view& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			value = a;
+			return true;
+		}
+	};
+	addOption(std::move(option));
+}
+
+void ArgParser::addOption(int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			try {
+				value = std::stoi(a);
+				return true;
+			}
+			catch (...) {
+				return false;
+			}
+		}
+	};
+	addOption(std::move(option));
+}
+
+void ArgParser::addOption(unsigned int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			unsigned long convert = 0;
+			try {
+				convert = std::stoul(a);
+			}
+			catch (...) {
+				return false;
+			}
+
+			if (convert <= std::numeric_limits<unsigned int>::max())
+			{
+				value = static_cast<unsigned int>(convert);
+				return true;
+			}
+
+			return false;
+		}
+	};
+	addOption(std::move(option));
+}
+
+void ArgParser::addOption(double& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
+{
+	Option option {
+		shortName,
+		longName,
+		argumentName,
+		usageString,
+		manString,
+		requiresArgument,
+		[&value](const char* a) -> bool {
+			try {
+				value = std::stod(a);
+				return true;
+			}
+			catch (...) {
+				return false;
+			}
 		}
 	};
 	addOption(std::move(option));

@@ -300,6 +300,75 @@ TEST_CASE(SingleNonRequiredStringOptions)
 
 // -----------------------------------------
 
+TEST_CASE(NumberOptions)
+{
+	// Required int short option
+	int intOpt1 = 0;
+	auto result = runParser({ "-i", "2147483647" }, [&](auto& parser) {
+		parser.addOption(intOpt1, 'i', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(intOpt1, 2147483647);
+
+	// Required int short option, overflown value given
+	intOpt1 = 0;
+	result = runParser({ "-i", "2147483648" }, [&](auto& parser) {
+		parser.addOption(intOpt1, 'i', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(intOpt1, 0);
+
+	// Required int short option, empty given
+	intOpt1 = 0;
+	result = runParser({ "-i" }, [&](auto& parser) {
+		parser.addOption(intOpt1, 'i', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(intOpt1, 0);
+
+	// Required unsigned int short option
+	unsigned int unsignedIntOpt1 = 0;
+	result = runParser({ "-u", "4294967295" }, [&](auto& parser) {
+		parser.addOption(unsignedIntOpt1, 'u', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(unsignedIntOpt1, 4294967295);
+
+	// Required unsigned int short option, overflown value given
+	unsignedIntOpt1 = 0;
+	result = runParser({ "-u", "4294967296" }, [&](auto& parser) {
+		parser.addOption(unsignedIntOpt1, 'u', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(unsignedIntOpt1, 0);
+
+	// Required unsigned int short option, empty given
+	unsignedIntOpt1 = 0;
+	result = runParser({ "-u" }, [&](auto& parser) {
+		parser.addOption(unsignedIntOpt1, 'u', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(unsignedIntOpt1, 0);
+
+	// Required double short option
+	double doubleOpt1 = 0;
+	result = runParser({ "-d", "999.999" }, [&](auto& parser) {
+		parser.addOption(doubleOpt1, 'd', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(doubleOpt1, 999.999);
+
+	// Required double short option, empty given
+	doubleOpt1 = 0;
+	result = runParser({ "-d" }, [&](auto& parser) {
+		parser.addOption(doubleOpt1, 'd', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(doubleOpt1, 0);
+}
+
+// -----------------------------------------
+
 TEST_CASE(VectorStringOptions)
 {
 	// Required vector string short option, not given

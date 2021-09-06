@@ -1,7 +1,7 @@
 #ifndef ARG_PARSER_H
 #define ARG_PARSER_H
 
-#include <functional>
+#include <functional> // function
 #include <string>
 #include <string_view>
 #include <vector>
@@ -46,7 +46,12 @@ public:
 
 	void addOption(Option&& option);
 	void addOption(bool& value, char shortName, const char* longName, const char* usageString, const char* manString);
+	void addOption(const char*& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 	void addOption(std::string& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
+	void addOption(std::string_view& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
+	void addOption(int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
+	void addOption(unsigned int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
+	void addOption(double& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 	void addOption(std::vector<std::string>& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 
 	void setOptionIndex(int index) { m_optionIndex = index; }
