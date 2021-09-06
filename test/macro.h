@@ -4,15 +4,16 @@
 #include <cstdio>   // printf
 #include <iostream> // cout
 
-#define EXPECT(x)                                                   \
-	if (!(x)) {                                                     \
-		printf("\033[31;1mFAIL\033[0m: %s:%d: EXPECT(%s) failed\n", \
-		       __FILE__, __LINE__, #x);                             \
+#define EXPECT(x)                                                            \
+	if (!(x)) {                                                              \
+		fprintf(stderr, "\033[31;1mFAIL\033[0m: %s:%d: EXPECT(%s) failed\n", \
+		        __FILE__, __LINE__, #x);                                     \
+		Test::TestSuite::the().currentTestCaseFailed();                      \
 	}
 
 #define EXPECT_EQ(a, b)                                                       \
 	if (a != b) {                                                             \
-		std::cout << "\033[31;1mFAIL\033[0m: " << __FILE__ << ":" << __LINE__ \
+		std::cerr << "\033[31;1mFAIL\033[0m: " << __FILE__ << ":" << __LINE__ \
 				  << ": EXPECT_EQ(" << #a << ", " << #b ") failed with"       \
 				  << " lhs='" << a << "' and rhs='" << b << "'" << std::endl; \
 		Test::TestSuite::the().currentTestCaseFailed();                       \
@@ -20,7 +21,7 @@
 
 #define EXPECT_NE(a, b)                                                       \
 	if (a == b) {                                                             \
-		std::cout << "\033[31;1mFAIL\033[0m: " << __FILE__ << ":" << __LINE__ \
+		std::cerr << "\033[31;1mFAIL\033[0m: " << __FILE__ << ":" << __LINE__ \
 				  << ": EXPECT_NE(" << #a << ", " << #b ") failed with"       \
 				  << " lhs='" << a << "' and rhs='" << b << "'" << std::endl; \
 		Test::TestSuite::the().currentTestCaseFailed();                       \
