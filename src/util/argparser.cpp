@@ -24,7 +24,7 @@ void ArgParser::printOptionError(char name, Error error)
 
 void ArgParser::printOptionError(const char* name, Error error, bool longName)
 {
-	if (!m_errorMessages) {
+	if (!m_errorReporting) {
 		return;
 	}
 
@@ -206,13 +206,14 @@ bool ArgParser::parse(int argc, const char* argv[])
 {
 	bool result = true;
 
+	// Skip program name argument
+	m_optionIndex = 1;
+
 	// By default parse all '-' prefixed parameters as options
 	m_nonOptionMode = false;
 
 	// Get program name
 	m_name = argv[0] + std::string_view(argv[0]).find_last_of('/') + 1;
-
-	printf("name: %s\n", m_name);
 
 	std::string_view argument;
 	std::string_view next;
@@ -250,6 +251,9 @@ bool ArgParser::parse(int argc, const char* argv[])
 		}
 		// Argument
 		else {
+			if (m_stopParsingOnFirstNonOption) {
+				m_nonOptionMode = true;
+			}
 			printf("-> argu: '%s'", argument.data());
 		}
 	}

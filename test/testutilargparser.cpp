@@ -484,7 +484,7 @@ TEST_CASE(MultipleOptions)
 
 // -----------------------------------------
 
-TEST_CASE(NonOptionMode)
+TEST_CASE(StopOnDoubleDashOption)
 {
 	// Bool short options, missing
 	// Expected: The bool options are interpreted as non-option parameters
@@ -529,6 +529,63 @@ TEST_CASE(NonOptionMode)
 	result = runParser({ "--bool", "--", "--cool" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, '\0', "bool", nullptr, nullptr);
 		parser.addOption(boolOpt2, '\0', "cool", nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, false);
+}
+
+// -----------------------------------------
+
+TEST_CASE(StopOnFirstNonOption)
+{
+	// Do not stop on first non-option; arguments are in correct order
+	// Expected: The bool options are set and one non-option parameter
+	bool boolOpt1 = false;
+	bool boolOpt2 = false;
+	auto result = runParser({ "-b", "-c", "stopping" }, [&](auto& parser) {
+		parser.setStopParsingOnFirstNonOption(false);
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, true);
+
+	// Do not stop on first non-option; arguments are in wrong order
+	// Expected: The bool options are set and one non-option parameter
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "-b", "stopping", "-c" }, [&](auto& parser) {
+		parser.setStopParsingOnFirstNonOption(false);
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, true);
+
+	// Stop on first non option, arguments are in correct order
+	// Expected: The bool options are set and one non-option parameter
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "-b", "-c", "stopping" }, [&](auto& parser) {
+		parser.setStopParsingOnFirstNonOption(true);
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(boolOpt1, true);
+	EXPECT_EQ(boolOpt2, true);
+
+	// Stop on first non option, arguments are in wrong order
+	// Expected: boolOpt1 is set and the rest are non-option parameters
+	boolOpt1 = false;
+	boolOpt2 = false;
+	result = runParser({ "-b", "stopping", "-c" }, [&](auto& parser) {
+		parser.setStopParsingOnFirstNonOption(true);
+		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
+		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);

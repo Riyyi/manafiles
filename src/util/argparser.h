@@ -54,10 +54,9 @@ public:
 	void addOption(double& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 	void addOption(std::vector<std::string>& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 
-	void setOptionIndex(int index) { m_optionIndex = index; }
+	void setErrorReporting(bool state) { m_errorReporting = state; }
 	void setExitOnFirstError(bool state) { m_exitOnFirstError = state; }
-	void setErrorMessages(bool state) { m_errorMessages = state; }
-	void setNonOptionAfterFirst(bool state) { m_nonOptionAfterFirst = state; }
+	void setStopParsingOnFirstNonOption(bool state) { m_stopParsingOnFirstNonOption = state; }
 
 private:
 	void printOptionError(char name, Error error);
@@ -65,12 +64,12 @@ private:
 	bool parseShortOption(std::string_view option, std::string_view next);
 	bool parseLongOption(std::string_view option, std::string_view next);
 
+	bool m_errorReporting { true };
+	bool m_exitOnFirstError { true };
+	bool m_stopParsingOnFirstNonOption { false };
+
 	int m_optionIndex { 1 };
 	bool m_nonOptionMode { false };
-	bool m_exitOnFirstError { true };
-	bool m_errorMessages { true };
-	// TODO: Implement this, maybe combine with error messages flag, enum class? or bitfield
-	bool m_nonOptionAfterFirst { false };
 
 	const char* m_name;
 	std::vector<Option> m_options;
