@@ -231,6 +231,7 @@ bool ArgParser::parse(int argc, const char* argv[])
 		// Stop parsing '-' prefixed parameters as options afer '--'
 		if (argument.compare("--") == 0) {
 			m_nonOptionMode = true;
+			continue;
 		}
 
 		// Long Option
