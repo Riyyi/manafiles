@@ -241,6 +241,10 @@ bool ArgParser::parse(int argc, const char* argv[])
 			}
 			printf("-> argu: '%s'", argument.data());
 		}
+
+		if (m_exitOnFirstError && !result) {
+			break;
+		}
 	}
 
 	return result;

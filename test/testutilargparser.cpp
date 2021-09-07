@@ -461,8 +461,8 @@ TEST_CASE(VectorStringOptions)
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(vectorOpt1.size(), 2);
 	if (vectorOpt1.size() == 2) {
-		EXPECT_EQ(vectorOpt1[0], "hello");
-		EXPECT_EQ(vectorOpt1[1], "world");
+		EXPECT_EQ(vectorOpt1.at(0), "hello");
+		EXPECT_EQ(vectorOpt1.at(1), "world");
 	}
 }
 
@@ -590,4 +590,29 @@ TEST_CASE(StopOnFirstNonOption)
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, false);
+
+// -----------------------------------------
+
+TEST_CASE(ExitOnFirstError)
+{
+	// Do not stop on first error, one non-existing given
+	// Expected: parsing fails, boolOpt1 is set
+	bool boolOpt1 = false;
+	auto result = runParser({ "--this-doesnt-exist", "--this-exist" }, [&](auto& parser) {
+		parser.setExitOnFirstError(false);
+		parser.addOption(boolOpt1, '\0', "this-exist", nullptr, nullptr);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(boolOpt1, true);
+
+	// Stop on first error, one non-existing given
+	// Expected: parsing fails, boolOpt1 is not set
+	boolOpt1 = false;
+	result = runParser({ "--this-doesnt-exist", "--this-exist" }, [&](auto& parser) {
+		parser.setExitOnFirstError(true);
+		parser.addOption(boolOpt1, '\0', "this-exist", nullptr, nullptr);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(boolOpt1, false);
+}
 }
