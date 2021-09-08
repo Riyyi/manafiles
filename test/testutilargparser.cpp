@@ -49,6 +49,189 @@ TEST_CASE(NonExistentArguments)
 
 // -----------------------------------------
 
+TEST_CASE(RequiredStringArguments)
+{
+	// Single required string argument
+	std::string stringArg1 = "";
+	auto result = runParser({ "my-required-argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my-required-argument");
+
+	// Single required string argument, not given
+	stringArg1 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(stringArg1, "");
+
+	// Multiple required string arguments
+	stringArg1 = "";
+	std::string stringArg2 = "";
+	std::string stringArg3 = "";
+	result = runParser({ "my", "required", "argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my");
+	EXPECT_EQ(stringArg2, "required");
+	EXPECT_EQ(stringArg3, "argument");
+
+	// Multiple required string arguments, not given
+	stringArg1 = "";
+	stringArg2 = "";
+	stringArg3 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(stringArg1, "");
+	EXPECT_EQ(stringArg2, "");
+	EXPECT_EQ(stringArg3, "");
+}
+
+// -----------------------------------------
+
+TEST_CASE(OptionalStringArguments)
+{
+	// Single optional string argument
+	std::string stringArg1 = "";
+	auto result = runParser({ "my-optional-argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my-optional-argument");
+
+	// Single optional string argument, not given
+	stringArg1 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "");
+
+	// Multiple optional string arguments
+	stringArg1 = "";
+	std::string stringArg2 = "";
+	std::string stringArg3 = "";
+	result = runParser({ "my", "optional", "argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my");
+	EXPECT_EQ(stringArg2, "optional");
+	EXPECT_EQ(stringArg3, "argument");
+
+	// Multiple optional string arguments, not given
+	stringArg1 = "";
+	stringArg2 = "";
+	stringArg3 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "");
+	EXPECT_EQ(stringArg2, "");
+	EXPECT_EQ(stringArg3, "");
+}
+
+// -----------------------------------------
+
+TEST_CASE(NonRequiredStringArguments)
+{
+	// Single non-required string argument
+	std::string stringArg1 = "";
+	auto result = runParser({ "my-non-required-argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my-non-required-argument");
+
+	// Single non-required string argument, not given
+	stringArg1 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "");
+
+	// Multiple non-required string arguments
+	stringArg1 = "";
+	std::string stringArg2 = "";
+	std::string stringArg3 = "";
+	result = runParser({ "my", "non-required", "argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "my");
+	EXPECT_EQ(stringArg2, "non-required");
+	EXPECT_EQ(stringArg3, "argument");
+
+	// Multiple non-required string arguments, not given
+	stringArg1 = "";
+	stringArg2 = "";
+	stringArg3 = "";
+	result = runParser({}, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg2, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg3, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(stringArg1, "");
+	EXPECT_EQ(stringArg2, "");
+	EXPECT_EQ(stringArg3, "");
+}
+
+// -----------------------------------------
+
+TEST_CASE(VectorStringArguments)
+{
+	// Required vector string argument, not given
+	std::vector<std::string> vectorArg1 = {};
+	auto result = runParser({}, [&](auto& parser) {
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(vectorArg1.size(), 0);
+
+	// Required vector string argument, one given
+	vectorArg1 = {};
+	result = runParser({ "foo" }, [&](auto& parser) {
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1[0], "foo");
+	}
+
+	// Required vector string argument, two given
+	vectorArg1 = {};
+	result = runParser({ "hello", "world" }, [&](auto& parser) {
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(vectorArg1.size(), 2);
+	if (vectorArg1.size() == 2) {
+		EXPECT_EQ(vectorArg1[0], "hello");
+		EXPECT_EQ(vectorArg1[1], "world");
+	}
+}
+
+// -----------------------------------------
+
 TEST_CASE(BoolOptions)
 {
 	// Short option
@@ -183,11 +366,14 @@ TEST_CASE(SingleOptionalStringOptions)
 {
 	// Single optional string short option
 	std::string stringOpt1 = "";
+	std::string stringArg1 = "";
 	auto result = runParser({ "-s", "my-optional-argument" }, [&](auto& parser) {
 		parser.addOption(stringOpt1, 's', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(stringOpt1, "");
+	EXPECT_EQ(stringArg1, "my-optional-argument");
 
 	// Single optional string short option, given directly after
 	stringOpt1 = "";
@@ -215,11 +401,14 @@ TEST_CASE(SingleOptionalStringOptions)
 
 	// Single optional string long option
 	stringOpt1 = "";
+	stringArg1 = "";
 	result = runParser({ "--string", "my-optional-argument" }, [&](auto& parser) {
 		parser.addOption(stringOpt1, '\0', "string", nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(stringOpt1, "");
+	EXPECT_EQ(stringArg1, "my-optional-argument");
 
 	// Single optional string long option, given directly after
 	stringOpt1 = "";
@@ -252,11 +441,14 @@ TEST_CASE(SingleNonRequiredStringOptions)
 {
 	// Single non-required string short option
 	std::string stringOpt1 = "";
+	std::string stringArg1 = "";
 	auto result = runParser({ "-s", "my-non-required-argument" }, [&](auto& parser) {
 		parser.addOption(stringOpt1, 's', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(stringOpt1, "");
+	EXPECT_EQ(stringArg1, "my-non-required-argument");
 
 	// Single non-required string short option, given directly after
 	stringOpt1 = "";
@@ -284,11 +476,14 @@ TEST_CASE(SingleNonRequiredStringOptions)
 
 	// Single non-required string long option
 	stringOpt1 = "";
+	stringArg1 = "";
 	result = runParser({ "--string", "my-non-required-argument" }, [&](auto& parser) {
 		parser.addOption(stringOpt1, '\0', "string", nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::No);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(stringOpt1, "");
+	EXPECT_EQ(stringArg1, "my-non-required-argument");
 
 	// Single non-required string long option, given directly after
 	stringOpt1 = "";
@@ -487,16 +682,22 @@ TEST_CASE(VectorStringOptions)
 
 TEST_CASE(MultipleOptions)
 {
-	// Both short options, second is required, with a non-option argument in-between
+	// Both short options, second is required, with a non-option parameter in-between
 	bool boolOpt1 = false;
 	std::string stringOpt1 = "";
+	std::vector<std::string> vectorArg1 = {};
 	auto result = runParser({ "-b", "something", "-s", "a-string-value" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(stringOpt1, 's', nullptr, nullptr, nullptr, nullptr, Util::ArgParser::Required::Yes);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(stringOpt1, "a-string-value");
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "something");
+	}
 }
 
 // -----------------------------------------
@@ -507,49 +708,75 @@ TEST_CASE(StopOnDoubleDashOption)
 	// Expected: The bool options are interpreted as non-option parameters
 	bool boolOpt1 = false;
 	bool boolOpt2 = false;
+	std::vector<std::string> vectorArg1 = {};
 	auto result = runParser({ "--", "-b", "-c" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, false);
 	EXPECT_EQ(boolOpt2, false);
+	EXPECT_EQ(vectorArg1.size(), 2);
+	if (vectorArg1.size() == 2) {
+		EXPECT_EQ(vectorArg1.at(0), "-b");
+		EXPECT_EQ(vectorArg1.at(1), "-c");
+	}
 
 	// Bool short options, one given
 	// Expected: boolOpt1 is set, one non-option parameter
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "-b", "--", "-c" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, false);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "-c");
+	}
 
 	// Bool long options, missing
 	// Expected: The bool options are interpreted as non-option parameters
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "--", "--bool", "--cool" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, '\0', "bool", nullptr, nullptr);
 		parser.addOption(boolOpt2, '\0', "cool", nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, false);
 	EXPECT_EQ(boolOpt2, false);
+	EXPECT_EQ(vectorArg1.size(), 2);
+	if (vectorArg1.size() == 2) {
+		EXPECT_EQ(vectorArg1.at(0), "--bool");
+		EXPECT_EQ(vectorArg1.at(1), "--cool");
+	}
 
 	// Bool long options, one given
 	// Expected: boolOpt1 is set, one non-option parameter
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "--bool", "--", "--cool" }, [&](auto& parser) {
 		parser.addOption(boolOpt1, '\0', "bool", nullptr, nullptr);
 		parser.addOption(boolOpt2, '\0', "cool", nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, false);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "--cool");
+	}
 }
 
 // -----------------------------------------
@@ -560,53 +787,79 @@ TEST_CASE(StopOnFirstNonOption)
 	// Expected: The bool options are set and one non-option parameter
 	bool boolOpt1 = false;
 	bool boolOpt2 = false;
+	std::vector<std::string> vectorArg1 = {};
 	auto result = runParser({ "-b", "-c", "stopping" }, [&](auto& parser) {
 		parser.setStopParsingOnFirstNonOption(false);
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, true);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "stopping");
+	}
 
 	// Do not stop on first non-option; arguments are in wrong order
 	// Expected: The bool options are set and one non-option parameter
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "-b", "stopping", "-c" }, [&](auto& parser) {
 		parser.setStopParsingOnFirstNonOption(false);
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, true);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "stopping");
+	}
 
 	// Stop on first non option, arguments are in correct order
 	// Expected: The bool options are set and one non-option parameter
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "-b", "-c", "stopping" }, [&](auto& parser) {
 		parser.setStopParsingOnFirstNonOption(true);
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, true);
+	EXPECT_EQ(vectorArg1.size(), 1);
+	if (vectorArg1.size() == 1) {
+		EXPECT_EQ(vectorArg1.at(0), "stopping");
+	}
 
 	// Stop on first non option, arguments are in wrong order
 	// Expected: boolOpt1 is set and the rest are non-option parameters
 	boolOpt1 = false;
 	boolOpt2 = false;
+	vectorArg1 = {};
 	result = runParser({ "-b", "stopping", "-c" }, [&](auto& parser) {
 		parser.setStopParsingOnFirstNonOption(true);
 		parser.addOption(boolOpt1, 'b', nullptr, nullptr, nullptr);
 		parser.addOption(boolOpt2, 'c', nullptr, nullptr, nullptr);
+		parser.addArgument(vectorArg1, nullptr, nullptr, nullptr);
 	});
 	EXPECT_EQ(result, true);
 	EXPECT_EQ(boolOpt1, true);
 	EXPECT_EQ(boolOpt2, false);
+	EXPECT_EQ(vectorArg1.size(), 2);
+	if (vectorArg1.size() == 2) {
+		EXPECT_EQ(vectorArg1.at(0), "stopping");
+		EXPECT_EQ(vectorArg1.at(1), "-c");
+	}
+}
 
 // -----------------------------------------
 
@@ -631,5 +884,4 @@ TEST_CASE(ExitOnFirstError)
 	});
 	EXPECT_EQ(result, false);
 	EXPECT_EQ(boolOpt1, false);
-}
 }
