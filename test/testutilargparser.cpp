@@ -32,6 +32,23 @@ TEST_CASE(NoArguments)
 
 // -----------------------------------------
 
+TEST_CASE(NonExistentArguments)
+{
+	auto result = runParser({ "-n", "-e" });
+	EXPECT_EQ(result, false);
+
+	result = runParser({ "--non", "--existent" });
+	EXPECT_EQ(result, false);
+
+	result = runParser({ "-n", "-e", "--non", "--existent" });
+	EXPECT_EQ(result, false);
+
+	result = runParser({ "no", "handling" });
+	EXPECT_EQ(result, false);
+}
+
+// -----------------------------------------
+
 TEST_CASE(BoolOptions)
 {
 	// Short option
