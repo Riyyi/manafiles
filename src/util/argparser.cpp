@@ -1,7 +1,8 @@
 #include <algorithm> // find_if
-#include <cstdio> // printf
-#include <limits> // numeric_limits
-#include <string> // stod, stoi, stoul
+#include <cstddef>   // size_t
+#include <cstdio>    // printf
+#include <limits>    // numeric_limits
+#include <string>    // stod, stoi, stoul
 #include <string_view>
 
 #include "util/argparser.h"
@@ -187,12 +188,34 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 	return result;
 }
 
+bool ArgParser::parseArgument(std::string_view argument)
+{
+	// No handler for argument
+	if (m_argumentIndex >= m_arguments.size()) {
+		return false;
+	}
+
+	Argument& currentArgument = m_arguments.at(m_argumentIndex);
+	bool result = currentArgument.acceptValue(argument.data());
+
+	if (result) {
+		currentArgument.addedValues++;
+	}
+
+	if (currentArgument.addedValues >= currentArgument.maxValues) {
+		m_argumentIndex++;
+	}
+
+	return result;
+}
+
 bool ArgParser::parse(int argc, const char* argv[])
 {
 	bool result = true;
 
-	// Skip program name argument
+	// Set looping indices
 	m_optionIndex = 1;
+	m_argumentIndex = 0;
 
 	// By default parse all '-' prefixed parameters as options
 	m_nonOptionMode = false;
@@ -202,12 +225,12 @@ bool ArgParser::parse(int argc, const char* argv[])
 
 	std::string_view argument;
 	std::string_view next;
-	for (; m_optionIndex < argc; ++m_optionIndex) {
-		printf("argv[%d]: %s\n", m_optionIndex, argv[m_optionIndex]);
+	for (; m_optionIndex < (size_t)argc; ++m_optionIndex) {
+		printf("argv[%zu]: %s\n", m_optionIndex, argv[m_optionIndex]);
 
 		// Get the current and next parameter
 		argument = argv[m_optionIndex];
-		if (m_optionIndex + 1 < argc && argv[m_optionIndex + 1][0] != '-') {
+		if (m_optionIndex + 1 < (size_t)argc && argv[m_optionIndex + 1][0] != '-') {
 			next = argv[m_optionIndex + 1];
 		}
 		else {
@@ -239,7 +262,9 @@ bool ArgParser::parse(int argc, const char* argv[])
 			if (m_stopParsingOnFirstNonOption) {
 				m_nonOptionMode = true;
 			}
-			printf("-> argu: '%s'", argument.data());
+			if (!parseArgument(argument)) {
+				result = false;
+			}
 		}
 
 		if (m_exitOnFirstError && !result) {
@@ -247,8 +272,19 @@ bool ArgParser::parse(int argc, const char* argv[])
 		}
 	}
 
+	// Check any leftover arguments for required
+	for (; m_argumentIndex < m_arguments.size(); ++m_argumentIndex) {
+		Argument& currentArgument = m_arguments.at(m_argumentIndex);
+		if (currentArgument.minValues > currentArgument.addedValues) {
+			result = false;
+			// TODO: decide if and what to print here
+		}
+	}
+
 	return result;
 }
+
+// -----------------------------------------
 
 void ArgParser::addOption(Option&& option)
 {
@@ -363,8 +399,7 @@ void ArgParser::addOption(unsigned int& value, char shortName, const char* longN
 				return false;
 			}
 
-			if (convert <= std::numeric_limits<unsigned int>::max())
-			{
+			if (convert <= std::numeric_limits<unsigned int>::max()) {
 				value = static_cast<unsigned int>(convert);
 				return true;
 			}
@@ -412,6 +447,49 @@ void ArgParser::addOption(std::vector<std::string>& values, char shortName, cons
 		}
 	};
 	addOption(std::move(option));
+}
+
+// -----------------------------------------
+
+void ArgParser::addArgument(Argument&& argument)
+{
+	m_arguments.push_back(argument);
+}
+
+void ArgParser::addArgument(std::string& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			value = a;
+			return true;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+void ArgParser::addArgument(std::vector<std::string>& values, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		values.max_size(),
+		0,
+		[&values](const char* a) -> bool {
+			values.push_back(a);
+			return true;
+		}
+	};
+	addArgument(std::move(argument));
 }
 
 } // namespace Util
