@@ -63,7 +63,13 @@ public:
 	void addOption(std::vector<std::string>& values, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName = "", Required requiresArgument = Required::No);
 
 	void addArgument(Argument&& argument);
+	void addArgument(bool& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
+	void addArgument(const char*& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
 	void addArgument(std::string& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
+	void addArgument(std::string_view& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
+	void addArgument(int& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
+	void addArgument(unsigned int& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
+	void addArgument(double& value, const char* name, const char* usageString, const char* manString, Required required = Required::No);
 	void addArgument(std::vector<std::string>& values, const char* name, const char* usageString, const char* manString, Required required = Required::No);
 
 	void setErrorReporting(bool state) { m_errorReporting = state; }

@@ -456,6 +456,42 @@ void ArgParser::addArgument(Argument&& argument)
 	m_arguments.push_back(argument);
 }
 
+void ArgParser::addArgument(bool& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char*) -> bool {
+			value = true;
+			return true;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+void ArgParser::addArgument(const char*& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			value = a;
+			return true;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
 void ArgParser::addArgument(std::string& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
@@ -469,6 +505,102 @@ void ArgParser::addArgument(std::string& value, const char* name, const char* us
 		[&value](const char* a) -> bool {
 			value = a;
 			return true;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+void ArgParser::addArgument(std::string_view& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			value = a;
+			return true;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+void ArgParser::addArgument(int& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			try {
+				value = std::stoi(a);
+				return true;
+			}
+			catch (...) {
+				return false;
+			}
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+
+void ArgParser::addArgument(unsigned int& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			unsigned long convert = 0;
+			try {
+				convert = std::stoul(a);
+			}
+			catch (...) {
+				return false;
+			}
+
+			if (convert <= std::numeric_limits<unsigned int>::max()) {
+				value = static_cast<unsigned int>(convert);
+				return true;
+			}
+
+			return false;
+		}
+	};
+	addArgument(std::move(argument));
+}
+
+
+void ArgParser::addArgument(double& value, const char* name, const char* usageString, const char* manString, Required required)
+{
+	size_t minValues = required == Required::Yes ? 1 : 0;
+	Argument argument {
+		name,
+		usageString,
+		manString,
+		minValues,
+		1,
+		0,
+		[&value](const char* a) -> bool {
+			try {
+				value = std::stod(a);
+				return true;
+			}
+			catch (...) {
+				return false;
+			}
 		}
 	};
 	addArgument(std::move(argument));
