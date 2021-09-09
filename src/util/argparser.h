@@ -9,6 +9,8 @@
 
 namespace Util {
 
+using AcceptFunction = std::function<bool(const char*)>;
+
 class ArgParser final {
 public:
 	ArgParser();
@@ -35,7 +37,7 @@ public:
 		const char* usageString { nullptr };
 		const char* manString { nullptr };
 		Required requiresArgument;
-		std::function<bool(const char*)> acceptValue;
+		AcceptFunction acceptValue;
 
 		Error error = Error::None;
 	};
@@ -47,7 +49,7 @@ public:
 		size_t minValues { 0 };
 		size_t maxValues { 1 };
 		size_t addedValues { 0 };
-		std::function<bool(const char*)> acceptValue;
+		AcceptFunction acceptValue;
 	};
 
 	bool parse(int argc, const char* argv[]);
@@ -82,6 +84,15 @@ private:
 	bool parseShortOption(std::string_view option, std::string_view next);
 	bool parseLongOption(std::string_view option, std::string_view next);
 	bool parseArgument(std::string_view argument);
+
+	AcceptFunction getAcceptFunction(bool& value);
+	AcceptFunction getAcceptFunction(const char*& value);
+	AcceptFunction getAcceptFunction(std::string& value);
+	AcceptFunction getAcceptFunction(std::string_view& value);
+	AcceptFunction getAcceptFunction(int& value);
+	AcceptFunction getAcceptFunction(unsigned int& value);
+	AcceptFunction getAcceptFunction(double& value);
+	AcceptFunction getAcceptFunction(std::vector<std::string>& value);
 
 	bool m_errorReporting { true };
 	bool m_exitOnFirstError { true };
