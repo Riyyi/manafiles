@@ -191,20 +191,29 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 
 bool ArgParser::parseArgument(std::string_view argument)
 {
-	// No handler for argument
-	if (m_argumentIndex >= m_arguments.size()) {
-		return false;
-	}
+	bool result = true;
 
-	Argument& currentArgument = m_arguments.at(m_argumentIndex);
-	bool result = currentArgument.acceptValue(argument.data());
+	for (;;) {
+		// Run out of argument handlers
+		if (m_argumentIndex >= m_arguments.size()) {
+			return false;
+		}
 
-	if (result) {
-		currentArgument.addedValues++;
-	}
+		Argument& currentArgument = m_arguments.at(m_argumentIndex);
+		result = currentArgument.acceptValue(argument.data());
 
-	if (currentArgument.addedValues >= currentArgument.maxValues) {
-		m_argumentIndex++;
+		if (result) {
+			currentArgument.addedValues++;
+			if (currentArgument.addedValues >= currentArgument.maxValues) {
+				m_argumentIndex++;
+			}
+		}
+		else if (currentArgument.minValues == 0) {
+			m_argumentIndex++;
+			continue;
+		}
+
+		break;
 	}
 
 	return result;
