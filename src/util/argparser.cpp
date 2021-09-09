@@ -399,33 +399,41 @@ AcceptFunction ArgParser::getAcceptFunction(bool& value)
 
 AcceptFunction ArgParser::getAcceptFunction(const char*& value)
 {
-	return [&value](const char* v) -> bool {
-		value = v;
+	return [&value](const char* input) -> bool {
+		value = input;
 		return true;
 	};
 }
 
 AcceptFunction ArgParser::getAcceptFunction(std::string& value)
 {
-	return [&value](const char* v) -> bool {
-		value = v;
+	return [&value](const char* input) -> bool {
+		value = input;
 		return true;
 	};
 }
 
 AcceptFunction ArgParser::getAcceptFunction(std::string_view& value)
 {
-	return [&value](const char* v) -> bool {
-		value = v;
+	return [&value](const char* input) -> bool {
+		value = input;
 		return true;
 	};
 }
 
 AcceptFunction ArgParser::getAcceptFunction(int& value)
 {
-	return [&value](const char* v) -> bool {
+	return [&value](const char* input) -> bool {
+		const char* validate = input;
+		for (; *validate != '\0'; ++validate) {
+			// - [0-9]
+			if (*validate != 45 && (*validate < 48 || *validate > 57)) {
+				return false;
+			}
+		}
+
 		try {
-			value = std::stoi(v);
+			value = std::stoi(input);
 			return true;
 		}
 		catch (...) {
@@ -436,10 +444,18 @@ AcceptFunction ArgParser::getAcceptFunction(int& value)
 
 AcceptFunction ArgParser::getAcceptFunction(unsigned int& value)
 {
-	return [&value](const char* v) -> bool {
+	return [&value](const char* input) -> bool {
+		const char* validate = input;
+		for (; *validate != '\0'; ++validate) {
+			// [0-9]
+			if (*validate < 48 || *validate > 57) {
+				return false;
+			}
+		}
+
 		unsigned long convert = 0;
 		try {
-			convert = std::stoul(v);
+			convert = std::stoul(input);
 		}
 		catch (...) {
 			return false;
@@ -456,9 +472,17 @@ AcceptFunction ArgParser::getAcceptFunction(unsigned int& value)
 
 AcceptFunction ArgParser::getAcceptFunction(double& value)
 {
-	return [&value](const char* v) -> bool {
+	return [&value](const char* input) -> bool {
+		const char* validate = input;
+		for (; *validate != '\0'; ++validate) {
+			// . [0-9]
+			if (*validate != 46 && (*validate < 48 || *validate > 57)) {
+				return false;
+			}
+		}
+
 		try {
-			value = std::stod(v);
+			value = std::stod(input);
 			return true;
 		}
 		catch (...) {
@@ -469,8 +493,8 @@ AcceptFunction ArgParser::getAcceptFunction(double& value)
 
 AcceptFunction ArgParser::getAcceptFunction(std::vector<std::string>& value)
 {
-	return [&value](const char* v) -> bool {
-		value.push_back(v);
+	return [&value](const char* input) -> bool {
+		value.push_back(input);
 		return true;
 	};
 }
