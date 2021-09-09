@@ -287,94 +287,6 @@ bool ArgParser::parse(int argc, const char* argv[])
 
 // -----------------------------------------
 
-AcceptFunction ArgParser::getAcceptFunction(bool& value)
-{
-	return [&value](const char*) -> bool {
-		value = true;
-		return true;
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(const char*& value)
-{
-	return [&value](const char* v) -> bool {
-		value = v;
-		return true;
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(std::string& value)
-{
-	return [&value](const char* v) -> bool {
-		value = v;
-		return true;
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(std::string_view& value)
-{
-	return [&value](const char* v) -> bool {
-		value = v;
-		return true;
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(int& value)
-{
-	return [&value](const char* v) -> bool {
-		try {
-			value = std::stoi(v);
-			return true;
-		}
-		catch (...) {
-			return false;
-		}
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(unsigned int& value)
-{
-	return [&value](const char* v) -> bool {
-		unsigned long convert = 0;
-		try {
-			convert = std::stoul(v);
-		}
-		catch (...) {
-			return false;
-		}
-
-		if (convert <= std::numeric_limits<unsigned int>::max()) {
-			value = static_cast<unsigned int>(convert);
-			return true;
-		}
-
-		return false;
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(double& value)
-{
-	return [&value](const char* v) -> bool {
-		try {
-			value = std::stod(v);
-			return true;
-		}
-		catch (...) {
-			return false;
-		}
-	};
-}
-
-AcceptFunction ArgParser::getAcceptFunction(std::vector<std::string>& value)
-{
-	return [&value](const char* v) -> bool {
-		value.push_back(v);
-		return true;
-	};
-}
-
-// -----------------------------------------
-
 void ArgParser::addOption(Option&& option)
 {
 	m_options.push_back(option);
@@ -473,6 +385,94 @@ void ArgParser::addArgument(std::vector<std::string>& values, const char* name, 
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
 	addArgument({ name, usageString, manString, minValues, values.max_size(), 0, getAcceptFunction(values) });
+}
+
+// -----------------------------------------
+
+AcceptFunction ArgParser::getAcceptFunction(bool& value)
+{
+	return [&value](const char*) -> bool {
+		value = true;
+		return true;
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(const char*& value)
+{
+	return [&value](const char* v) -> bool {
+		value = v;
+		return true;
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(std::string& value)
+{
+	return [&value](const char* v) -> bool {
+		value = v;
+		return true;
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(std::string_view& value)
+{
+	return [&value](const char* v) -> bool {
+		value = v;
+		return true;
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(int& value)
+{
+	return [&value](const char* v) -> bool {
+		try {
+			value = std::stoi(v);
+			return true;
+		}
+		catch (...) {
+			return false;
+		}
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(unsigned int& value)
+{
+	return [&value](const char* v) -> bool {
+		unsigned long convert = 0;
+		try {
+			convert = std::stoul(v);
+		}
+		catch (...) {
+			return false;
+		}
+
+		if (convert <= std::numeric_limits<unsigned int>::max()) {
+			value = static_cast<unsigned int>(convert);
+			return true;
+		}
+
+		return false;
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(double& value)
+{
+	return [&value](const char* v) -> bool {
+		try {
+			value = std::stod(v);
+			return true;
+		}
+		catch (...) {
+			return false;
+		}
+	};
+}
+
+AcceptFunction ArgParser::getAcceptFunction(std::vector<std::string>& value)
+{
+	return [&value](const char* v) -> bool {
+		value.push_back(v);
+		return true;
+	};
 }
 
 } // namespace Util
