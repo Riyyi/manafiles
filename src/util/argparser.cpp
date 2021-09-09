@@ -382,114 +382,42 @@ void ArgParser::addOption(Option&& option)
 
 void ArgParser::addOption(bool& value, char shortName, const char* longName, const char* usageString, const char* manString)
 {
-	Option option {
-		shortName,
-		longName,
-		nullptr,
-		usageString,
-		manString,
-		Required::No,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, nullptr, usageString, manString, Required::No, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(const char*& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(std::string& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(std::string_view& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(unsigned int& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(double& value, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(value),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(value) });
 }
 
 void ArgParser::addOption(std::vector<std::string>& values, char shortName, const char* longName, const char* usageString, const char* manString, const char* argumentName, Required requiresArgument)
 {
-	Option option {
-		shortName,
-		longName,
-		argumentName,
-		usageString,
-		manString,
-		requiresArgument,
-		getAcceptFunction(values),
-	};
-	addOption(std::move(option));
+	addOption({ shortName, longName, argumentName, usageString, manString, requiresArgument, getAcceptFunction(values) });
 }
 
 // -----------------------------------------
@@ -502,121 +430,49 @@ void ArgParser::addArgument(Argument&& argument)
 void ArgParser::addArgument(bool& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(const char*& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(std::string& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(std::string_view& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(int& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(unsigned int& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(double& value, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		1,
-		0,
-		getAcceptFunction(value),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, 1, 0, getAcceptFunction(value) });
 }
 
 void ArgParser::addArgument(std::vector<std::string>& values, const char* name, const char* usageString, const char* manString, Required required)
 {
 	size_t minValues = required == Required::Yes ? 1 : 0;
-	Argument argument {
-		name,
-		usageString,
-		manString,
-		minValues,
-		values.max_size(),
-		0,
-		getAcceptFunction(values),
-	};
-	addArgument(std::move(argument));
+	addArgument({ name, usageString, manString, minValues, values.max_size(), 0, getAcceptFunction(values) });
 }
 
 } // namespace Util
