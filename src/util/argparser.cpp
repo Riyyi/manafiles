@@ -130,7 +130,7 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 {
 	bool result = true;
 
-	std::string_view name = option.substr(0, option.find_first_of('='));
+	std::string name = std::string(option.substr(0, option.find_first_of('=')));
 	std::string_view value = option.substr(option.find_first_of('=') + 1);
 
 	bool argumentProvided = true;
