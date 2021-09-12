@@ -7,8 +7,8 @@
 namespace Util {
 
 Timer::Timer()
+	: m_start(std::chrono::high_resolution_clock::now())
 {
-	m_start = std::chrono::high_resolution_clock::now();
 }
 
 Timer Timer::operator-(const Timer& timer)
