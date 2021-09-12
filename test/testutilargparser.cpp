@@ -232,6 +232,67 @@ TEST_CASE(VectorStringArguments)
 
 // -----------------------------------------
 
+TEST_CASE(CombinationOfNonRequiredArguments)
+{
+	// Optional arguments, one given
+	int intArg1 = 0;
+	double doubleArg1 = 0;
+	std::string stringArg1 = "";
+	auto result = runParser({ "optional argument" }, [&](auto& parser) {
+		parser.addArgument(intArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(doubleArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(intArg1, 0);
+	EXPECT_EQ(doubleArg1, 0);
+	EXPECT_EQ(stringArg1, "optional argument");
+
+	// Optional arguments, two given
+	intArg1 = 0;
+	doubleArg1 = 0;
+	stringArg1 = "";
+	result = runParser({ "999.999", "optional argument" }, [&](auto& parser) {
+		parser.addArgument(intArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(doubleArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, true);
+	EXPECT_EQ(intArg1, 0);
+	EXPECT_EQ(doubleArg1, 999.999);
+	EXPECT_EQ(stringArg1, "optional argument");
+
+	// Optional arguments, two given, one valid
+	intArg1 = 0;
+	doubleArg1 = 0;
+	stringArg1 = "";
+	result = runParser({ "999,999", "optional argument" }, [&](auto& parser) {
+		parser.addArgument(intArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(doubleArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(intArg1, 0);
+	EXPECT_EQ(doubleArg1, 0);
+	EXPECT_EQ(stringArg1, "999,999");
+
+	// Optional arguments, two given, both valid but wrong order
+	stringArg1 = "";
+	intArg1 = 0;
+	doubleArg1 = 0;
+	result = runParser({ "999.999", "optional argument" }, [&](auto& parser) {
+		parser.addArgument(stringArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(intArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+		parser.addArgument(doubleArg1, nullptr, nullptr, nullptr, Util::ArgParser::Required::Optional);
+	});
+	EXPECT_EQ(result, false);
+	EXPECT_EQ(stringArg1, "999.999");
+	EXPECT_EQ(intArg1, 0);
+	EXPECT_EQ(doubleArg1, 0);
+}
+
+// -----------------------------------------
+
 TEST_CASE(BoolOptions)
 {
 	// Short option
