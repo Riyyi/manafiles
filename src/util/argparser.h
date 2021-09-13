@@ -29,6 +29,7 @@ public:
 		ExtraOperand,       // For arguments
 		DoesntAllowArgument,
 		RequiresArgument,
+		InvalidArgumentType,
 	};
 
 	struct Option {

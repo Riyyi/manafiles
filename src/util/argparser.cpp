@@ -51,6 +51,9 @@ void ArgParser::printOptionError(const char* name, Error error, bool longName)
 			printf("%s: option requires an argument -- '%s'\n", m_name, name);
 		}
 	}
+	else if (error == Error::InvalidArgumentType) {
+		printf("%s: invalid argument type '%s'\n", m_name, name);
+	}
 
 	// TODO: Print command usage, if it's enabled.
 }
@@ -216,6 +219,9 @@ bool ArgParser::parseArgument(std::string_view argument)
 		else if (currentArgument.minValues == 0) {
 			m_argumentIndex++;
 			continue;
+		}
+		else {
+			printOptionError(argument.data(), Error::InvalidArgumentType);
 		}
 
 		break;
