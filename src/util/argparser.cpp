@@ -141,7 +141,7 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 	printf("Parsing long option: '%s' with value '%s'\n", name.data(), argumentProvided ? value.data() : "");
 
 	auto foundOption = std::find_if(m_options.begin(), m_options.end(), [&name](Option& it) -> bool {
-		return it.longName == name;
+		return it.longName && it.longName == name;
 	});
 
 	if (foundOption == m_options.cend()) {
