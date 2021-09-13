@@ -40,16 +40,24 @@ void ArgParser::printError(const char* parameter, Error error, bool longName)
 	else if (error == Error::OptionDoesntAllowArgument) {
 		printf("%s: option '--%s' doesn't allow an argument\n", m_name, parameter);
 	}
-	else if (error == Error::ArgumentExtraOperand) {
-		printf("%s: extra operand '%s'\n", m_name, parameter);
-	}
 	else if (error == Error::OptionRequiresArgument) {
 		if (longName) {
-			printf("%s: option '--%s' requires an argument", m_name, parameter);
+			printf("%s: option '--%s' requires an argument\n", m_name, parameter);
 		}
 		else {
 			printf("%s: option requires an argument -- '%s'\n", m_name, parameter);
 		}
+	}
+	else if (error == Error::OptionInvalidArgumentType) {
+		if (longName) {
+			printf("%s: option '--%s' invalid type\n", m_name, parameter);
+		}
+		else {
+			printf("%s: option invalid type -- '%s'\n", m_name, parameter);
+		}
+	}
+	else if (error == Error::ArgumentExtraOperand) {
+		printf("%s: extra operand '%s'\n", m_name, parameter);
 	}
 	else if (error == Error::ArgumentInvalidType) {
 		printf("%s: invalid argument type '%s'\n", m_name, parameter);
@@ -80,9 +88,8 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 		if (foundOption == m_options.cend()) {
 			printError(c, Error::OptionInvalid);
 
-			result = false;
 			if (m_exitOnFirstError) {
-				return result;
+				return false;
 			}
 		}
 		else if (foundOption->requiresArgument == Required::No) {
@@ -94,27 +101,25 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 			if (value.empty() && next.empty()) {
 				foundOption->error = Error::OptionRequiresArgument;
 				printError(c, Error::OptionRequiresArgument);
-
 				result = false;
-				if (m_exitOnFirstError) {
-					return result;
-				}
 			}
 			else if (!value.empty()) {
 				result = foundOption->acceptValue(value.data());
+				if (!result) {
+					printError(c, Error::OptionInvalidArgumentType);
+				}
 			}
 			else if (next[0] == '-') {
 				foundOption->error = Error::OptionRequiresArgument;
 				printError(c, Error::OptionRequiresArgument);
-
 				result = false;
-				if (m_exitOnFirstError) {
-					return result;
-				}
 			}
 			else {
 				result = foundOption->acceptValue(next.data());
 				m_optionIndex++;
+				if (!result) {
+					printError(c, Error::OptionInvalidArgumentType);
+				}
 			}
 
 			break;
@@ -123,6 +128,9 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 			value = option.substr(i + 1);
 			if (!value.empty()) {
 				result = foundOption->acceptValue(value.data());
+				if (!result) {
+					printError(c, Error::OptionInvalidArgumentType);
+				}
 				break;
 			}
 		}
@@ -165,9 +173,15 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 		}
 		else if (foundOption->requiresArgument == Required::Yes) {
 			result = foundOption->acceptValue(value.data());
+			if (!result) {
+				printError(name.data(), Error::OptionInvalidArgumentType);
+			}
 		}
 		else if (foundOption->requiresArgument == Required::Optional) {
 			result = foundOption->acceptValue(value.data());
+			if (!result) {
+				printError(name.data(), Error::OptionInvalidArgumentType);
+			}
 		}
 	}
 	else if (!next.empty() && foundOption->requiresArgument == Required::Yes) {
@@ -180,6 +194,9 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 		else {
 			result = foundOption->acceptValue(next.data());
 			m_optionIndex++;
+			if (!result) {
+				printError(name.data(), Error::OptionInvalidArgumentType);
+			}
 		}
 	}
 	else if (foundOption->requiresArgument == Required::Yes) {

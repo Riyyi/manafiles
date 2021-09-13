@@ -28,6 +28,7 @@ public:
 		OptionUnrecognized, // For long options
 		OptionDoesntAllowArgument,
 		OptionRequiresArgument,
+		OptionInvalidArgumentType,
 		ArgumentExtraOperand,
 		ArgumentInvalidType,
 	};
