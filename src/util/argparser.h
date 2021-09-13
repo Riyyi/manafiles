@@ -81,8 +81,8 @@ public:
 	void setStopParsingOnFirstNonOption(bool state) { m_stopParsingOnFirstNonOption = state; }
 
 private:
-	void printOptionError(char name, Error error);
-	void printOptionError(const char* name, Error error, bool longName = true);
+	void printError(char parameter, Error error);
+	void printError(const char* parameter, Error error, bool longName = true);
 	bool parseShortOption(std::string_view option, std::string_view next);
 	bool parseLongOption(std::string_view option, std::string_view next);
 	bool parseArgument(std::string_view argument);
