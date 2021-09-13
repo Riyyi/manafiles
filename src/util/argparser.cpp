@@ -59,6 +59,9 @@ void ArgParser::printError(const char* parameter, Error error, bool longName)
 	else if (error == Error::ArgumentExtraOperand) {
 		printf("%s: extra operand '%s'\n", m_name, parameter);
 	}
+	else if (error == Error::ArgumentRequired) {
+		printf("%s: missing required argument '%s'\n", m_name, parameter);
+	}
 	else if (error == Error::ArgumentInvalidType) {
 		printf("%s: invalid argument type '%s'\n", m_name, parameter);
 	}
@@ -179,7 +182,6 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 			return false;
 		}
 
-		// FIXME: Figure out why providing a nullptr breaks the lambda here.
 		result = foundOption->acceptValue("");
 	}
 	else if (foundOption->requiresArgument == Required::Yes) {
@@ -312,7 +314,7 @@ bool ArgParser::parse(int argc, const char* argv[])
 		Argument& currentArgument = m_arguments.at(m_argumentIndex);
 		if (currentArgument.minValues > currentArgument.addedValues) {
 			result = false;
-			// TODO: decide if and what to print here
+			printError(currentArgument.name ? currentArgument.name : "", Error::ArgumentRequired);
 		}
 	}
 

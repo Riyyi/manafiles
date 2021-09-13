@@ -30,6 +30,7 @@ public:
 		OptionRequiresArgument,
 		OptionInvalidArgumentType,
 		ArgumentExtraOperand,
+		ArgumentRequired,
 		ArgumentInvalidType,
 	};
 
