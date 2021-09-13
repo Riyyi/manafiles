@@ -1,6 +1,7 @@
 #include <algorithm> // find_if
 #include <cstddef>   // size_t
 #include <cstdio>    // printf
+#include <cstring>   // strcmp
 #include <limits>    // numeric_limits
 #include <string>    // stod, stoi, stoul
 #include <string_view>
@@ -38,6 +39,9 @@ void ArgParser::printOptionError(const char* name, Error error, bool longName)
 	}
 	else if (error == Error::DoesntAllowArgument) {
 		printf("%s: option '--%s' doesn't allow an argument\n", m_name, name);
+	}
+	else if (error == Error::ExtraOperand) {
+		printf("%s: extra operand '%s'\n", m_name, name);
 	}
 	else if (error == Error::RequiresArgument) {
 		if (longName) {
@@ -196,6 +200,7 @@ bool ArgParser::parseArgument(std::string_view argument)
 	for (;;) {
 		// Run out of argument handlers
 		if (m_argumentIndex >= m_arguments.size()) {
+			printOptionError(argument.data(), Error::ExtraOperand);
 			return false;
 		}
 
@@ -291,7 +296,22 @@ bool ArgParser::parse(int argc, const char* argv[])
 		}
 	}
 
-	return result;
+	if (result) {
+		return true;
+	}
+
+	for (auto& option : m_options) {
+		if (option.longName && strcmp(option.longName, "help") == 0) {
+			printf("Try '%s --help' for more information.\n", m_name);
+			break;
+		}
+		if (option.shortName == 'h') {
+			printf("Try '%s -h' for more information.\n", m_name);
+			break;
+		}
+	}
+
+	return false;
 }
 
 // -----------------------------------------

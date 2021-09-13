@@ -26,6 +26,7 @@ public:
 		None,
 		InvalidOption,      // For short options
 		UnrecognizedOption, // For long options
+		ExtraOperand,       // For arguments
 		DoesntAllowArgument,
 		RequiresArgument,
 	};
