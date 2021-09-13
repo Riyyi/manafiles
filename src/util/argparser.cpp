@@ -31,19 +31,19 @@ void ArgParser::printError(const char* parameter, Error error, bool longName)
 		return;
 	}
 
-	if (error == Error::InvalidOption) {
+	if (error == Error::OptionInvalid) {
 		printf("%s: invalid option -- '%s'\n", m_name, parameter);
 	}
-	else if (error == Error::UnrecognizedOption) {
+	else if (error == Error::OptionUnrecognized) {
 		printf("%s: unrecognized option -- '%s'\n", m_name, parameter);
 	}
-	else if (error == Error::DoesntAllowArgument) {
+	else if (error == Error::OptionDoesntAllowArgument) {
 		printf("%s: option '--%s' doesn't allow an argument\n", m_name, parameter);
 	}
-	else if (error == Error::ExtraOperand) {
+	else if (error == Error::ArgumentExtraOperand) {
 		printf("%s: extra operand '%s'\n", m_name, parameter);
 	}
-	else if (error == Error::RequiresArgument) {
+	else if (error == Error::OptionRequiresArgument) {
 		if (longName) {
 			printf("%s: option '--%s' requires an argument", m_name, parameter);
 		}
@@ -51,7 +51,7 @@ void ArgParser::printError(const char* parameter, Error error, bool longName)
 			printf("%s: option requires an argument -- '%s'\n", m_name, parameter);
 		}
 	}
-	else if (error == Error::InvalidArgumentType) {
+	else if (error == Error::ArgumentInvalidType) {
 		printf("%s: invalid argument type '%s'\n", m_name, parameter);
 	}
 
@@ -78,7 +78,7 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 
 		// Option does not exist
 		if (foundOption == m_options.cend()) {
-			printError(c, Error::InvalidOption);
+			printError(c, Error::OptionInvalid);
 
 			result = false;
 			if (m_exitOnFirstError) {
@@ -92,8 +92,8 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 		else if (foundOption->requiresArgument == Required::Yes) {
 			value = option.substr(i + 1);
 			if (value.empty() && next.empty()) {
-				foundOption->error = Error::RequiresArgument;
-				printError(c, Error::RequiresArgument);
+				foundOption->error = Error::OptionRequiresArgument;
+				printError(c, Error::OptionRequiresArgument);
 
 				result = false;
 				if (m_exitOnFirstError) {
@@ -104,8 +104,8 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 				result = foundOption->acceptValue(value.data());
 			}
 			else if (next[0] == '-') {
-				foundOption->error = Error::RequiresArgument;
-				printError(c, Error::RequiresArgument);
+				foundOption->error = Error::OptionRequiresArgument;
+				printError(c, Error::OptionRequiresArgument);
 
 				result = false;
 				if (m_exitOnFirstError) {
@@ -152,14 +152,14 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 	});
 
 	if (foundOption == m_options.cend()) {
-		printError(name.data(), Error::UnrecognizedOption);
+		printError(name.data(), Error::OptionUnrecognized);
 
 		result = false;
 	}
 	else if (argumentProvided) {
 		if (foundOption->requiresArgument == Required::No) {
-			foundOption->error = Error::DoesntAllowArgument;
-			printError(name.data(), Error::DoesntAllowArgument);
+			foundOption->error = Error::OptionDoesntAllowArgument;
+			printError(name.data(), Error::OptionDoesntAllowArgument);
 
 			result = false;
 		}
@@ -172,8 +172,8 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 	}
 	else if (!next.empty() && foundOption->requiresArgument == Required::Yes) {
 		if (next[0] == '-') {
-			foundOption->error = Error::RequiresArgument;
-			printError(name.data(), Error::RequiresArgument);
+			foundOption->error = Error::OptionRequiresArgument;
+			printError(name.data(), Error::OptionRequiresArgument);
 
 			result = false;
 		}
@@ -183,8 +183,8 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 		}
 	}
 	else if (foundOption->requiresArgument == Required::Yes) {
-		foundOption->error = Error::RequiresArgument;
-		printError(name.data(), Error::RequiresArgument);
+		foundOption->error = Error::OptionRequiresArgument;
+		printError(name.data(), Error::OptionRequiresArgument);
 
 		result = false;
 	}
@@ -203,7 +203,7 @@ bool ArgParser::parseArgument(std::string_view argument)
 	for (;;) {
 		// Run out of argument handlers
 		if (m_argumentIndex >= m_arguments.size()) {
-			printError(argument.data(), Error::ExtraOperand);
+			printError(argument.data(), Error::ArgumentExtraOperand);
 			return false;
 		}
 
@@ -221,7 +221,7 @@ bool ArgParser::parseArgument(std::string_view argument)
 			continue;
 		}
 		else {
-			printError(argument.data(), Error::InvalidArgumentType);
+			printError(argument.data(), Error::ArgumentInvalidType);
 		}
 
 		break;

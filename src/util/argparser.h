@@ -24,12 +24,12 @@ public:
 
 	enum class Error {
 		None,
-		InvalidOption,      // For short options
-		UnrecognizedOption, // For long options
-		ExtraOperand,       // For arguments
-		DoesntAllowArgument,
-		RequiresArgument,
-		InvalidArgumentType,
+		OptionInvalid,      // For short options
+		OptionUnrecognized, // For long options
+		OptionDoesntAllowArgument,
+		OptionRequiresArgument,
+		ArgumentExtraOperand,
+		ArgumentInvalidType,
 	};
 
 	struct Option {
