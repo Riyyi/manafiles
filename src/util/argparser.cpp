@@ -143,17 +143,8 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 // Optional: directly after, separated by '='
 bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 {
-	bool result = true;
-
 	std::string name = std::string(option.substr(0, option.find_first_of('=')));
 	std::string_view value = option.substr(option.find_first_of('=') + 1);
-
-	bool argumentProvided = true;
-	if (name.compare(value) == 0 && option.find('=') == std::string_view::npos) {
-		argumentProvided = false;
-	}
-
-	printf("Parsing long option: '%s' with value '%s'\n", name.data(), argumentProvided ? value.data() : "");
 
 	auto foundOption = std::find_if(m_options.begin(), m_options.end(), [&name](Option& it) -> bool {
 		return it.longName && it.longName == name;
@@ -161,53 +152,59 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 
 	if (foundOption == m_options.cend()) {
 		printError(name.data(), Error::OptionUnrecognized);
-
-		result = false;
+		return false;
 	}
-	else if (argumentProvided) {
-		if (foundOption->requiresArgument == Required::No) {
+
+	enum class ArgumentProvided {
+		No,
+		DirectlyAfter,
+		Seperated,
+	};
+
+	auto argument = ArgumentProvided::No;
+	if (name != value || option.find('=') != std::string_view::npos) {
+		argument = ArgumentProvided::DirectlyAfter;
+	}
+	else if (!next.empty() && next[0] != '-') {
+		argument = ArgumentProvided::Seperated;
+		value = next;
+	}
+
+	bool result = true;
+
+	if (foundOption->requiresArgument == Required::No) {
+		if (argument == ArgumentProvided::DirectlyAfter) {
 			foundOption->error = Error::OptionDoesntAllowArgument;
 			printError(name.data(), Error::OptionDoesntAllowArgument);
+			return false;
+		}
 
-			result = false;
-		}
-		else if (foundOption->requiresArgument == Required::Yes) {
-			result = foundOption->acceptValue(value.data());
-			if (!result) {
-				printError(name.data(), Error::OptionInvalidArgumentType);
-			}
-		}
-		else if (foundOption->requiresArgument == Required::Optional) {
-			result = foundOption->acceptValue(value.data());
-			if (!result) {
-				printError(name.data(), Error::OptionInvalidArgumentType);
-			}
-		}
-	}
-	else if (!next.empty() && foundOption->requiresArgument == Required::Yes) {
-		if (next[0] == '-') {
-			foundOption->error = Error::OptionRequiresArgument;
-			printError(name.data(), Error::OptionRequiresArgument);
-
-			result = false;
-		}
-		else {
-			result = foundOption->acceptValue(next.data());
-			m_optionIndex++;
-			if (!result) {
-				printError(name.data(), Error::OptionInvalidArgumentType);
-			}
-		}
-	}
-	else if (foundOption->requiresArgument == Required::Yes) {
-		foundOption->error = Error::OptionRequiresArgument;
-		printError(name.data(), Error::OptionRequiresArgument);
-
-		result = false;
-	}
-	else {
 		// FIXME: Figure out why providing a nullptr breaks the lambda here.
 		result = foundOption->acceptValue("");
+	}
+	else if (foundOption->requiresArgument == Required::Yes) {
+		if (argument == ArgumentProvided::No) {
+			foundOption->error = Error::OptionRequiresArgument;
+			printError(name.data(), Error::OptionRequiresArgument);
+			return false;
+		}
+
+		result = foundOption->acceptValue(value.data());
+		if (!result) {
+			printError(name.data(), Error::OptionInvalidArgumentType);
+		}
+
+		if (argument == ArgumentProvided::Seperated) {
+			m_optionIndex++;
+		}
+	}
+	else if (foundOption->requiresArgument == Required::Optional) {
+		if (argument == ArgumentProvided::DirectlyAfter) {
+			result = foundOption->acceptValue(value.data());
+			if (!result) {
+				printError(name.data(), Error::OptionInvalidArgumentType);
+			}
+		}
 	}
 
 	return result;
