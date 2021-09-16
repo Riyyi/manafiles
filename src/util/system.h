@@ -30,7 +30,10 @@ public:
 	System operator()(const std::vector<std::string>& arguments);
 	System operator()(const std::vector<std::string_view>& arguments);
 
+	System operator+(System rhs);
 	System operator|(System rhs);
+	System operator||(System rhs);
+	System operator&&(System rhs);
 
 	void print(const std::vector<std::string>& arguments);
 

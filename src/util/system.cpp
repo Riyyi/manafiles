@@ -77,9 +77,58 @@ System System::operator()(const std::vector<std::string_view>& arguments)
 	return System(stringArguments);
 }
 
+// Shell equivalent ;
+System System::operator+(System rhs)
+{
+	auto lhs = *this;
+
+	lhs.exec();
+	rhs.m_output.append(lhs.m_output);
+	rhs.m_error.append(lhs.m_error);
+	rhs.exec();
+
+	return rhs;
+}
+
 System System::operator|(System rhs)
 {
-	rhs.exec(exec().output());
+	auto lhs = *this;
+
+	lhs.exec();
+	rhs.exec(lhs.m_output);
+
+	return rhs;
+}
+
+System System::operator||(System rhs)
+{
+	auto lhs = *this;
+
+	lhs.exec();
+	if (lhs.m_status == 0) {
+		return lhs;
+	}
+
+	rhs.m_output.append(lhs.m_output);
+	rhs.m_error.append(lhs.m_error);
+	rhs.exec();
+
+	return rhs;
+}
+
+System System::operator&&(System rhs)
+{
+	auto lhs = *this;
+
+	lhs.exec();
+	if (lhs.m_status > 0) {
+		return lhs;
+	}
+
+	rhs.m_output.append(lhs.m_output);
+	rhs.m_error.append(lhs.m_error);
+	rhs.exec();
+
 	return rhs;
 }
 
@@ -103,6 +152,10 @@ void System::print(const std::vector<std::string>& arguments)
 
 System System::exec(std::string input)
 {
+	if (m_arguments.empty()) {
+		return *this;
+	}
+
 	int stdinFd[2];
 	int stdoutFd[2];
 	int stderrFd[2];
@@ -146,6 +199,7 @@ System System::exec(std::string input)
 	}
 	// Parent
 	default:
+		m_arguments.clear();
 		break;
 	}
 
@@ -170,7 +224,6 @@ System System::exec(std::string input)
 void System::readFromFileDescriptor(int fileDescriptor[2], std::string& output)
 {
 	close(fileDescriptor[WriteFileDescriptor]);
-	output.clear();
 
 	constexpr int bufferSize = 4096;
 	char buffer[bufferSize];
