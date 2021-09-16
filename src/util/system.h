@@ -13,7 +13,8 @@ using SplitCallback = std::function<void(size_t, char*)>;
 
 class System {
 public:
-	System() {}
+	System();
+	System(std::vector<std::string> arguments);
 	virtual ~System() {}
 
 	enum FileDescriptor {
@@ -21,22 +22,28 @@ public:
 		WriteFileDescriptor,
 	};
 
-	void operator()(const char* command);
-	void operator()(std::string command);
-	void operator()(std::string_view command);
-	void operator()(const std::vector<const char*>& arguments);
-	void operator()(const std::vector<std::string>& arguments);
-	void operator()(const std::vector<std::string_view>& arguments);
+	System operator()();
+	System operator()(const char* command);
+	System operator()(std::string command);
+	System operator()(std::string_view command);
+	System operator()(const std::vector<const char*>& arguments);
+	System operator()(const std::vector<std::string>& arguments);
+	System operator()(const std::vector<std::string_view>& arguments);
 
+	System operator|(System rhs);
+
+	void print(const std::vector<std::string>& arguments);
+
+	const std::vector<std::string>& arguments() const { return m_arguments; }
 	std::string output() const { return m_output; }
 	std::string error() const { return m_error; }
 	int status() const { return m_status; }
 
 private:
-	void operator()(const std::vector<char*>& arguments);
+	System exec(std::string input = "");
 	void readFromFileDescriptor(int fileDescriptor[2], std::string& output);
-	size_t split(char* split, const char* delimiters, SplitCallback callback = {});
 
+	std::vector<std::string> m_arguments;
 	std::string m_output;
 	std::string m_error;
 	int m_status { 0 };
