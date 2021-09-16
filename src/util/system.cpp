@@ -236,10 +236,6 @@ void System::readFromFileDescriptor(int fileDescriptor[2], std::string& output)
 		}
 	} while (errno == EAGAIN || errno == EINTR);
 
-	if (!output.empty() && output.find_last_of('\n') == output.size() - 1) {
-		output.pop_back();
-	}
-
 	close(fileDescriptor[ReadFileDescriptor]);
 }
 
