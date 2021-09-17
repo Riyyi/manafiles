@@ -100,12 +100,12 @@ System System::operator|(System rhs)
 	return rhs;
 }
 
-System System::operator||(System rhs)
+System System::operator&&(System rhs)
 {
 	auto lhs = *this;
 
 	lhs.exec();
-	if (lhs.m_status == 0) {
+	if (lhs.m_status > 0) {
 		return lhs;
 	}
 
@@ -116,12 +116,12 @@ System System::operator||(System rhs)
 	return rhs;
 }
 
-System System::operator&&(System rhs)
+System System::operator||(System rhs)
 {
 	auto lhs = *this;
 
 	lhs.exec();
-	if (lhs.m_status > 0) {
+	if (lhs.m_status == 0) {
 		return lhs;
 	}
 

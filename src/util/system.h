@@ -29,10 +29,12 @@ public:
 	System operator()(const std::vector<std::string>& arguments);
 	System operator()(const std::vector<std::string_view>& arguments);
 
+	// Operator order
+	// + -> | -> && -> ||
 	System operator+(System rhs);
 	System operator|(System rhs);
-	System operator||(System rhs);
 	System operator&&(System rhs);
+	System operator||(System rhs);
 
 	void print(const std::vector<std::string>& arguments);
 
