@@ -160,20 +160,20 @@ System System::exec(std::string input)
 	int stdoutFd[2];
 	int stderrFd[2];
 	if (pipe(stdinFd) < 0) {
-		perror("\033[31;1mError\033[0m");
+		perror("\033[31;1mError:\033[0m pipe");
 	}
 	if (pipe(stdoutFd) < 0) {
-		perror("\033[31;1mError\033[0m");
+		perror("\033[31;1mError:\033[0m pipe");
 	}
 	if (pipe(stderrFd) < 0) {
-		perror("\033[31;1mError\033[0m");
+		perror("\033[31;1mError:\033[0m pipe");
 	}
 
 	pid_t pid = fork();
 	switch (pid) {
 	// Failed
 	case -1:
-		perror("\033[31;1mError\033[0m");
+		perror("\033[31;1mError:\033[0m fork");
 		break;
 	// Child
 	case 0: {
