@@ -14,7 +14,6 @@ using SplitCallback = std::function<void(size_t, char*)>;
 class System {
 public:
 	System();
-	System(std::vector<std::string> arguments);
 	virtual ~System() {}
 
 	enum FileDescriptor {
@@ -43,6 +42,8 @@ public:
 	int status() const { return m_status; }
 
 private:
+	System(const std::vector<std::string>& arguments);
+
 	System exec(std::string input = "");
 	void readFromFileDescriptor(int fileDescriptor[2], std::string& output);
 

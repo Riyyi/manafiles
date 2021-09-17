@@ -18,7 +18,7 @@ System::System()
 {
 }
 
-System::System(std::vector<std::string> arguments)
+System::System(const std::vector<std::string>& arguments)
 	: m_arguments(arguments)
 {
 }
@@ -44,7 +44,7 @@ System System::operator()(std::string command)
 		command = command.substr(index + 1);
 	}
 
-	return System(arguments);
+	return { arguments };
 }
 
 System System::operator()(std::string_view command)
@@ -59,12 +59,12 @@ System System::operator()(const std::vector<const char*>& arguments)
 		stringArguments[i] = arguments[i];
 	}
 
-	return System(stringArguments);
+	return { stringArguments };
 }
 
 System System::operator()(const std::vector<std::string>& arguments)
 {
-	return System(arguments);
+	return { arguments };
 }
 
 System System::operator()(const std::vector<std::string_view>& arguments)
@@ -74,7 +74,7 @@ System System::operator()(const std::vector<std::string_view>& arguments)
 		stringArguments[i] = arguments[i];
 	}
 
-	return System(stringArguments);
+	return { stringArguments };
 }
 
 // Shell equivalent ;
