@@ -1,3 +1,4 @@
+#include <functional> // function
 #include <string>
 #include <vector>
 
