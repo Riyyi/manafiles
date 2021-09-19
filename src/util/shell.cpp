@@ -10,7 +10,7 @@ Shell::Shell()
 {
 }
 
-Shell::Shell(std::string output, int status)
+Shell::Shell(const std::string& output, int status)
 	: m_output(output)
 	, m_status(status)
 {

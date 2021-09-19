@@ -19,7 +19,7 @@ public:
 	int status() const { return m_status; }
 
 private:
-	Shell(std::string output, int status);
+	Shell(const std::string& output, int status);
 
 	std::string m_output;
 	int m_status { 0 };
