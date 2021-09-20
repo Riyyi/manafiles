@@ -29,13 +29,14 @@ public:
 		std::string path;
 	};
 
-	static void list();
+	static void list(const std::vector<std::string>& targets = {});
 
 	static void setWorkingDirectory(std::filesystem::path directory) { s_workingDirectory = directory; }
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
 private:
 	static bool filter(const std::filesystem::path& path);
+	static bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 
 	static std::vector<ExcludePath> s_excludePaths;
 	static std::filesystem::path s_workingDirectory;

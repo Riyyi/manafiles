@@ -26,7 +26,7 @@ Dotfile::~Dotfile()
 
 // -----------------------------------------
 
-void Dotfile::list()
+void Dotfile::list(const std::vector<std::string>& targets)
 {
 	if (s_workingDirectory.empty()) {
 		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is unset\n");
@@ -41,6 +41,9 @@ void Dotfile::list()
 	size_t workingDirectory = s_workingDirectory.string().size() + 1;
 	for (const auto& path : std::filesystem::recursive_directory_iterator { s_workingDirectory }) {
 		if (path.is_directory() || filter(path)) {
+			continue;
+		}
+		if (!targets.empty() && !include(path.path().string(), targets)) {
 			continue;
 		}
 		printf("%s\n", path.path().c_str() + workingDirectory);
@@ -66,6 +69,17 @@ bool Dotfile::filter(const std::filesystem::path& path)
 			if (path.string().find(excludePath.path) == path.string().size() - excludePath.path.size()) {
 				return true;
 			}
+		}
+	}
+
+	return false;
+}
+
+bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::string>& targets)
+{
+	for (const auto& target : targets) {
+		if (path.string().find(s_workingDirectory / target) == 0) {
+			return true;
 		}
 	}
 
