@@ -8,7 +8,8 @@
 #include <cstddef> // size_t
 #include <cstdio>  // fprintf, printf, stderr
 #include <filesystem>
-#include <pwd.h> // getpwnam
+#include <functional> // function
+#include <pwd.h>      // getpwnam
 #include <string>
 #include <system_error> // error_code
 #include <unistd.h>     // geteuid, getlogin, setegid, seteuid
@@ -114,7 +115,7 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		std::error_code error;
 		if (std::filesystem::is_regular_file(from)) {
 			auto directory = to.relative_path().parent_path();
-			if (!directory.empty() && !std::filesystem::exists(directory) ) {
+			if (!directory.empty() && !std::filesystem::exists(directory)) {
 				printf("created directory '%s'\n", directory.c_str());
 				std::filesystem::create_directories(directory, error);
 				printError(to.relative_path().parent_path(), error);
@@ -160,7 +161,16 @@ void Dotfile::list(const std::vector<std::string>& targets)
 		return;
 	}
 
-	size_t workingDirectory = s_workingDirectory.string().size() + 1;
+	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t workingDirectory) {
+		printf("%s\n", path.path().c_str() + workingDirectory + 1);
+	});
+}
+
+// -----------------------------------------
+
+void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t)>& callback)
+{
+	size_t workingDirectory = s_workingDirectory.string().size();
 	for (const auto& path : std::filesystem::recursive_directory_iterator { s_workingDirectory }) {
 		if (path.is_directory() || filter(path)) {
 			continue;
@@ -168,11 +178,9 @@ void Dotfile::list(const std::vector<std::string>& targets)
 		if (!targets.empty() && !include(path.path().string(), targets)) {
 			continue;
 		}
-		printf("%s\n", path.path().c_str() + workingDirectory);
+		callback(path, workingDirectory);
 	}
 }
-
-// -----------------------------------------
 
 bool Dotfile::filter(const std::filesystem::path& path)
 {
