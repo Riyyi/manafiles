@@ -31,17 +31,17 @@ public:
 		std::string path;
 	};
 
-	static void add(const std::vector<std::string>& targets = {});
-	static void list(const std::vector<std::string>& targets = {});
+	void add(const std::vector<std::string>& targets = {});
+	void list(const std::vector<std::string>& targets = {});
 
 	static void setWorkingDirectory(std::filesystem::path directory) { s_workingDirectory = directory; }
 	static void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { s_systemDirectories = systemDirectories; }
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
 private:
-	static void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t)>& callback);
-	static bool filter(const std::filesystem::path& path);
-	static bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
+	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t)>& callback);
+	bool filter(const std::filesystem::path& path);
+	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 
 	static std::vector<ExcludePath> s_excludePaths;
 	static std::vector<std::filesystem::path> s_systemDirectories;
