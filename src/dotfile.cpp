@@ -93,7 +93,8 @@ void Dotfile::list(const std::vector<std::string>& targets)
 		return;
 	}
 
-	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t, size_t workingDirectory) {
+	size_t workingDirectory = s_workingDirectory.string().size();
+	forEachDotfile(targets, [&workingDirectory](std::filesystem::directory_entry path, size_t) {
 		printf("%s\n", path.path().c_str() + workingDirectory + 1);
 	});
 }
@@ -105,7 +106,7 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 	std::vector<size_t> systemFiles;
 
 	// Separate home and system targets
-	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index, size_t) {
+	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
 		dotfiles.push_back(path.path().string());
 		if (isSystemTarget(path.path().string())) {
 			systemFiles.push_back(index);
@@ -208,10 +209,8 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 	}
 }
 
-void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t, size_t)>& callback)
+void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback)
 {
-	size_t workingDirectory = s_workingDirectory.string().size();
-
 	size_t index = 0;
 	for (const auto& path : std::filesystem::recursive_directory_iterator { s_workingDirectory }) {
 		if (path.is_directory() || filter(path)) {
@@ -220,7 +219,7 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 		if (!targets.empty() && !include(path.path().string(), targets)) {
 			continue;
 		}
-		callback(path, index++, workingDirectory);
+		callback(path, index++);
 	}
 }
 

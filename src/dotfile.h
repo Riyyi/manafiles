@@ -43,7 +43,7 @@ private:
 	void sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
 	          const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
 	          const std::function<void(std::string*, const std::string&)>& generateSystemPaths);
-	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t, size_t)>& callback);
+	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
 	bool filter(const std::filesystem::path& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 	bool isSystemTarget(const std::string& target);
