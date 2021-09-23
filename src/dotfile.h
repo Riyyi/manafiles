@@ -40,7 +40,7 @@ public:
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
 private:
-	void sync(const std::vector<std::string>& files, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
+	void sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
 	          const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
 	          const std::function<void(std::string*, const std::string&)>& generateSystemPaths);
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t, size_t)>& callback);

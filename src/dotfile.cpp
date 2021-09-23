@@ -134,14 +134,14 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 
 // -----------------------------------------
 
-void Dotfile::sync(const std::vector<std::string>& files, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
+void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
                    const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
                    const std::function<void(std::string*, const std::string&)>& generateSystemPaths)
 {
 	bool root = !geteuid() ? true : false;
 	if (!systemIndices.empty() && !root) {
 		for (size_t i : systemIndices) {
-			fprintf(stderr, "\033[31;1mDotfile:\033[0m you cannot copy system file '%s' unless you are root\n", files.at(i).c_str());
+			fprintf(stderr, "\033[31;1mDotfile:\033[0m you cannot copy system file '%s' unless you are root\n", paths.at(i).c_str());
 		}
 		return;
 	}
@@ -196,15 +196,15 @@ void Dotfile::sync(const std::vector<std::string>& files, const std::vector<size
 	// /home/<user>/
 	std::string homeDirectory = "/home/" + std::string(user->pw_name);
 	for (size_t i : homeIndices) {
-		std::string paths[2];
-		generateHomePaths(paths, files.at(i), homeDirectory);
-		copy(paths[0], paths[1], true);
+		std::string homePaths[2];
+		generateHomePaths(homePaths, paths.at(i), homeDirectory);
+		copy(homePaths[0], homePaths[1], true);
 	}
 	// /
 	for (size_t i : systemIndices) {
-		std::string paths[2];
-		generateSystemPaths(paths, files.at(i));
-		copy(paths[0], paths[1], false);
+		std::string systemPaths[2];
+		generateSystemPaths(systemPaths, paths.at(i));
+		copy(systemPaths[0], systemPaths[1], false);
 	}
 }
 
