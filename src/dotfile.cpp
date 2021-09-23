@@ -45,7 +45,6 @@ void Dotfile::add(const std::vector<std::string>& targets)
 	std::vector<size_t> systemTargets;
 
 	// Separate home and system targets
-	bool isSystem = false;
 	for (size_t i = 0; i < targets.size(); ++i) {
 		if (!std::filesystem::is_regular_file(targets.at(i))
 		    && !std::filesystem::is_directory(targets.at(i))
@@ -54,14 +53,7 @@ void Dotfile::add(const std::vector<std::string>& targets)
 			continue;
 		}
 
-		isSystem = false;
-		for (const auto& systemDirectory : s_systemDirectories) {
-			if (targets.at(i).find(systemDirectory) == 0) {
-				isSystem = true;
-			}
-		}
-
-		if (isSystem) {
+		if (isSystemTarget(targets.at(i))) {
 			systemTargets.push_back(i);
 		}
 		else {
@@ -211,6 +203,17 @@ bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::
 {
 	for (const auto& target : targets) {
 		if (path.string().find(s_workingDirectory / target) == 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Dotfile::isSystemTarget(const std::string& target)
+{
+	for (const auto& systemDirectory : s_systemDirectories) {
+		if (target.find(systemDirectory) == 0) {
 			return true;
 		}
 	}

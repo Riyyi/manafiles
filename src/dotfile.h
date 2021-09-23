@@ -42,6 +42,7 @@ private:
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t, size_t)>& callback);
 	bool filter(const std::filesystem::path& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
+	bool isSystemTarget(const std::string& target);
 
 	static std::vector<ExcludePath> s_excludePaths;
 	static std::vector<std::filesystem::path> s_systemDirectories;
