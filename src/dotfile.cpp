@@ -161,16 +161,18 @@ void Dotfile::list(const std::vector<std::string>& targets)
 		return;
 	}
 
-	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t workingDirectory) {
+	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t, size_t workingDirectory) {
 		printf("%s\n", path.path().c_str() + workingDirectory + 1);
 	});
 }
 
 // -----------------------------------------
 
-void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t)>& callback)
+void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t, size_t)>& callback)
 {
 	size_t workingDirectory = s_workingDirectory.string().size();
+
+	size_t index = 0;
 	for (const auto& path : std::filesystem::recursive_directory_iterator { s_workingDirectory }) {
 		if (path.is_directory() || filter(path)) {
 			continue;
@@ -178,7 +180,7 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 		if (!targets.empty() && !include(path.path().string(), targets)) {
 			continue;
 		}
-		callback(path, workingDirectory);
+		callback(path, index++, workingDirectory);
 	}
 }
 

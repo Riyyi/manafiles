@@ -39,7 +39,7 @@ public:
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
 private:
-	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t)>& callback);
+	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t, size_t)>& callback);
 	bool filter(const std::filesystem::path& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 
