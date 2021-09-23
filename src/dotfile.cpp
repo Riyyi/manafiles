@@ -119,13 +119,13 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 	size_t workingDirectory = s_workingDirectory.string().size();
 	sync(
 		dotfiles, homeFiles, systemFiles,
-		[&](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 			// homeFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/<file>  ->  /home/<user>/dotfiles/<file>
 			paths[0] = homeDirectory + homeFile.substr(workingDirectory);
 			paths[1] = homeFile;
 		},
-		[&](std::string* paths, const std::string& systemFile) {
+		[&workingDirectory](std::string* paths, const std::string& systemFile) {
 			// systemFile = /home/<user>/dotfiles/<file>
 			// copy: <file>  ->  /home/<user>/dotfiles/<file>
 			paths[0] = systemFile.substr(workingDirectory);
