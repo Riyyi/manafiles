@@ -133,6 +133,40 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 		});
 }
 
+void Dotfile::push(const std::vector<std::string>& targets)
+{
+	std::vector<std::string> dotfiles;
+	std::vector<size_t> homeFiles;
+	std::vector<size_t> systemFiles;
+
+	// Separate home and system targets
+	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
+		dotfiles.push_back(path.path().string());
+		if (isSystemTarget(path.path().string())) {
+			systemFiles.push_back(index);
+		}
+		else {
+			homeFiles.push_back(index);
+		}
+	});
+
+	size_t workingDirectory = s_workingDirectory.string().size();
+	sync(
+		dotfiles, homeFiles, systemFiles,
+		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+			// homeFile = /home/<user>/dotfiles/<file>
+			// copy: /home/<user>/dotfiles/<file>  ->  /home/<user>/<file>
+			paths[0] = homeFile;
+			paths[1] = homeDirectory + homeFile.substr(workingDirectory);
+		},
+		[&workingDirectory](std::string* paths, const std::string& systemFile) {
+			// systemFile = /home/<user>/dotfiles/<file>
+			// copy: /home/<user>/dotfiles/<file>  ->  <file>
+			paths[0] = systemFile;
+			paths[1] = systemFile.substr(workingDirectory);
+		});
+}
+
 // -----------------------------------------
 
 void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,

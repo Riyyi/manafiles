@@ -34,6 +34,7 @@ public:
 	void add(const std::vector<std::string>& targets = {});
 	void list(const std::vector<std::string>& targets = {});
 	void pull(const std::vector<std::string>& targets = {});
+	void push(const std::vector<std::string>& targets = {});
 
 	static void setWorkingDirectory(std::filesystem::path directory) { s_workingDirectory = directory; }
 	static void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { s_systemDirectories = systemDirectories; }
