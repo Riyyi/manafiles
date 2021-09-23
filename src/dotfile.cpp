@@ -40,37 +40,37 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		return;
 	}
 
-	std::vector<size_t> noExistTargets;
-	std::vector<size_t> homeTargets;
-	std::vector<size_t> systemTargets;
+	std::vector<size_t> noExistPaths;
+	std::vector<size_t> homePaths;
+	std::vector<size_t> systemPaths;
 
 	// Separate home and system targets
 	for (size_t i = 0; i < targets.size(); ++i) {
 		if (!std::filesystem::is_regular_file(targets.at(i))
 		    && !std::filesystem::is_directory(targets.at(i))
 		    && !std::filesystem::is_symlink(targets.at(i))) {
-			noExistTargets.push_back(i);
+			noExistPaths.push_back(i);
 			continue;
 		}
 
 		if (isSystemTarget(targets.at(i))) {
-			systemTargets.push_back(i);
+			systemPaths.push_back(i);
 		}
 		else {
-			homeTargets.push_back(i);
+			homePaths.push_back(i);
 		}
 	}
 
 	// Print non-existing targets and exit
-	if (!noExistTargets.empty()) {
-		for (size_t i : noExistTargets) {
+	if (!noExistPaths.empty()) {
+		for (size_t i : noExistPaths) {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m '%s': no such file or directory\n", targets.at(i).c_str());
 		}
 		return;
 	}
 
 	sync(
-		targets, homeTargets, systemTargets,
+		targets, homePaths, systemPaths,
 		[](std::string* paths, std::string homePath, size_t homeSize) {
 			paths[0] = homePath;
 			paths[1] = homePath.substr(homeSize + 1);
