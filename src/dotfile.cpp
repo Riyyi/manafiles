@@ -69,11 +69,45 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		return;
 	}
 
-	// Print root-owned targets and exit
+	sync(
+		targets, homeTargets, systemTargets,
+		[](std::string* paths, std::string homePath, size_t homeSize) {
+			paths[0] = homePath;
+			paths[1] = homePath.substr(homeSize + 1);
+		},
+		[](std::string* paths, std::string systemPath) {
+			paths[0] = systemPath;
+			paths[1] = systemPath.substr(1);
+		});
+}
+
+void Dotfile::list(const std::vector<std::string>& targets)
+{
+	if (s_workingDirectory.empty()) {
+		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is unset\n");
+		return;
+	}
+
+	if (!std::filesystem::is_directory(s_workingDirectory)) {
+		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is not a directory\n");
+		return;
+	}
+
+	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t, size_t workingDirectory) {
+		printf("%s\n", path.path().c_str() + workingDirectory + 1);
+	});
+}
+
+// -----------------------------------------
+
+void Dotfile::sync(const std::vector<std::string>& files, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
+                   const std::function<void(std::string*, std::string, size_t)>& generateHomePaths,
+                   const std::function<void(std::string*, std::string)>& generateSystemPaths)
+{
 	bool root = !geteuid() ? true : false;
-	if (!systemTargets.empty() && !root) {
-		for (size_t i : systemTargets) {
-			fprintf(stderr, "\033[31;1mDotfile:\033[0m you cannot copy system file '%s' unless you are root\n", targets.at(i).c_str());
+	if (!systemIndices.empty() && !root) {
+		for (size_t i : systemIndices) {
+			fprintf(stderr, "\033[31;1mDotfile:\033[0m you cannot copy system file '%s' unless you are root\n", files.at(i).c_str());
 		}
 		return;
 	}
@@ -81,10 +115,6 @@ void Dotfile::add(const std::vector<std::string>& targets)
 	// Get the password database record (/etc/passwd) of the user logged in on
 	// the controlling terminal of the process
 	passwd* user = getpwnam(getlogin());
-
-	const auto copyOptions = std::filesystem::copy_options::overwrite_existing
-	                         | std::filesystem::copy_options::recursive
-	                         | std::filesystem::copy_options::copy_symlinks;
 
 	auto printError = [](const std::filesystem::path& path, const std::error_code& error) -> void {
 		// std::filesystem::copy doesnt respect 'overwrite_existing' for symlinks
@@ -96,8 +126,12 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		}
 	};
 
-	auto copyTarget = [&root, &user, &printError](const std::filesystem::path& from,
-	                                              const std::filesystem::path& to, bool homePath) -> void {
+	const auto copyOptions = std::filesystem::copy_options::overwrite_existing
+	                         | std::filesystem::copy_options::recursive
+	                         | std::filesystem::copy_options::copy_symlinks;
+
+	auto copy = [&root, &user, &printError](const std::filesystem::path& from,
+	                                        const std::filesystem::path& to, bool homePath) -> void {
 		if (homePath && root) {
 			seteuid(user->pw_uid);
 			setegid(user->pw_gid);
@@ -127,38 +161,18 @@ void Dotfile::add(const std::vector<std::string>& targets)
 
 	// /home/<user>/
 	std::string home = "/home/" + std::string(user->pw_name);
-	for (size_t index : homeTargets) {
-		copyTarget(std::filesystem::path(targets.at(index)),
-		           std::filesystem::path(targets.at(index).substr(home.size() + 1)),
-		           true);
+	for (size_t i : homeIndices) {
+		std::string paths[2];
+		generateHomePaths(paths, files.at(i), home.size());
+		copy(paths[0], paths[1], true);
 	}
 	// /
-	for (size_t index : systemTargets) {
-		auto path = std::filesystem::path(targets.at(index));
-		copyTarget(path,
-		           path.relative_path(),
-		           false);
+	for (size_t i : systemIndices) {
+		std::string paths[2];
+		generateSystemPaths(paths, files.at(i));
+		copy(paths[0], paths[1], false);
 	}
 }
-
-void Dotfile::list(const std::vector<std::string>& targets)
-{
-	if (s_workingDirectory.empty()) {
-		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is unset\n");
-		return;
-	}
-
-	if (!std::filesystem::is_directory(s_workingDirectory)) {
-		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is not a directory\n");
-		return;
-	}
-
-	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t, size_t workingDirectory) {
-		printf("%s\n", path.path().c_str() + workingDirectory + 1);
-	});
-}
-
-// -----------------------------------------
 
 void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(std::filesystem::directory_entry, size_t, size_t)>& callback)
 {
