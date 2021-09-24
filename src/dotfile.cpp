@@ -17,8 +17,6 @@
 
 #include "dotfile.h"
 
-namespace Util {
-
 std::vector<Dotfile::ExcludePath> Dotfile::s_excludePaths;
 std::vector<std::filesystem::path> Dotfile::s_systemDirectories;
 std::filesystem::path Dotfile::s_workingDirectory;
@@ -301,5 +299,3 @@ bool Dotfile::isSystemTarget(const std::string& target)
 
 	return false;
 }
-
-} // namespace Util

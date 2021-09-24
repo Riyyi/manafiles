@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-namespace Util {
-
 class Dotfile {
 public:
 	Dotfile();
@@ -53,7 +51,5 @@ private:
 	static std::vector<std::filesystem::path> s_systemDirectories;
 	static std::filesystem::path s_workingDirectory;
 };
-
-} // namespace Util
 
 #endif // DOTFILE_H
