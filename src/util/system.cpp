@@ -1,6 +1,6 @@
 #include <cerrno>     // errno, EAGAIN, EINTR
 #include <cstddef>    // size_t
-#include <cstdio>     // perror
+#include <cstdio>     // perror, ssize_t
 #include <cstdlib>    // exit, WEXITSTATUS
 #include <cstring>    // strcpy, strtok
 #include <functional> // function
@@ -228,13 +228,23 @@ void System::readFromFileDescriptor(int fileDescriptor[2], std::string& output)
 	constexpr int bufferSize = 4096;
 	char buffer[bufferSize];
 
-	do {
+	for (;;) {
 		const ssize_t result = read(fileDescriptor[ReadFileDescriptor], buffer, bufferSize);
-		// FIXME: also handle failure cases
 		if (result > 0) {
 			output.append(buffer, result);
 		}
-	} while (errno == EAGAIN || errno == EINTR);
+		// EOF
+		if (result == 0) {
+			break;
+		}
+		// Error
+		else if (result == -1) {
+			if (errno != EAGAIN && errno != EINTR) {
+				perror("\033[31;1mError:\033[0m read");
+				break;
+			}
+		}
+	}
 
 	close(fileDescriptor[ReadFileDescriptor]);
 }
