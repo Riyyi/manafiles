@@ -4,6 +4,7 @@
 #include <cstdlib>    // exit, WEXITSTATUS
 #include <cstring>    // strcpy, strtok
 #include <functional> // function
+#include <sstream>    // istringstream
 #include <string>
 #include <string_view>
 #include <sys/wait.h> // waitpid
@@ -130,6 +131,81 @@ System System::operator||(System rhs)
 	rhs.exec();
 
 	return rhs;
+}
+
+// cut -f
+System& System::cut(uint32_t field)
+{
+	exec();
+
+	return apply([&field](std::vector<std::string>& lines) {
+		for (auto& line : lines) {
+			size_t count = 1;
+			size_t index = 0;
+			while (index != std::string::npos) {
+				if (count == field) {
+					line = line.substr(0, line.find_first_of(" "));
+					break;
+				}
+
+				index = line.find_first_of(" ");
+				line = line.substr(index + 1);
+				count++;
+			}
+		}
+	});
+}
+
+System& System::sort(bool unique)
+{
+	exec();
+
+	return apply([&unique](std::vector<std::string>& lines) {
+		std::sort(lines.begin(), lines.end());
+
+		if (unique) {
+			auto last = std::unique(lines.begin(), lines.end());
+			lines.erase(last, lines.end());
+		}
+	});
+}
+
+// tail -n
+System& System::tail(int32_t number, bool starting)
+{
+	exec();
+
+	return apply([&number, &starting](std::vector<std::string>& lines) {
+		number = abs(number);
+		if (!starting) {
+			lines.erase(lines.begin(), lines.end() - number);
+		}
+		else {
+			lines.erase(lines.begin(), lines.begin() + number - 1);
+		}
+	});
+}
+
+System& System::apply(LineCallback callback)
+{
+	exec();
+
+	std::vector<std::string> lines;
+
+	auto stream = std::istringstream(m_output);
+	std::string line;
+	while (std::getline(stream, line)) {
+		lines.push_back(line);
+	}
+
+	callback(lines);
+
+	m_output.clear();
+	for (size_t i = 0; i < lines.size(); ++i) {
+		m_output.append(lines.at(i) + '\n');
+	}
+
+	return *this;
 }
 
 void System::print(const std::vector<std::string>& arguments)

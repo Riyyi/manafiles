@@ -1,7 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <cstddef>    // size_t
+#include <cstdint>    // int32_t, uint32_t
 #include <functional> // function
 #include <string>
 #include <string_view>
@@ -9,7 +9,7 @@
 
 namespace Util {
 
-using SplitCallback = std::function<void(size_t, char*)>;
+using LineCallback = std::function<void(std::vector<std::string>&)>;
 
 class System {
 public:
@@ -35,6 +35,11 @@ public:
 	System operator|(System rhs);
 	System operator&&(System rhs);
 	System operator||(System rhs);
+
+	System& cut(uint32_t field);
+	System& sort(bool unique = false);
+	System& tail(int32_t number, bool starting = false);
+	System& apply(LineCallback callback);
 
 	void print(const std::vector<std::string>& arguments);
 
