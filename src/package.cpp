@@ -41,19 +41,20 @@ void Package::list(const std::vector<std::string>& targets)
 
 	Util::System $;
 	if (m_distro == Distro::Arch) {
-		auto basePackages = $("pactree -u base") | $("tail -n +2");
+		auto basePackages = $("pactree -u base").tail(2, true);
 		auto develPackages = $("pacman -Qqg base-devel");
-		auto filterList = basePackages + develPackages | $("sort -u");
-		auto packageList = $("pacman -Qqe") | $("grep -vx " + filterList.output()) | $("sort");
+		auto filterList = (basePackages + develPackages).sort(true);
+		auto packageList = ($("pacman -Qqe") | $("grep -xv " + filterList.output())).sort();
 		packages = packageList.output();
 	}
 	else if (m_distro == Distro::Debian) {
 		auto installedList = $("dpkg-query --show --showformat=${Package}\\t${Priority}\\n");
-		auto filterList = installedList | $("grep -E required|important|standard") | $("cut -f 1");
-		installedList = installedList | $("cut -f 1");
+		auto filterList = (installedList | $("grep -E required|important|standard")).cut(1);
+		installedList = installedList.cut(1);
 		auto installedManuallyList = $("awk '/Commandline:.* install / && !/APT::/ { print $NF }' /var/log/apt/history.log");
-		installedManuallyList = (installedManuallyList + $("apt-mark showmanual")) | $("sort -u");
-		auto packageList = installedManuallyList | $("grep -x " + installedList.output()) | $("grep -vx " + filterList.output());
+		installedManuallyList = (installedManuallyList + $("apt-mark showmanual")).sort(true);
+		auto packageList = installedManuallyList | $("grep -x " + installedList.output()) | $("grep -xv " + filterList.output());
+		packages = packageList.output();
 	}
 
 	if (targets.empty()) {
