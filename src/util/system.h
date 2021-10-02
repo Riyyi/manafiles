@@ -36,7 +36,7 @@ public:
 	System operator&&(System rhs);
 	System operator||(System rhs);
 
-	System& cut(uint32_t field);
+	System& cut(uint32_t field, char delimiter = '\t');
 	System& sort(bool unique = false);
 	System& tail(int32_t number, bool starting = false);
 	System& apply(LineCallback callback);

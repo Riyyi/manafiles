@@ -133,22 +133,22 @@ System System::operator||(System rhs)
 	return rhs;
 }
 
-// cut -f
-System& System::cut(uint32_t field)
+// cut -f -d
+System& System::cut(uint32_t field, char delimiter)
 {
 	exec();
 
-	return apply([&field](std::vector<std::string>& lines) {
+	return apply([&field, &delimiter](std::vector<std::string>& lines) {
 		for (auto& line : lines) {
 			size_t count = 1;
 			size_t index = 0;
 			while (index != std::string::npos) {
 				if (count == field) {
-					line = line.substr(0, line.find_first_of(" "));
+					line = line.substr(0, line.find_first_of(delimiter));
 					break;
 				}
 
-				index = line.find_first_of(" ");
+				index = line.find_first_of(delimiter);
 				line = line.substr(index + 1);
 				count++;
 			}
