@@ -181,6 +181,7 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 
 	// Get the password database record (/etc/passwd) of the user logged in on
 	// the controlling terminal of the process
+	// FIXME: Do error handling on these calls
 	passwd* user = getpwnam(getlogin());
 
 	auto printError = [](const std::filesystem::path& path, const std::error_code& error) -> void {
