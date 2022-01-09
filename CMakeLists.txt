@@ -61,6 +61,8 @@ set(TEST_SOURCES ${TEST_SOURCES} ${MAIN_SOURCES})
 
 project(${PROJECT})
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT})
@@ -69,6 +71,8 @@ target_link_libraries(${PROJECT})
 
 project(test)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(test ${TEST_SOURCES})
 target_link_libraries(test)
