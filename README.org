@@ -6,6 +6,12 @@ Needed information for generation:
 - short description (for usage ouput)
 - long description (for manpage output)
 
+* Machine specific configuration
+
+- Selection based on file name
+- Config section selection based on pattern with machine name
+- Possibly variable insertion and comment removal
+
 * Option Parsing
 
 Parsed from left to right.
@@ -62,13 +68,49 @@ Each parameter after a '--' parameter is always interpreted as a non-option para
 ./stowage -e pattern1 -epattern2 --regexp=pattern3 --regexp pattern4
 #+END_SRC
 
-* TODO
+* TODO [24/38]
 
-- after first non option, go into no-option mode
-- support '--' to go into no-option mode
-- add multi-option support, vectors!
-- support argument parsing + storing
-- add addOption overloads
-- generate usage string
-- generate man page string
-- parse() function to return bool true if any error has occured
+- [X] macros: add more EXPECT_
+- [X] macros: print to stderr, add colors
+- [X] suite: improve printing style
+- [X] convert more tests from main()
+- [X] suite: add time tracking
+- [X] suite: print time info
+- [X] suite: add mechanism for EXPECT_ macros to mark current test as failed
+- [X] suite: print suite failed tests
+
+- [X] argparser: after first non option, go into no-option mode. this should be a setting to enable (default off)
+- [X] argparser: support '--' to go into non-option mode
+- [X] argparser: add multi-option support, vectors!
+- [X] argparser: support non-option arguments parsing + storing
+- [X] argparser: non-option arguments, what error messages, when?
+- [X] argparser: update tests to check non-option arguments
+- [X] argparser: add addOption overloads
+- [ ] argparser: generate usage string
+- [ ] argparser: generate man page string
+- [X] argparser: parse() function to return bool false if any error has occurred
+- [ ] argparser: setting for failure behavior (usage/exit/usage+exit)
+- [X] argparser: add proper tests for non-existent options
+- [X] argparser: m_exitOnFirstError is implemented wrong in longOption, should also break in the main loop!
+                 I think its fine in shortOption as it can parse multiple arguments
+- [X] argparser: support optional arguments, if acceptvalue fails and arg is optional, increment index and try again
+- [X] argparser: receives empty parameters (at least arguments), decide what to do with them. $ uname bla => uname: extra operand ‘bla’
+- [X] argparser: dont use std::regex, just loop through characters and bail if unexpected
+- [ ] argparser: support long option abbreviations, if they are not ambiguous
+- [ ] argparser: support for single - long options
+- [ ] argparser: check and set $value to $next before the if spaghetti to simplify, at least in longOption
+
+- [X] system: add piping functionality, print result of previous command to stdin before execvp() ?
+- [ ] system: output/error/status getter, automatically call exec if workload
+- [ ] system: output/error getter, cut off last character if its "\n", as std::string already handles trailing \n
+- [X] system: test with file descriptors captured in std::system
+- [ ] system: write test cases
+- [ ] system: fix bug: splitting on space needs to be escapable, ex: '\ ' or ' ' or " ", needs a lexer
+- [ ] system: test if exec() can return a reference?
+
+- [X] dotfile: add loop index to forEachDotfile
+- [ ] dotfile: convert excludePaths and system directories matching to regex
+- [ ] dotfile: add excludePaths (ignore file) config file functionality
+      https://systemcrafters.net/managing-your-dotfiles/using-gnu-stow/
+      https://www.gnu.org/software/stow/manual/stow.html#Types-And-Syntax-Of-Ignore-Lists
+- [ ] dotfile: add system directories config file functionality
