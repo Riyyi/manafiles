@@ -21,14 +21,19 @@ public:
 		Debian,
 	};
 
-	void aurInstall(const std::vector<std::string>& targets = {});
-	void install(const std::vector<std::string>& targets = {});
+	void aurInstall();
+	void install();
 	void list(const std::vector<std::string>& targets = {});
-	void store(const std::vector<std::string>& targets = {});
+	void store();
+
+	static void setHostname(const std::string& hostname) { m_hostname = hostname; }
 
 private:
 	bool distroDetect();
 	bool distroDependencies();
+	std::string getPackageList();
+
+	static std::string m_hostname;
 
 	Distro m_distro { Distro::Unsupported };
 };
