@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -26,14 +26,10 @@ public:
 	void list(const std::vector<std::string>& targets = {});
 	void store();
 
-	static void setHostname(const std::string& hostname) { m_hostname = hostname; }
-
 private:
 	bool distroDetect();
 	bool distroDependencies();
 	std::string getPackageList();
-
-	static std::string m_hostname;
 
 	Distro m_distro { Distro::Unsupported };
 };

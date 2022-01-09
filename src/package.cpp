@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -10,11 +10,10 @@
 #include <string>  // getline
 #include <vector>
 
+#include "machine.h"
 #include "package.h"
 #include "util/file.h"
 #include "util/system.h"
-
-std::string Package::m_hostname;
 
 Package::Package()
 {
@@ -74,20 +73,8 @@ void Package::store()
 
 bool Package::distroDetect()
 {
-	std::string id;
-	std::string idLike;
-
-	auto osRelease = Util::File("/etc/os-release");
-	auto stream = std::istringstream(osRelease.data());
-	std::string line;
-	while (std::getline(stream, line)) {
-		if (line.find("ID=") == 0) {
-			id = line.substr(3);
-		}
-		if (line.find("ID_LIKE=") == 0) {
-			idLike = line.substr(8);
-		}
-	}
+	std::string id = Machine::the().distroId();
+	std::string idLike = Machine::the().distroIdLike();
 
 	if (id == "arch") {
 		m_distro = Distro::Arch;

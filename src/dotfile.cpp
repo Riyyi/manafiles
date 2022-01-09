@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "dotfile.h"
+#include "machine.h"
 
 std::vector<Dotfile::ExcludePath> Dotfile::s_excludePaths;
 std::vector<std::filesystem::path> Dotfile::s_systemDirectories;
@@ -179,11 +180,6 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 		return;
 	}
 
-	// Get the password database record (/etc/passwd) of the user logged in on
-	// the controlling terminal of the process
-	// FIXME: Do error handling on these calls
-	passwd* user = getpwnam(getlogin());
-
 	auto printError = [](const std::filesystem::path& path, const std::error_code& error) -> void {
 		// std::filesystem::copy doesnt respect 'overwrite_existing' for symlinks
 		if (error.value() && error.message() != "File exists") {
@@ -198,11 +194,11 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 	                         | std::filesystem::copy_options::recursive
 	                         | std::filesystem::copy_options::copy_symlinks;
 
-	auto copy = [&root, &user, &printError](const std::filesystem::path& from,
-	                                        const std::filesystem::path& to, bool homePath) -> void {
+	auto copy = [&root, &printError](const std::filesystem::path& from,
+	                                 const std::filesystem::path& to, bool homePath) -> void {
 		if (homePath && root) {
-			seteuid(user->pw_uid);
-			setegid(user->pw_gid);
+			seteuid(Machine::the().uid());
+			setegid(Machine::the().gid());
 		}
 
 		// Create directory for the file
@@ -228,7 +224,7 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 	};
 
 	// /home/<user>/
-	std::string homeDirectory = "/home/" + std::string(user->pw_name);
+	std::string homeDirectory = "/home/" + Machine::the().username();
 	for (size_t i : homeIndices) {
 		std::string homePaths[2];
 		generateHomePaths(homePaths, paths.at(i), homeDirectory);

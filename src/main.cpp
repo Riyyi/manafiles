@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2021-2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include <cstdio> // fprintf, perror, stderr
 #include <filesystem>
 #include <string>
@@ -54,11 +60,6 @@ int main(int argc, const char* argv[])
 		return 1;
 	}
 
-	char hostname[64] { 0 };
-	if (gethostname(hostname, 64) < 0) {
-		perror("\033[31;1mError:\033[0m gethostname");
-	}
-
 	Util::Timer t;
 
 	if (fileOperation) {
@@ -95,8 +96,6 @@ int main(int argc, const char* argv[])
 	}
 	else if (packageOperation) {
 		Package package;
-
-		Package::setHostname(hostname);
 
 		if (addOrAur) {
 			// TODO install tracked AUR packages
