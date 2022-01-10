@@ -18,6 +18,11 @@ public:
 	Dotfile();
 	virtual ~Dotfile();
 
+	enum class SyncType {
+		Pull,
+		Push,
+	};
+
 	enum class ExcludeType {
 		File,
 		Directory,
@@ -43,9 +48,11 @@ public:
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
 private:
+	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
 	void sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
 	          const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
 	          const std::function<void(std::string*, const std::string&)>& generateSystemPaths);
+
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
 	bool filter(const std::filesystem::path& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
