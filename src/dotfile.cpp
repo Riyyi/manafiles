@@ -21,6 +21,7 @@
 std::vector<Dotfile::ExcludePath> Dotfile::s_excludePaths;
 std::vector<std::filesystem::path> Dotfile::s_systemDirectories;
 std::filesystem::path Dotfile::s_workingDirectory;
+size_t Dotfile::s_workingDirectorySize { 0 };
 
 Dotfile::Dotfile()
 {
@@ -92,9 +93,8 @@ void Dotfile::list(const std::vector<std::string>& targets)
 		return;
 	}
 
-	size_t workingDirectory = s_workingDirectory.string().size();
-	forEachDotfile(targets, [&workingDirectory](std::filesystem::directory_entry path, size_t) {
-		printf("%s\n", path.path().c_str() + workingDirectory + 1);
+	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t) {
+		printf("%s\n", path.path().c_str() + s_workingDirectorySize + 1);
 	});
 }
 
@@ -115,19 +115,19 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 		}
 	});
 
-	size_t workingDirectory = s_workingDirectory.string().size();
 	sync(
 		dotfiles, homeIndices, systemIndices,
-		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+		[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 			// homeFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/<file>  ->  /home/<user>/dotfiles/<file>
-			paths[0] = homeDirectory + homeFile.substr(workingDirectory);
+			paths[0] = homeDirectory + homeFile.substr(s_workingDirectorySize);
 			paths[1] = homeFile;
 		},
-		[&workingDirectory](std::string* paths, const std::string& systemFile) {
+		[](std::string* paths, const std::string& systemFile) {
+			printf("system file: %s", systemFile.c_str());
 			// systemFile = /home/<user>/dotfiles/<file>
 			// copy: <file>  ->  /home/<user>/dotfiles/<file>
-			paths[0] = systemFile.substr(workingDirectory);
+			paths[0] = systemFile.substr(s_workingDirectorySize);
 			paths[1] = systemFile;
 		});
 }
@@ -149,20 +149,19 @@ void Dotfile::push(const std::vector<std::string>& targets)
 		}
 	});
 
-	size_t workingDirectory = s_workingDirectory.string().size();
 	sync(
 		dotfiles, homeIndices, systemIndices,
-		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+		[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 			// homeFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/dotfiles/<file>  ->  /home/<user>/<file>
 			paths[0] = homeFile;
-			paths[1] = homeDirectory + homeFile.substr(workingDirectory);
+			paths[1] = homeDirectory + homeFile.substr(s_workingDirectorySize);
 		},
-		[&workingDirectory](std::string* paths, const std::string& systemFile) {
+		[](std::string* paths, const std::string& systemFile) {
 			// systemFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/dotfiles/<file>  ->  <file>
 			paths[0] = systemFile;
-			paths[1] = systemFile.substr(workingDirectory);
+			paths[1] = systemFile.substr(s_workingDirectorySize);
 		});
 }
 
@@ -289,7 +288,7 @@ bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::
 bool Dotfile::isSystemTarget(const std::string& target)
 {
 	for (const auto& systemDirectory : s_systemDirectories) {
-		if (target.find(systemDirectory) == 0) {
+		if (target.find(systemDirectory) - s_workingDirectorySize == 0) {
 			return true;
 		}
 	}

@@ -34,7 +34,11 @@ public:
 	void pull(const std::vector<std::string>& targets = {});
 	void push(const std::vector<std::string>& targets = {});
 
-	static void setWorkingDirectory(std::filesystem::path directory) { s_workingDirectory = directory; }
+	static void setWorkingDirectory(std::filesystem::path directory)
+	{
+		s_workingDirectory = directory;
+		s_workingDirectorySize = directory.string().size();
+	}
 	static void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { s_systemDirectories = systemDirectories; }
 	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
 
@@ -50,6 +54,7 @@ private:
 	static std::vector<ExcludePath> s_excludePaths;
 	static std::vector<std::filesystem::path> s_systemDirectories;
 	static std::filesystem::path s_workingDirectory;
+	static size_t s_workingDirectorySize;
 };
 
 #endif // DOTFILE_H
