@@ -174,7 +174,8 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 	bool root = !geteuid() ? true : false;
 	if (!systemIndices.empty() && !root) {
 		for (size_t i : systemIndices) {
-			fprintf(stderr, "\033[31;1mDotfile:\033[0m needs root privileges to copy system file '%s'\n", paths.at(i).c_str());
+			fprintf(stderr, "\033[31;1mDotfile:\033[0m need root privileges to copy system file '%s'\n",
+			        paths.at(i).c_str() + s_workingDirectorySize);
 		}
 		return;
 	}
