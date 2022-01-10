@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -39,37 +39,37 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		return;
 	}
 
-	std::vector<size_t> noExistPaths;
-	std::vector<size_t> homePaths;
-	std::vector<size_t> systemPaths;
+	std::vector<size_t> noExistIndices;
+	std::vector<size_t> homeIndices;
+	std::vector<size_t> systemIndices;
 
 	// Separate home and system targets
 	for (size_t i = 0; i < targets.size(); ++i) {
 		if (!std::filesystem::is_regular_file(targets.at(i))
 		    && !std::filesystem::is_directory(targets.at(i))
 		    && !std::filesystem::is_symlink(targets.at(i))) {
-			noExistPaths.push_back(i);
+			noExistIndices.push_back(i);
 			continue;
 		}
 
 		if (isSystemTarget(targets.at(i))) {
-			systemPaths.push_back(i);
+			systemIndices.push_back(i);
 		}
 		else {
-			homePaths.push_back(i);
+			homeIndices.push_back(i);
 		}
 	}
 
 	// Print non-existing targets and exit
-	if (!noExistPaths.empty()) {
-		for (size_t i : noExistPaths) {
+	if (!noExistIndices.empty()) {
+		for (size_t i : noExistIndices) {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m '%s': no such file or directory\n", targets.at(i).c_str());
 		}
 		return;
 	}
 
 	sync(
-		targets, homePaths, systemPaths,
+		targets, homeIndices, systemIndices,
 		[](std::string* paths, const std::string& homePath, const std::string& homeDirectory) {
 			paths[0] = homePath;
 			paths[1] = homePath.substr(homeDirectory.size() + 1);
@@ -101,23 +101,23 @@ void Dotfile::list(const std::vector<std::string>& targets)
 void Dotfile::pull(const std::vector<std::string>& targets)
 {
 	std::vector<std::string> dotfiles;
-	std::vector<size_t> homeFiles;
-	std::vector<size_t> systemFiles;
+	std::vector<size_t> homeIndices;
+	std::vector<size_t> systemIndices;
 
 	// Separate home and system targets
 	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
 		dotfiles.push_back(path.path().string());
 		if (isSystemTarget(path.path().string())) {
-			systemFiles.push_back(index);
+			systemIndices.push_back(index);
 		}
 		else {
-			homeFiles.push_back(index);
+			homeIndices.push_back(index);
 		}
 	});
 
 	size_t workingDirectory = s_workingDirectory.string().size();
 	sync(
-		dotfiles, homeFiles, systemFiles,
+		dotfiles, homeIndices, systemIndices,
 		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 			// homeFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/<file>  ->  /home/<user>/dotfiles/<file>
@@ -135,23 +135,23 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 void Dotfile::push(const std::vector<std::string>& targets)
 {
 	std::vector<std::string> dotfiles;
-	std::vector<size_t> homeFiles;
-	std::vector<size_t> systemFiles;
+	std::vector<size_t> homeIndices;
+	std::vector<size_t> systemIndices;
 
 	// Separate home and system targets
 	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
 		dotfiles.push_back(path.path().string());
 		if (isSystemTarget(path.path().string())) {
-			systemFiles.push_back(index);
+			systemIndices.push_back(index);
 		}
 		else {
-			homeFiles.push_back(index);
+			homeIndices.push_back(index);
 		}
 	});
 
 	size_t workingDirectory = s_workingDirectory.string().size();
 	sync(
-		dotfiles, homeFiles, systemFiles,
+		dotfiles, homeIndices, systemIndices,
 		[&workingDirectory](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 			// homeFile = /home/<user>/dotfiles/<file>
 			// copy: /home/<user>/dotfiles/<file>  ->  /home/<user>/<file>
@@ -175,7 +175,7 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 	bool root = !geteuid() ? true : false;
 	if (!systemIndices.empty() && !root) {
 		for (size_t i : systemIndices) {
-			fprintf(stderr, "\033[31;1mDotfile:\033[0m you cannot copy system file '%s' unless you are root\n", paths.at(i).c_str());
+			fprintf(stderr, "\033[31;1mDotfile:\033[0m needs root privileges to copy system file '%s'\n", paths.at(i).c_str());
 		}
 		return;
 	}
@@ -206,7 +206,7 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 		if (std::filesystem::is_regular_file(from)) {
 			auto directory = to.relative_path().parent_path();
 			if (!directory.empty() && !std::filesystem::exists(directory)) {
-				printf("created directory '%s'\n", directory.c_str());
+				printf("Created directory: '%s'\n", directory.c_str());
 				std::filesystem::create_directories(directory, error);
 				printError(to.relative_path().parent_path(), error);
 			}
