@@ -124,7 +124,6 @@ void Dotfile::pull(const std::vector<std::string>& targets)
 			paths[1] = homeFile;
 		},
 		[](std::string* paths, const std::string& systemFile) {
-			printf("system file: %s", systemFile.c_str());
 			// systemFile = /home/<user>/dotfiles/<file>
 			// copy: <file>  ->  /home/<user>/dotfiles/<file>
 			paths[0] = systemFile.substr(s_workingDirectorySize);
@@ -204,7 +203,7 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 		// Create directory for the file
 		std::error_code error;
 		if (std::filesystem::is_regular_file(from)) {
-			auto directory = to.relative_path().parent_path();
+			auto directory = to.parent_path();
 			if (!directory.empty() && !std::filesystem::exists(directory)) {
 				printf("Created directory: '%s'\n", directory.c_str());
 				std::filesystem::create_directories(directory, error);
