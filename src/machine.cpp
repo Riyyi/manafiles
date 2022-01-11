@@ -13,10 +13,9 @@
 
 Machine::Machine(s)
 {
-	auto osRelease = Util::File("/etc/os-release");
-	auto stream = std::istringstream(osRelease.data());
-	std::string line;
-	while (std::getline(stream, line)) {
+	Util::File osRelease("/etc/os-release");
+	std::istringstream stream(osRelease.data());
+	for (std::string line; std::getline(stream, line);) {
 		if (line.find("ID=") == 0) {
 			m_distroId = line.substr(3);
 		}
