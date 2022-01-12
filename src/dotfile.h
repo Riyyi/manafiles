@@ -49,9 +49,11 @@ public:
 
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
-	void sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
+	void sync(SyncType type,
+	          const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
 	          const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
 	          const std::function<void(std::string*, const std::string&)>& generateSystemPaths);
+	void selectivelyCommentOrUncomment(const std::string& path);
 
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
 	bool filter(const std::filesystem::path& path);

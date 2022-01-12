@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -18,6 +18,7 @@ public:
 
 	void clear();
 	File& append(std::string data);
+	File& replace(size_t index, size_t length, const std::string& data);
 	File& flush();
 
 	const char* c_str() const { return m_data.c_str(); }

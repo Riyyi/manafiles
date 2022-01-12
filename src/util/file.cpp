@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -51,6 +51,13 @@ void File::clear()
 File& File::append(std::string data)
 {
 	m_data.append(data);
+
+	return *this;
+}
+
+File& File::replace(size_t index, size_t length, const std::string& data)
+{
+	m_data.replace(index, length, data);
 
 	return *this;
 }

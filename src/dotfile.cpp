@@ -17,6 +17,7 @@
 
 #include "dotfile.h"
 #include "machine.h"
+#include "util/file.h"
 
 std::vector<Dotfile::ExcludePath> Dotfile::s_excludePaths;
 std::vector<std::filesystem::path> Dotfile::s_systemDirectories;
@@ -70,7 +71,7 @@ void Dotfile::add(const std::vector<std::string>& targets)
 	}
 
 	sync(
-		targets, homeIndices, systemIndices,
+		SyncType::Pull, targets, homeIndices, systemIndices,
 		[](std::string* paths, const std::string& homePath, const std::string& homeDirectory) {
 			paths[0] = homePath;
 			paths[1] = homePath.substr(homeDirectory.size() + 1);
@@ -129,7 +130,7 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 
 	if (type == SyncType::Pull) {
 		sync(
-			dotfiles, homeIndices, systemIndices,
+			type, dotfiles, homeIndices, systemIndices,
 			[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 				// homeFile = /home/<user>/dotfiles/<file>
 			    // copy: /home/<user>/<file>  ->  /home/<user>/dotfiles/<file>
@@ -145,7 +146,7 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 	}
 	else {
 		sync(
-			dotfiles, homeIndices, systemIndices,
+			type, dotfiles, homeIndices, systemIndices,
 			[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 				// homeFile = /home/<user>/dotfiles/<file>
 			    // copy: /home/<user>/dotfiles/<file>  ->  /home/<user>/<file>
@@ -161,7 +162,8 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 	}
 }
 
-void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
+void Dotfile::sync(SyncType type,
+                   const std::vector<std::string>& paths, const std::vector<size_t>& homeIndices, const std::vector<size_t>& systemIndices,
                    const std::function<void(std::string*, const std::string&, const std::string&)>& generateHomePaths,
                    const std::function<void(std::string*, const std::string&)>& generateSystemPaths)
 {
@@ -223,13 +225,116 @@ void Dotfile::sync(const std::vector<std::string>& paths, const std::vector<size
 		std::string homePaths[2];
 		generateHomePaths(homePaths, paths.at(i), homeDirectory);
 		copy(homePaths[0], homePaths[1], true);
+		if (type == SyncType::Push) {
+			selectivelyCommentOrUncomment(homePaths[1]);
+		}
 	}
 	// /
 	for (size_t i : systemIndices) {
 		std::string systemPaths[2];
 		generateSystemPaths(systemPaths, paths.at(i));
 		copy(systemPaths[0], systemPaths[1], false);
+		if (type == SyncType::Push) {
+			selectivelyCommentOrUncomment(systemPaths[1]);
+		}
 	}
+}
+
+void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
+{
+	Util::File dotfile(path);
+
+	const std::string search[3] = {
+		"distro=",
+		"hostname=",
+		"user=",
+	};
+
+	// State of the loop
+	bool isFiltering = false;
+	std::string filter[3];
+	std::string commentCharacter;
+	size_t positionInFile = 0;
+
+	auto commentOrUncommentLine = [&](std::string& line, bool addComment) {
+		size_t lineLength = line.size();
+		size_t whiteSpaceBeforeComment = line.find_first_of(commentCharacter);
+		size_t contentAfterComment = line.find_first_not_of(commentCharacter + " \t");
+
+		// If there was no comment, grab whitespace correctly
+		if (whiteSpaceBeforeComment == std::string::npos) {
+			whiteSpaceBeforeComment = contentAfterComment;
+		}
+
+		if (!addComment) {
+			line = line.substr(0, whiteSpaceBeforeComment)
+				+ line.substr(contentAfterComment);
+		}
+		else {
+			line = line.substr(0, whiteSpaceBeforeComment)
+				+ commentCharacter + ' '
+				+ line.substr(contentAfterComment);
+		}
+
+		dotfile.replace(positionInFile, lineLength, line);
+	};
+
+	std::istringstream stream(dotfile.data());
+	for (std::string line; std::getline(stream, line); positionInFile += line.size() + 1) {
+
+		if (line.find(">>>") != std::string::npos) {
+			// Find machine info
+			size_t find = 0;
+			for (size_t i = 0; i < 3; ++i) {
+				find = line.find(search[i]) + search[i].size();
+				if (find < search[i].size()) {
+					continue;
+				}
+				filter[i] = line.substr(find, line.find_first_of(' ', find) - find);
+			}
+
+			// Get the characters used for commenting in this file-type
+			commentCharacter = line.substr(0, line.find_first_of(">>>"));
+			for (size_t i = commentCharacter.size() - 1; i != std::string::npos; --i) {
+				if (commentCharacter.at(i) == ' ' || commentCharacter.at(i) == '\t') {
+					commentCharacter.erase(i, 1);
+				}
+			}
+
+			isFiltering = true;
+			continue;
+		}
+
+		if (line.find("<<<") != std::string::npos) {
+			isFiltering = false;
+			filter[0] = "";
+			filter[1] = "";
+			filter[2] = "";
+			commentCharacter.clear();
+			continue;
+		}
+
+		if (!isFiltering) {
+			continue;
+		}
+
+		if (filter[0] != Machine::the().distroId() && !filter[0].empty()) {
+			commentOrUncommentLine(line, true);
+			continue;
+		}
+		else if (filter[1] != Machine::the().hostname() && !filter[1].empty()) {
+			commentOrUncommentLine(line, true);
+			continue;
+		}
+		else if (filter[2] != Machine::the().username() && !filter[2].empty()) {
+			commentOrUncommentLine(line, true);
+			continue;
+		}
+
+		commentOrUncommentLine(line, false);
+	}
+
+	dotfile.flush();
 }
 
 void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback)
