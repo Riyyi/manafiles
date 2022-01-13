@@ -6,6 +6,7 @@
 
 #include <cassert> // assert
 #include <cstdint> // int32_t
+#include <filesystem>
 #include <fstream> // ifstream, ios, ofstream
 #include <memory>  // make_unique
 #include <string>
@@ -39,6 +40,17 @@ File::File(const std::string& path)
 
 File::~File()
 {
+}
+
+// -----------------------------------------
+
+File File::create(const std::string& path)
+{
+	if (!std::filesystem::exists(path)) {
+		std::ofstream { path };
+	}
+
+	return Util::File(path);
 }
 
 // -----------------------------------------

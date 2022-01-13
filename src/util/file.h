@@ -16,6 +16,8 @@ public:
 	File(const std::string& path);
 	virtual ~File();
 
+	static File create(const std::string& path);
+
 	void clear();
 	File& append(std::string data);
 	File& replace(size_t index, size_t length, const std::string& data);
