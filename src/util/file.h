@@ -19,7 +19,7 @@ public:
 	static File create(const std::string& path);
 
 	void clear();
-	File& append(std::string data);
+	File& append(const std::string& data);
 	File& replace(size_t index, size_t length, const std::string& data);
 	File& flush();
 

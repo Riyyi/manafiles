@@ -60,7 +60,7 @@ void File::clear()
 	m_data.clear();
 }
 
-File& File::append(std::string data)
+File& File::append(const std::string& data)
 {
 	m_data.append(data);
 
