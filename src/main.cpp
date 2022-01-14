@@ -63,9 +63,7 @@ int main(int argc, const char* argv[])
 	Util::Timer t;
 
 	if (fileOperation) {
-		Dotfile dotfile;
-
-		Dotfile::setExcludePaths({
+		Dotfile::the().setExcludePaths({
 			{ Dotfile::ExcludeType::File, "dotfiles.sh" },
 			{ Dotfile::ExcludeType::File, "packages" },
 			{ Dotfile::ExcludeType::EndsWith, ".md" },
@@ -78,20 +76,19 @@ int main(int argc, const char* argv[])
 			{ Dotfile::ExcludeType::Directory, "cppcheck-cppcheck-build-dir" },
 		});
 
-		Dotfile::setSystemDirectories({ "/boot", "/etc", "/usr/share" });
-		Dotfile::setWorkingDirectory(std::filesystem::current_path());
+		Dotfile::the().setSystemDirectories({ "/boot", "/etc", "/usr/share" });
 
 		if (addOrAur) {
-			dotfile.add(targets);
+			Dotfile::the().add(targets);
 		}
 		if (pull) {
-			dotfile.pull(targets);
+			Dotfile::the().pull(targets);
 		}
 		if (pushOrStore) {
-			dotfile.push(targets);
+			Dotfile::the().push(targets);
 		}
 		if (!addOrAur && !pull && !pushOrStore) {
-			dotfile.list(targets);
+			Dotfile::the().list(targets);
 		}
 	}
 	else if (packageOperation) {

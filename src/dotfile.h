@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Riyyi
+ * Copyright (C) 2021-2022 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -13,9 +13,11 @@
 #include <string>
 #include <vector>
 
-class Dotfile {
+#include "util/singleton.h"
+
+class Dotfile : public Util::Singleton<Dotfile> {
 public:
-	Dotfile();
+	Dotfile(s);
 	virtual ~Dotfile();
 
 	enum class SyncType {
@@ -39,13 +41,13 @@ public:
 	void pull(const std::vector<std::string>& targets = {});
 	void push(const std::vector<std::string>& targets = {});
 
-	static void setWorkingDirectory(std::filesystem::path directory)
+	void setWorkingDirectory(std::filesystem::path directory)
 	{
-		s_workingDirectory = directory;
-		s_workingDirectorySize = directory.string().size();
+		m_workingDirectory = directory;
+		m_workingDirectorySize = directory.string().size();
 	}
-	static void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { s_systemDirectories = systemDirectories; }
-	static void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { s_excludePaths = excludePaths; }
+	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_systemDirectories = systemDirectories; }
+	void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { m_excludePaths = excludePaths; }
 
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
@@ -60,10 +62,10 @@ private:
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 	bool isSystemTarget(const std::string& target);
 
-	static std::vector<ExcludePath> s_excludePaths;
-	static std::vector<std::filesystem::path> s_systemDirectories;
-	static std::filesystem::path s_workingDirectory;
-	static size_t s_workingDirectorySize;
+	std::vector<ExcludePath> m_excludePaths;
+	std::vector<std::filesystem::path> m_systemDirectories;
+	std::filesystem::path m_workingDirectory;
+	size_t m_workingDirectorySize { 0 };
 };
 
 #endif // DOTFILE_H
