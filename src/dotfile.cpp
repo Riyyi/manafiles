@@ -385,7 +385,11 @@ bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::
 bool Dotfile::isSystemTarget(const std::string& target)
 {
 	for (const auto& systemDirectory : m_systemDirectories) {
-		if (target.find(systemDirectory) - m_workingDirectorySize == 0) {
+
+		if (target.find(systemDirectory) == 0) {
+			return true;
+		}
+		if (target.find(m_workingDirectory / systemDirectory) == 0) {
 			return true;
 		}
 	}
