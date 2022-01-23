@@ -49,6 +49,8 @@ public:
 	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_systemDirectories = systemDirectories; }
 	void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { m_excludePaths = excludePaths; }
 
+	const std::filesystem::path& workingDirectory() const { return m_workingDirectory; }
+
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
 	void sync(SyncType type,
