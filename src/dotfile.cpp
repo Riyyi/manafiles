@@ -190,8 +190,8 @@ void Dotfile::sync(SyncType type,
 	auto copy = [&root, &printError](const std::filesystem::path& from,
 	                                 const std::filesystem::path& to, bool homePath) -> void {
 		if (homePath && root) {
-			seteuid(Machine::the().uid());
 			setegid(Machine::the().gid());
+			seteuid(Machine::the().uid());
 		}
 
 		// Create directory for the file
