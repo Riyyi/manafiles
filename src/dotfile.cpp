@@ -15,6 +15,7 @@
 #include <unistd.h>     // geteuid, getlogin, setegid, seteuid
 #include <vector>
 
+#include "config.h"
 #include "dotfile.h"
 #include "machine.h"
 #include "util/file.h"
@@ -199,14 +200,18 @@ void Dotfile::sync(SyncType type,
 		if (std::filesystem::is_regular_file(from)) {
 			auto directory = to.parent_path();
 			if (!directory.empty() && !std::filesystem::exists(directory)) {
-				printf("Created directory: '%s'\n", directory.c_str());
+				if (Config::the().verbose()) {
+					printf("Created directory: '%s'\n", directory.c_str());
+				}
 				std::filesystem::create_directories(directory, error);
 				printError(to.relative_path().parent_path(), error);
 			}
 		}
 
 		// Copy the file or directory
-		printf("'%s' -> '%s'\n", from.c_str(), to.c_str());
+		if (Config::the().verbose()) {
+			printf("'%s' -> '%s'\n", from.c_str(), to.c_str());
+		}
 		std::filesystem::copy(from, to, copyOptions, error);
 		printError(to, error);
 

@@ -10,6 +10,7 @@
 #include <unistd.h> // gethostname
 #include <vector>
 
+#include "config.h"
 #include "dotfile.h"
 #include "package.h"
 #include "util/argparser.h"
@@ -39,6 +40,7 @@ int main(int argc, const char* argv[])
 	bool install = false;
 	bool pull = false;
 	bool pushOrStore = false;
+	bool verbose = false;
 
 	std::vector<std::string> targets {};
 
@@ -51,6 +53,7 @@ int main(int argc, const char* argv[])
 	argParser.addOption(install, 'i', "install", nullptr, nullptr);
 	argParser.addOption(pull, 'l', "pull", nullptr, nullptr);
 	argParser.addOption(pushOrStore, 's', "push", nullptr, nullptr);
+	argParser.addOption(verbose, 'v', "verbose", nullptr, nullptr);
 
 	argParser.addArgument(targets, "targets", nullptr, nullptr, Util::ArgParser::Required::No);
 	argParser.parse(argc, argv);
@@ -61,6 +64,8 @@ int main(int argc, const char* argv[])
 	}
 
 	Util::Timer t;
+
+	Config::the().setVerbose(verbose);
 
 	if (fileOperation) {
 		Dotfile::the().setExcludePaths({
