@@ -54,8 +54,9 @@ set(PROJECT_SOURCES ${PROJECT_SOURCES})
 
 # Define test source files
 file(GLOB_RECURSE TEST_SOURCES "test/*.cpp")
-file(GLOB_RECURSE MAIN_SOURCES "src/*/*.cpp")
+file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
 set(TEST_SOURCES ${TEST_SOURCES} ${MAIN_SOURCES})
+list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
 # ------------------------------------------
 
