@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <string>
+#include <unistd.h> // geteuid, setegid, seteuid
 #include <utility>
 #include <vector>
 
@@ -25,6 +26,12 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 {
 	VERIFY(fileNames.size() == fileContents.size());
 
+	bool root = !geteuid() ? true : false;
+	if (root) {
+		setegid(Machine::the().gid());
+		seteuid(Machine::the().uid());
+	}
+
 	for (size_t i = 0; i < fileNames.size(); ++i) {
 		auto fileName = fileNames.at(i);
 
@@ -37,6 +44,11 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 		if (file.data().size() == 0) {
 			file.append(fileContents.at(i).c_str()).flush();
 		}
+	}
+
+	if (root) {
+		seteuid(0);
+		setegid(0);
 	}
 }
 
