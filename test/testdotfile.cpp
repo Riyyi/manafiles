@@ -111,10 +111,11 @@ TEST_CASE(AddDotfiles)
 TEST_CASE(AddNonExistentDotfiles)
 {
 	stderr = Test::TestSuite::the().outputNull();
-	Dotfile::the().add({ "/tmp/__non-existent-test-file" });
+	Dotfile::the().add({ homeDirectory + "/__non-existent-test-file" });
 	stderr = Test::TestSuite::the().outputErr();
 
 	EXPECT(!std::filesystem::exists("__non-existent-test-file"));
+	removeTestDotfiles({ "__non-existent-test-file" });
 }
 
 TEST_CASE(PullDotfiles)
