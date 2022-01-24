@@ -196,3 +196,35 @@ TEST_CASE(PushDotfiles)
 
 	removeTestDotfiles(fileNames);
 }
+
+TEST_CASE(AddSystemDotfiles)
+{
+	VERIFY(geteuid() == 0);
+
+	Dotfile::the().setSystemDirectories({ "/etc", "/usr/lib" });
+	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
+	Dotfile::the().setSystemDirectories({});
+
+	EXPECT(std::filesystem::exists("etc/group"));
+	EXPECT(std::filesystem::exists("usr/lib/os-release"));
+
+	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "etc");
+	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "usr");
+}
+
+TEST_CASE(PullSystemDotfiles)
+{
+	VERIFY(geteuid() == 0);
+
+	createTestDotfiles({ "etc/group" }, { "" });
+
+	Dotfile::the().setSystemDirectories({ "/etc" });
+	Dotfile::the().pull({ "etc/group" });
+	Dotfile::the().setSystemDirectories({});
+
+	Util::File lhs("/etc/group");
+	Util::File rhs(Dotfile::the().workingDirectory() / "etc/group");
+	EXPECT_EQ(lhs.data(), rhs.data());
+
+	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "etc");
+}
