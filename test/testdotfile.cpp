@@ -149,7 +149,6 @@ TEST_CASE(PullDotfiles)
 	createTestDotfiles(homeFileNames, homeFileContents);
 	createTestDotfiles(fileNames, workingDirectoryFileContents);
 
-	Dotfile::the().setSystemDirectories({ "/etc" });
 	Dotfile::the().pull(fileNames);
 
 	for (size_t i = 0; i < fileNames.size(); ++i) {
@@ -192,6 +191,32 @@ TEST_CASE(PushDotfiles)
 		Util::File lhs(file);
 		Util::File rhs(homeDirectory + '/' + file);
 		EXPECT_EQ(lhs.data(), rhs.data());
+	}
+
+	removeTestDotfiles(fileNames);
+}
+
+TEST_CASE(PushDotfilesWithExcludePath)
+{
+	std::vector<std::string> fileNames = {
+		"__test-file-1",
+		"__subdir/__test-file-2",
+		"__subdir/__test-file-3",
+		"__another-subdir/__test-file-4.test",
+	};
+
+	createTestDotfiles(fileNames, { "", "", "", "" });
+
+	Dotfile::the().setExcludePaths({
+		{ Dotfile::ExcludeType::File, "__test-file-1" },
+		{ Dotfile::ExcludeType::Directory, "__subdir" },
+		{ Dotfile::ExcludeType::EndsWith, ".test" },
+	});
+	Dotfile::the().push(fileNames);
+	Dotfile::the().setExcludePaths({});
+
+	for (const auto& file : fileNames) {
+		EXPECT(!std::filesystem::exists(homeDirectory + '/' + file));
 	}
 
 	removeTestDotfiles(fileNames);
