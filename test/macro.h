@@ -4,6 +4,14 @@
 #include <cstdio>   // fprintf
 #include <iostream> // cerr
 
+#define VERIFY(x)                                                              \
+	if (!(x)) {                                                                \
+		fprintf(stderr, " \033[31;1mFAIL:\033[0m  %s:%d: VERIFY(%s) failed\n", \
+		        __FILE__, __LINE__, #x);                                       \
+		Test::TestSuite::the().currentTestCaseFailed();                        \
+		return;                                                                \
+	}
+
 #define EXPECT(x)                                                              \
 	if (!(x)) {                                                                \
 		fprintf(stderr, " \033[31;1mFAIL:\033[0m  %s:%d: EXPECT(%s) failed\n", \

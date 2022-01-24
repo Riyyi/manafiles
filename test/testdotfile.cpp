@@ -23,7 +23,7 @@ const size_t homeDirectorySize = homeDirectory.size();
 
 void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents)
 {
-	EXPECT_EQ(fileNames.size(), fileContents.size());
+	VERIFY(fileNames.size() == fileContents.size());
 
 	for (size_t i = 0; i < fileNames.size(); ++i) {
 		auto fileName = fileNames.at(i);
