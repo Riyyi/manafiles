@@ -18,6 +18,7 @@
 #include "util/file.h"
 #include "util/system.h"
 
+const bool root = !geteuid() ? true : false;
 const std::string homeDirectory = "/home/" + Machine::the().username();
 const size_t homeDirectorySize = homeDirectory.size();
 
@@ -25,7 +26,6 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 {
 	VERIFY(fileNames.size() == fileContents.size());
 
-	bool root = !geteuid() ? true : false;
 	if (root && !asRoot) {
 		setegid(Machine::the().gid());
 		seteuid(Machine::the().uid());
