@@ -394,7 +394,9 @@ bool Dotfile::isSystemTarget(const std::string& target)
 		if (target.find(systemDirectory) == 0) {
 			return true;
 		}
-		if (target.find(m_workingDirectory / systemDirectory) == 0) {
+		// FIXME: The second filesystem::path cant have a "/" as the first character,
+		//        as it will think the path is at the root.
+		if (target.find(m_workingDirectory.string() + systemDirectory.string()) == 0) {
 			return true;
 		}
 	}
