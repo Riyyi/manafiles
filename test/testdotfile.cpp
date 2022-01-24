@@ -19,8 +19,8 @@
 #include "util/system.h"
 
 const bool root = !geteuid() ? true : false;
-const std::string homeDirectory = "/home/" + Machine::the().username();
-const size_t homeDirectorySize = homeDirectory.size();
+const std::filesystem::path homeDirectory = "/home/" + Machine::the().username();
+const size_t homeDirectorySize = homeDirectory.string().size();
 
 void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents, bool asRoot = false)
 {
@@ -66,7 +66,7 @@ void removeTestDotfiles(const std::vector<std::string>& files)
 		}
 
 		// Delete recursively in home directory
-		file = homeDirectory + '/' + file;
+		file = homeDirectory / file;
 		if (std::filesystem::exists(file)) {
 			std::filesystem::remove_all(file);
 		}
@@ -78,9 +78,9 @@ void removeTestDotfiles(const std::vector<std::string>& files)
 TEST_CASE(AddDotfiles)
 {
 	std::vector<std::string> fileNames = {
-		homeDirectory + "/__test-file-1",
-		homeDirectory + "/__subdir/__test-file-2",
-		homeDirectory + "/__subdir/__another-subdir/__test-file-3",
+		homeDirectory / "__test-file-1",
+		homeDirectory / "__subdir/__test-file-2",
+		homeDirectory / "__subdir/__another-subdir/__test-file-3",
 	};
 
 	std::vector<std::string> fileContents = {
@@ -111,7 +111,7 @@ TEST_CASE(AddDotfiles)
 TEST_CASE(AddNonExistentDotfiles)
 {
 	stderr = Test::TestSuite::the().outputNull();
-	Dotfile::the().add({ homeDirectory + "/__non-existent-test-file" });
+	Dotfile::the().add({ homeDirectory / "__non-existent-test-file" });
 	stderr = Test::TestSuite::the().outputErr();
 
 	EXPECT(!std::filesystem::exists("__non-existent-test-file"));
@@ -127,7 +127,7 @@ TEST_CASE(PullDotfiles)
 	};
 	std::vector<std::string> homeFileNames;
 	for (const auto& file : fileNames) {
-		homeFileNames.push_back(homeDirectory + '/' + file);
+		homeFileNames.push_back(homeDirectory / file);
 	}
 
 	std::vector<std::string> homeFileContents = {
@@ -187,10 +187,10 @@ TEST_CASE(PushDotfiles)
 
 	for (const auto& file : fileNames) {
 		EXPECT(std::filesystem::exists(file));
-		EXPECT(std::filesystem::exists(homeDirectory + '/' + file));
+		EXPECT(std::filesystem::exists(homeDirectory / file));
 
 		Util::File lhs(file);
-		Util::File rhs(homeDirectory + '/' + file);
+		Util::File rhs(homeDirectory / file);
 		EXPECT_EQ(lhs.data(), rhs.data());
 	}
 
@@ -217,7 +217,7 @@ TEST_CASE(PushDotfilesWithExcludePath)
 	Dotfile::the().setExcludePaths({});
 
 	for (const auto& file : fileNames) {
-		EXPECT(!std::filesystem::exists(homeDirectory + '/' + file));
+		EXPECT(!std::filesystem::exists(homeDirectory / file));
 	}
 
 	removeTestDotfiles(fileNames);
