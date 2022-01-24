@@ -11,6 +11,7 @@ namespace Test {
 TestSuite::TestSuite(s)
 {
 	m_outputStd = stdout;
+	m_outputErr = stderr;
 	m_outputNull = fopen("/dev/null", "w"); // Windows: nul
 }
 

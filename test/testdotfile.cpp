@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstdio>
+#include <cstdio> // stderr
 #include <filesystem>
 #include <string>
 #include <unistd.h> // geteuid, setegid, seteuid
-#include <utility>
 #include <vector>
 
 #include "dotfile.h"
@@ -111,7 +110,10 @@ TEST_CASE(AddDotfiles)
 
 TEST_CASE(AddNonExistentDotfiles)
 {
+	stderr = Test::TestSuite::the().outputNull();
 	Dotfile::the().add({ "/tmp/__non-existent-test-file" });
+	stderr = Test::TestSuite::the().outputErr();
+
 	EXPECT(!std::filesystem::exists("__non-existent-test-file"));
 }
 

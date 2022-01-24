@@ -19,11 +19,13 @@ public:
 	void currentTestCaseFailed() { m_currentTestCasePassed = false; }
 
 	FILE* outputStd() const { return m_outputStd; }
+	FILE* outputErr() const { return m_outputErr; }
 	FILE* outputNull() const { return m_outputNull; }
 
 private:
 	bool m_currentTestCasePassed { true };
 	FILE* m_outputStd { nullptr };
+	FILE* m_outputErr { nullptr };
 	FILE* m_outputNull { nullptr };
 
 	std::vector<TestCase> m_cases;
