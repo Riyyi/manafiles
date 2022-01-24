@@ -21,12 +21,12 @@
 const std::string homeDirectory = "/home/" + Machine::the().username();
 const size_t homeDirectorySize = homeDirectory.size();
 
-void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents)
+void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents, bool asRoot = false)
 {
 	VERIFY(fileNames.size() == fileContents.size());
 
 	bool root = !geteuid() ? true : false;
-	if (root) {
+	if (root && !asRoot) {
 		setegid(Machine::the().gid());
 		seteuid(Machine::the().uid());
 	}
@@ -45,7 +45,7 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 		}
 	}
 
-	if (root) {
+	if (root && !asRoot) {
 		seteuid(0);
 		setegid(0);
 	}
@@ -216,7 +216,7 @@ TEST_CASE(PullSystemDotfiles)
 {
 	VERIFY(geteuid() == 0);
 
-	createTestDotfiles({ "etc/group" }, { "" });
+	createTestDotfiles({ "etc/group" }, { "" }, true);
 
 	Dotfile::the().setSystemDirectories({ "/etc" });
 	Dotfile::the().pull({ "etc/group" });
