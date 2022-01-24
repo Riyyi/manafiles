@@ -270,12 +270,12 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 
 		if (!addComment) {
 			line = line.substr(0, whiteSpaceBeforeComment)
-				+ line.substr(contentAfterComment);
+			       + line.substr(contentAfterComment);
 		}
 		else {
 			line = line.substr(0, whiteSpaceBeforeComment)
-				+ commentCharacter + ' '
-				+ line.substr(contentAfterComment);
+			       + commentCharacter + ' '
+			       + line.substr(contentAfterComment);
 		}
 
 		dotfile.replace(positionInFile, lineLength, line);
