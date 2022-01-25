@@ -223,6 +223,101 @@ TEST_CASE(PushDotfilesWithExcludePath)
 	removeTestDotfiles(fileNames);
 }
 
+TEST_CASE(PushDotfilesSelectivelyComment)
+{
+	std::vector<std::string> fileNames = {
+		"__test-file-1",
+		"__test-file-2",
+		"__test-file-3",
+		"__test-file-4",
+		"__test-file-5",
+		"__test-file-6",
+		"__test-file-7",
+	};
+
+	auto distro = Machine::the().distroId();
+	auto hostname = Machine::the().hostname();
+	auto username = Machine::the().username();
+	std::string placeholder = "@@@@";
+
+	std::vector<std::string> fileContents = {
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+# this should be uncommented
+# <<<
+)",
+		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+# this should remain commented
+# <<<
+)",
+		"# >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+# this should remain commented
+# <<<
+)",
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+this should be commented
+# <<<
+)",
+		"  # >>> distro=" + distro + R"(
+  # this should be uncommented
+  # <<<
+)",
+		"	# >>> user=" + username + R"(
+	# this should be uncommented
+	# <<<
+)",
+		"	  # >>> hostname=" + hostname + R"(
+	  this should remain uncommented
+	  # <<<
+)",
+	};
+
+	std::vector<std::string> pushedFileContents = {
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+this should be uncommented
+# <<<
+)",
+		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+# this should remain commented
+# <<<
+)",
+		"# >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+# this should remain commented
+# <<<
+)",
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+# this should be commented
+# <<<
+)",
+		"  # >>> distro=" + distro + R"(
+  this should be uncommented
+  # <<<
+)",
+		"	# >>> user=" + username + R"(
+	this should be uncommented
+	# <<<
+)",
+		"	  # >>> hostname=" + hostname + R"(
+	  this should remain uncommented
+	  # <<<
+)",
+	};
+
+	createTestDotfiles(fileNames, fileContents);
+
+	Dotfile::the().push(fileNames);
+
+	for (size_t i = 0; i < fileNames.size(); ++i) {
+		const auto& file = fileNames.at(i);
+		VERIFY(std::filesystem::exists(file), continue);
+		VERIFY(std::filesystem::exists(homeDirectory / file), continue);
+
+		Util::File lhs(homeDirectory / file);
+		EXPECT_EQ(lhs.data(), pushedFileContents.at(i));
+	}
+
+	removeTestDotfiles(fileNames);
+}
+
 TEST_CASE(AddSystemDotfiles)
 {
 	VERIFY(geteuid() == 0, return);
