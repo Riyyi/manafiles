@@ -60,20 +60,20 @@ list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
 # ------------------------------------------
 
-project(${PROJECT})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# ------------------------------------------
+
+project(${PROJECT} CXX)
 
 add_executable(${PROJECT} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT})
 
 # ------------------------------------------
 
-project(test)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+project(test CXX)
 
 add_executable(test ${TEST_SOURCES})
 target_link_libraries(test)
