@@ -1,0 +1,85 @@
+.TH STOWAGE 1 "2022-01-29" "stowage 0.5" "User Commands"
+
+.SH NAME
+stowage \- config file and package tracking utility
+
+.SH SYNOPSIS
+.B stowage
+.I OPERATION
+.RI [ OPTION ...]\&
+.RI [ TARGET ...]
+
+.SH DESCRIPTION
+stowage is a config file and package tracking utility that tracks installed packages on a Linux system. \
+It features listing and tracking of config files and packages, and the ability to install the tracked packages.
+
+Currently, package tracking is only supported on APT and Pacman based distributions.
+
+Invoking stowage involves specifying an operation with any potential options and targets to operate on. \
+A \fItarget\fR is usually a file name, directory or a package name. \
+Targets can be provided as command line arguments. \
+Additionally, if a single hyphen (-) is passed as an argument, targets will be read from stdin.
+
+.SH OPERATIONS
+.TP
+.BR \-F ", " \-\-file
+Operate on config files. \
+This operation allows you to sync config files between the system and the dotfiles directory. \
+In the first case, if no file names are provided in the command line, all files will be selected. \
+See File Options below.
+
+.TP
+.BR \-P ", " \-\-package
+Operate on packages. \
+This operation allows you to track installed packages and reinstall them. \
+In the first case, if no package names are provided in the command line, all packages will be selected. \
+See Package Options below.
+
+.TP
+.BR \-h ", " \-\-help
+Display usage message and exit.
+
+.SH OPTIONS
+.TP
+.BR \-v ", " \-\-verbose
+Output paths such as directories created, config files copied.
+
+.SH FILE OPTIONS (APPLY TO -F)
+.TP
+.BR \-a ", " \-\-add
+Add selected file \fIpaths\fR to the dotfiles directory.
+
+.TP
+.BR \-l ", " \-\-pull
+Pull every (selected) \fIfile\fR from the system to the dotfiles directory.
+
+.TP
+.BR \-s ", " \-\-push
+Push every (selected) \fIfile\fR from the dotfiles directory to the system.
+
+.SH PACKAGE OPTIONS (APPLY TO -P)
+.TP
+.BR \-a ", " \-\-aur-install
+Install all AUR packages of the stored list.
+
+.TP
+.BR \-i ", " \-\-install
+Install all official packages of the stored list.
+
+.TP
+.BR \-s ", " \-\-store
+Stores a list of all installed packages on the system.
+
+.SH EXAMPLES
+Usage examples:
+
+$ \fBstowage\fR -Fa ~/.zshrc /etc/zsh/zshenv
+.br
+\h'4'Add config files to the dotfiles directory
+
+$ \fBstowage\fR -Pia
+.br
+\h'4'Install all tracked official and AUR packages
+
+.SH AUTHOR
+Riyyi

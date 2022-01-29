@@ -90,3 +90,8 @@ add_dependencies(run ${PROJECT})
 
 add_executable(test ${TEST_SOURCES})
 target_link_libraries(test)
+
+# ------------------------------------------
+# Man page target
+
+add_subdirectory(doc)
