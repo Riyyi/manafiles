@@ -9,6 +9,9 @@ set(PROJECT "stowage")
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(${PROJECT} CXX)
 
+set(CMAKE_INSTALL_PREFIX /usr)
+include(GNUInstallDirs)
+
 # ------------------------------------------
 # Setup C++ compiler
 
@@ -70,6 +73,10 @@ list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 
 add_executable(${PROJECT} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT})
+
+install(TARGETS ${PROJECT}
+	DESTINATION ${CMAKE_INSTALL_BINDIR}
+	CONFIGURATIONS Release)
 
 # ------------------------------------------
 # Execute target
