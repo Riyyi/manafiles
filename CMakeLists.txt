@@ -3,12 +3,6 @@
 
 # Set project name
 set(PROJECT "stowage")
-# ------------------------------------------
-
-# Add 'make run' target
-add_custom_target(run
-    COMMAND ${PROJECT}
-)
 
 # ------------------------------------------
 
@@ -77,6 +71,12 @@ list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 add_executable(${PROJECT} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT})
 
+# ------------------------------------------
+# Execute target
+
+add_custom_target(run
+    COMMAND ${PROJECT})
+add_dependencies(run ${PROJECT})
 
 # ------------------------------------------
 # Unit test target
