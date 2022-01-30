@@ -95,3 +95,14 @@ target_link_libraries(test)
 # Man page target
 
 add_subdirectory(doc)
+
+# ------------------------------------------
+# Uninstall target
+
+configure_file(
+	${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in
+	${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+	@ONLY)
+
+add_custom_target(uninstall
+	COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake)
