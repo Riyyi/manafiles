@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2021-2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include <algorithm> // find_if
 #include <cstddef>   // size_t
 #include <cstdio>    // printf
@@ -75,13 +81,18 @@ bool ArgParser::parseShortOption(std::string_view option, std::string_view next)
 {
 	bool result = true;
 
+#ifndef NDEBUG
 	printf("Parsing short option: '%s'\n", option.data());
+#endif
 
 	char c;
 	std::string_view value;
 	for (size_t i = 0; i < option.size(); ++i) {
 		c = option.at(i);
+
+#ifndef NDEBUG
 		printf("short '%c'\n", c);
+#endif
 
 		auto foundOption = std::find_if(m_options.begin(), m_options.end(), [&c](Option& it) -> bool {
 			return it.shortName == c;
@@ -263,7 +274,10 @@ bool ArgParser::parse(int argc, const char* argv[])
 	std::string_view argument;
 	std::string_view next;
 	for (; m_optionIndex < (size_t)argc; ++m_optionIndex) {
+
+#ifndef NDEBUG
 		printf("argv[%zu]: %s\n", m_optionIndex, argv[m_optionIndex]);
+#endif
 
 		// Get the current and next parameter
 		argument = argv[m_optionIndex];

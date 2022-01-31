@@ -47,7 +47,9 @@ int main(int argc, const char* argv[])
 		return 1;
 	}
 
+#ifndef NDEBUG
 	Util::Timer t;
+#endif
 
 	Config::the().setVerbose(verbose);
 
@@ -103,7 +105,9 @@ int main(int argc, const char* argv[])
 		// TODO open manpage
 	}
 
-	printf("%fms\n", t.elapsedNanoseconds() / 1000000.0);
+#ifndef NDEBUG
+		printf("%fms\n", t.elapsedNanoseconds() / 1000000.0);
+#endif
 
 	return 0;
 }
