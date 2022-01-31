@@ -6,7 +6,7 @@
 Config file and package tracking utility.
 
 - Manage dotfiles and system config files.
-- Selectively command and uncomment depending on machine configuration.
+- Selectively comment and uncomment depending on machine configuration.
 - Store a list of all installed packages.
 - Install packages from a stored list.
 
