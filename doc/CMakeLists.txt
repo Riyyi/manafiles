@@ -11,10 +11,10 @@ if(NOT GZIP_TOOL)
 endif()
 
 add_custom_target(doc ALL
-	COMMAND ${GZIP_TOOL} -c ${CMAKE_SOURCE_DIR}/doc/stowage.1 > ${CMAKE_BINARY_DIR}/stowage.1.gz
-	DEPENDS ${CMAKE_SOURCE_DIR}/doc/stowage.1)
+	COMMAND ${GZIP_TOOL} -c ${CMAKE_SOURCE_DIR}/doc/manafiles.1 > ${CMAKE_BINARY_DIR}/manafiles.1.gz
+	DEPENDS ${CMAKE_SOURCE_DIR}/doc/manafiles.1)
 
 install(
-	FILES ${CMAKE_BINARY_DIR}/stowage.1.gz
+	FILES ${CMAKE_BINARY_DIR}/manafiles.1.gz
 	DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
 	CONFIGURATIONS Release)

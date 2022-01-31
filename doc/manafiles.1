@@ -1,21 +1,21 @@
-.TH STOWAGE 1 "2022-01-29" "stowage 0.5" "User Commands"
+.TH MANAFILES 1 "2022-01-29" "manafiles 0.5" "User Commands"
 
 .SH NAME
-stowage \- config file and package tracking utility
+manafiles \- config file and package tracking utility
 
 .SH SYNOPSIS
-.B stowage
+.B manafiles
 .I OPERATION
 .RI [ OPTION ...]\&
 .RI [ TARGET ...]
 
 .SH DESCRIPTION
-stowage is a config file and package tracking utility that tracks installed packages on a Linux system. \
+manafiles is a config file and package tracking utility that tracks installed packages on a Linux system. \
 It features listing and tracking of config files and packages, and the ability to install the tracked packages.
 
 Currently, package tracking is only supported on APT and Pacman based distributions.
 
-Invoking stowage involves specifying an operation with any potential options and targets to operate on. \
+Invoking manafiles involves specifying an operation with any potential options and targets to operate on. \
 A \fItarget\fR is usually a file name, directory or a package name. \
 Targets can be provided as command line arguments. \
 Additionally, if a single hyphen (-) is passed as an argument, targets will be read from stdin.
@@ -73,11 +73,11 @@ Stores a list of all installed packages on the system.
 .SH EXAMPLES
 Usage examples:
 
-$ \fBstowage\fR -Fa ~/.zshrc /etc/zsh/zshenv
+$ \fBmanafiles\fR -Fa ~/.zshrc /etc/zsh/zshenv
 .br
 \h'4'Add config files to the dotfiles directory
 
-$ \fBstowage\fR -Pia
+$ \fBmanafiles\fR -Pia
 .br
 \h'4'Install all tracked official and AUR packages
 

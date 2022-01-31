@@ -2,7 +2,7 @@
 # User config between these lines
 
 # Set project name
-set(PROJECT "stowage")
+set(PROJECT "manafiles")
 
 # ------------------------------------------
 
