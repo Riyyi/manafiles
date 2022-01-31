@@ -1,116 +1,56 @@
-* Stowage
+#+TITLE: Manafiles
+#+AUTHOR: Riyyi
+#+LANGUAGE: en
+#+OPTIONS: toc:nil
 
-Needed information for generation:
-- short option
-- long option
-- short description (for usage ouput)
-- long description (for manpage output)
+Config file and package tracking utility.
 
-* Machine specific configuration
+- Manage dotfiles and system config files.
+- Selectively command and uncomment depending on machine configuration.
+- Store a list of all installed packages.
+- Install packages from a stored list.
 
-- Selection based on file name
-- Config section selection based on pattern with machine name
-- Possibly variable insertion and comment removal
-
-* Option Parsing
-
-Parsed from left to right.
-
-** Types
-
-- Short option
-- Long option
-- Argument to option
-- Non-option parameter (default argument)
-
-*** Short Option
-
-'-' followed by short option character.
-If option has required argument, directly after OR separated by white-space.
-Optional argument must be directly after the option character.
-
-Possible to write several short options after one '-',
-if all (except last) do not have *required* or *optional* arguments.
-
-*** Long Option
-
-'--' followed by long option name.
-If option has a required argument, directly after, separated by '=' OR white-space.
-Optional argument must be directly after the option, separated by '='.
-
-*** Non-option Parameter
-
-Each parameter not starting with '-' and not a required argument of a previous option,
-is a non-option parameter.
-
-Each parameter after a '--' parameter is always interpreted as a non-option parameter.
-
-* Examples
+** Build instructions
 
 #+BEGIN_SRC shell-script
-./stowage -Fals
-./stowage -F -a -l -s
-
-./stowage --file --add --pull --push
-
-./stowage -r filename
-./stowage -rfilename
-./stowage --remove=filename
-./stowage --remove filename
-
-./stowage --remove filename other stuff
-./stowage --remove filename -- other stuff
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
 #+END_SRC
 
-** Multiple of the same options
+** Installation
 
 #+BEGIN_SRC shell-script
-./stowage -e pattern1 -epattern2 --regexp=pattern3 --regexp pattern4
+$ sudo make install
 #+END_SRC
 
-* TODO [24/38]
+** Usage
 
-- [X] macros: add more EXPECT_
-- [X] macros: print to stderr, add colors
-- [X] suite: improve printing style
-- [X] convert more tests from main()
-- [X] suite: add time tracking
-- [X] suite: print time info
-- [X] suite: add mechanism for EXPECT_ macros to mark current test as failed
-- [X] suite: print suite failed tests
+*** Selectively comment and uncomment
 
-- [X] argparser: after first non option, go into no-option mode. this should be a setting to enable (default off)
-- [X] argparser: support '--' to go into non-option mode
-- [X] argparser: add multi-option support, vectors!
-- [X] argparser: support non-option arguments parsing + storing
-- [X] argparser: non-option arguments, what error messages, when?
-- [X] argparser: update tests to check non-option arguments
-- [X] argparser: add addOption overloads
-- [ ] argparser: generate usage string
-- [ ] argparser: generate man page string
-- [X] argparser: parse() function to return bool false if any error has occurred
-- [ ] argparser: setting for failure behavior (usage/exit/usage+exit)
-- [X] argparser: add proper tests for non-existent options
-- [X] argparser: m_exitOnFirstError is implemented wrong in longOption, should also break in the main loop!
-                 I think its fine in shortOption as it can parse multiple arguments
-- [X] argparser: support optional arguments, if acceptvalue fails and arg is optional, increment index and try again
-- [X] argparser: receives empty parameters (at least arguments), decide what to do with them. $ uname bla => uname: extra operand ‘bla’
-- [X] argparser: dont use std::regex, just loop through characters and bail if unexpected
-- [ ] argparser: support long option abbreviations, if they are not ambiguous
-- [ ] argparser: support for single - long options
-- [ ] argparser: check and set $value to $next before the if spaghetti to simplify, at least in longOption
+Config files can be pushed from the working directory to the system like so:
 
-- [X] system: add piping functionality, print result of previous command to stdin before execvp() ?
-- [ ] system: output/error/status getter, automatically call exec if workload
-- [ ] system: output/error getter, cut off last character if its "\n", as std::string already handles trailing \n
-- [X] system: test with file descriptors captured in std::system
-- [ ] system: write test cases
-- [ ] system: fix bug: splitting on space needs to be escapable, ex: '\ ' or ' ' or " ", needs a lexer
-- [ ] system: test if exec() can return a reference?
+#+BEGIN_SRC shell-script
+$ manafiles -Fs
+#+END_SRC
 
-- [X] dotfile: add loop index to forEachDotfile
-- [ ] dotfile: convert excludePaths and system directories matching to regex
-- [ ] dotfile: add excludePaths (ignore file) config file functionality
-      https://systemcrafters.net/managing-your-dotfiles/using-gnu-stow/
-      https://www.gnu.org/software/stow/manual/stow.html#Types-And-Syntax-Of-Ignore-Lists
-- [ ] dotfile: add system directories config file functionality
+When pushing files to the system, manafiles recognizes special blocks and comments
+or uncomments them depending on the machine's configuration. Such a block looks
+like this:
+
+#+BEGIN_SRC shell-script
+# >>> distro=arch hostname=arch-desktop user=anon
+export PATH="$PATH:$HOME/.local/bin"
+# <<<
+#+END_SRC
+
+This block uses all of the supported configurations, ~distro~, ~hostname~ and
+ ~user~. These can be used in any combination and order.
+
+If *all* of the given configurations match, manafiles will make sure that the
+contents of the block are uncommented. If *any* of them do *not* match, then
+manafiles will make sure that the contents of the block are commented.
+
+*** COMMENT System config files
+*** COMMENT Exclude paths
