@@ -4,31 +4,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstdio> // fprintf, perror, stderr
-#include <filesystem>
+#include <cstdio> // fprintf, stderr
 #include <string>
-#include <unistd.h> // gethostname
 #include <vector>
 
 #include "config.h"
 #include "dotfile.h"
 #include "package.h"
 #include "util/argparser.h"
-#include "util/file.h"
-#include "util/system.h"
 #include "util/timer.h"
-
-// void* operator new(size_t size)
-// {
-// 	std::cout << "@Allocating '" << size << "' bytes" << std::endl;
-// 	return std::malloc(size);
-// }
-
-// void operator delete(void* pointer, size_t size)
-// {
-// 	std::cout << "@Freeing '" << size << "' bytes" << std::endl;
-// 	free(pointer);
-// }
 
 int main(int argc, const char* argv[])
 {
@@ -123,14 +107,3 @@ int main(int argc, const char* argv[])
 
 	return 0;
 }
-
-// cp -a <> <>
-// -a = -dR --preserve=all
-// -d = --no-dereference --preserve=links
-// -P, --no-dereference = never follow symbolic links in SOURCE
-// -R = recursive
-// --preserve = preserve attributes (default: mode,ownership,timestamps), additional: context,links,xattr,all
-
-// # Files that are stored in the repository but shouldn't get copied (regex)
-// excludeFiles="${0#??}|$packageFile|.*.md$|.*README.org$|.git|screenshot.png"
-// exclude: files, folders, ends-with
