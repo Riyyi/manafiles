@@ -63,7 +63,7 @@ void Package::store()
 {
 	std::string packages = getPackageList();
 
-	auto packageFile = Util::File("./packages");
+	auto packageFile = Util::File::create("./packages");
 	packageFile.clear();
 	packageFile.append(packages);
 	packageFile.flush();
