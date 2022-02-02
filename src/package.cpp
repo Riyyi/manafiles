@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <algorithm> // replace
 #include <array>
 #include <cstdio>  // fprintf, printf, stderr
+#include <cstdlib> // system
 #include <sstream> // istringstream
 #include <string>  // getline
 #include <vector>
@@ -13,6 +15,7 @@
 #include "machine.h"
 #include "package.h"
 #include "util/file.h"
+#include "util/shell.h"
 #include "util/system.h"
 
 Package::Package()
@@ -27,10 +30,12 @@ Package::~Package()
 
 void Package::aurInstall()
 {
+	installOrAurInstall(InstallType::AurInstall);
 }
 
 void Package::install()
 {
+	installOrAurInstall(InstallType::Install);
 }
 
 void Package::list(const std::vector<std::string>& targets)
@@ -70,6 +75,49 @@ void Package::store()
 }
 
 // -----------------------------------------
+
+void Package::installOrAurInstall(InstallType type)
+{
+	distroDetect();
+	distroDependencies();
+
+	std::string command = "";
+
+	Util::System $;
+	if (m_distro == Distro::Arch) {
+		// Grab everything off enabled official repositories that is in the list
+		auto repoList = $("pacman -Ssq") | $("grep -xf ./packages");
+
+		if (type == InstallType::AurInstall) {
+			// Determine which packages in the list are from the AUR
+			auto aurCommand = "grep -vx '" + repoList.output() + "'";
+
+			// NOTE: Util::System does not support commands with newlines
+			auto aurList = Util::Shell()("cat ./packages | " + aurCommand);
+			command = "trizen -Sy --needed --noconfirm " + aurList.output();
+		}
+		else {
+			command = "sudo pacman -Sy --needed " + repoList.output();
+		}
+	}
+	else if (m_distro == Distro::Debian) {
+		if (type == InstallType::AurInstall) {
+			fprintf(stderr, "\033[31;1mPackage:\033[0m AUR is not supported on this distribution\n");
+			return;
+		}
+
+		// Grab everything off enabled official repositories that is in the list
+		auto repoList = $("apt-cache search .").cut(1, ' ') | $("grep -xf ./packages");
+		command = "sudo apt install " + repoList.output();
+	}
+
+	std::replace(command.begin(), command.end(), '\n', ' ');
+
+#ifndef NDEBUG
+	printf("running: $ %s\n", command.c_str());
+#endif
+	system(command.c_str());
+}
 
 bool Package::distroDetect()
 {

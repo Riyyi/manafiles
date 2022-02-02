@@ -21,12 +21,19 @@ public:
 		Debian,
 	};
 
+	enum class InstallType {
+		Install,
+		AurInstall,
+	};
+
 	void aurInstall();
 	void install();
 	void list(const std::vector<std::string>& targets = {});
 	void store();
 
 private:
+	void installOrAurInstall(InstallType type);
+
 	bool distroDetect();
 	bool distroDependencies();
 	std::string getPackageList();

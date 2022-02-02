@@ -86,10 +86,10 @@ int main(int argc, const char* argv[])
 		Package package;
 
 		if (addOrAur) {
-			// TODO install tracked AUR packages
+			package.aurInstall();
 		}
 		if (install) {
-			// TODO install tracked repo packages
+			package.install();
 		}
 		if (pushOrStore) {
 			package.store();
