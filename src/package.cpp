@@ -139,13 +139,13 @@ void Package::installOrAurInstall(InstallType type)
 			command = aurHelper.value() + " -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
-			command = "sudo pacman -Sy --needed " + repoList.output();
+			command = "pacman -Sy --needed " + repoList.output();
 		}
 	}
 	else if (m_distro == Distro::Debian) {
 		// Grab everything off enabled official repositories that is in the list
 		auto repoList = $("apt-cache search .").cut(1, ' ') | $("grep -xf ./packages");
-		command = "sudo apt install " + repoList.output();
+		command = "apt install " + repoList.output();
 	}
 
 	std::replace(command.begin(), command.end(), '\n', ' ');
