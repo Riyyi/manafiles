@@ -134,10 +134,8 @@ void Package::installOrAurInstall(InstallType type)
 
 		if (type == InstallType::AurInstall) {
 			// Determine which packages in the list are from the AUR
-			auto aurCommand = "grep -vx '" + repoList.output() + "'";
-
 			// NOTE: Util::System does not support commands with newlines
-			auto aurList = Util::Shell()("cat ./packages | " + aurCommand);
+			auto aurList = Util::Shell()("grep -vx '" + repoList.output() + "' ./packages");
 			command = aurHelper.value() + " -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
