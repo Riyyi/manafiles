@@ -27,6 +27,10 @@ public:
 	uint32_t gid() { return m_passwd->pw_gid; }
 
 private:
+	void fetchDistro();
+	void fetchHostname();
+	void fetchUsername();
+
 	std::string m_distroId;
 	std::string m_distroIdLike;
 	std::string m_hostname;
