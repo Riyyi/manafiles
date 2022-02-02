@@ -94,7 +94,7 @@ void Package::installOrAurInstall(InstallType type)
 
 			// NOTE: Util::System does not support commands with newlines
 			auto aurList = Util::Shell()("cat ./packages | " + aurCommand);
-			command = "trizen -Sy --needed --noconfirm " + aurList.output();
+			command = "trizen -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
 			command = "sudo pacman -Sy --needed " + repoList.output();
