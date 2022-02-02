@@ -6,8 +6,10 @@
 
 #include <algorithm> // replace
 #include <array>
-#include <cstdio>  // fprintf, printf, stderr
-#include <cstdlib> // system
+#include <cstdio>     // fprintf, printf, stderr
+#include <cstdlib>    // system
+#include <filesystem> // exists
+#include <optional>
 #include <sstream> // istringstream
 #include <string>  // getline
 #include <vector>
@@ -76,10 +78,42 @@ void Package::store()
 
 // -----------------------------------------
 
+std::optional<std::string> Package::fetchAurHelper()
+{
+	const std::string helpers[] = {
+		"yay",
+		"paru",
+		"trizen",
+	};
+
+	for(const auto& helper : helpers) {
+		if (findDependency(helper)) {
+			return { helper };
+		}
+	}
+
+	return {};
+}
+
 void Package::installOrAurInstall(InstallType type)
 {
 	distroDetect();
 	distroDependencies();
+
+	std::optional<std::string> aurHelper;
+	if (type == InstallType::AurInstall) {
+		if (m_distro == Distro::Arch) {
+			aurHelper = fetchAurHelper();
+			if (!aurHelper.has_value()) {
+				fprintf(stderr, "\033[31;1mPackage:\033[0m no supported AUR helper found\n");
+				return;
+			}
+		}
+		else {
+			fprintf(stderr, "\033[31;1mPackage:\033[0m AUR is not supported on this distribution\n");
+			return;
+		}
+	}
 
 	std::string command = "";
 
@@ -94,18 +128,13 @@ void Package::installOrAurInstall(InstallType type)
 
 			// NOTE: Util::System does not support commands with newlines
 			auto aurList = Util::Shell()("cat ./packages | " + aurCommand);
-			command = "trizen -Sy --devel --needed --noconfirm " + aurList.output();
+			command = aurHelper.value() + " -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
 			command = "sudo pacman -Sy --needed " + repoList.output();
 		}
 	}
 	else if (m_distro == Distro::Debian) {
-		if (type == InstallType::AurInstall) {
-			fprintf(stderr, "\033[31;1mPackage:\033[0m AUR is not supported on this distribution\n");
-			return;
-		}
-
 		// Grab everything off enabled official repositories that is in the list
 		auto repoList = $("apt-cache search .").cut(1, ' ') | $("grep -xf ./packages");
 		command = "sudo apt install " + repoList.output();
@@ -117,6 +146,13 @@ void Package::installOrAurInstall(InstallType type)
 	printf("running: $ %s\n", command.c_str());
 #endif
 	system(command.c_str());
+}
+
+bool Package::findDependency(const std::string& search)
+{
+	return std::filesystem::exists("/bin/" + search)
+	       || std::filesystem::exists("/usr/bin/" + search)
+	       || std::filesystem::exists("/usr/local/bin/" + search);
 }
 
 bool Package::distroDetect()

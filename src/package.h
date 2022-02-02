@@ -7,6 +7,7 @@
 #ifndef PACKAGE_H
 #define PACKAGE_H
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,8 +33,10 @@ public:
 	void store();
 
 private:
+	std::optional<std::string> fetchAurHelper();
 	void installOrAurInstall(InstallType type);
 
+	bool findDependency(const std::string& search);
 	bool distroDetect();
 	bool distroDependencies();
 	std::string getPackageList();
