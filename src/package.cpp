@@ -42,7 +42,13 @@ void Package::install()
 
 void Package::list(const std::vector<std::string>& targets)
 {
-	std::string packages = getPackageList();
+	auto packagesOrEmpty = getPackageList();
+
+	if (!packagesOrEmpty.has_value()) {
+		return;
+	}
+
+	std::string packages = packagesOrEmpty.value();
 
 	if (targets.empty()) {
 		printf("%s", packages.c_str());
@@ -68,11 +74,15 @@ void Package::list(const std::vector<std::string>& targets)
 
 void Package::store()
 {
-	std::string packages = getPackageList();
+	auto packagesOrEmpty = getPackageList();
+
+	if (!packagesOrEmpty.has_value()) {
+		return;
+	}
 
 	auto packageFile = Util::File::create("./packages");
 	packageFile.clear();
-	packageFile.append(packages);
+	packageFile.append(packagesOrEmpty.value());
 	packageFile.flush();
 }
 
@@ -210,10 +220,11 @@ bool Package::distroDependencies()
 	return true;
 }
 
-std::string Package::getPackageList()
+std::optional<std::string> Package::getPackageList()
 {
-	distroDetect();
-	distroDependencies();
+	if (!distroDetect() || !distroDependencies()) {
+		return {};
+	}
 
 	std::string packages;
 

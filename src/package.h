@@ -39,7 +39,7 @@ private:
 	bool findDependency(const std::string& search);
 	bool distroDetect();
 	bool distroDependencies();
-	std::string getPackageList();
+	std::optional<std::string> getPackageList();
 
 	Distro m_distro { Distro::Unsupported };
 };
