@@ -10,7 +10,25 @@ Config file and package tracking utility.
 - Store a list of all installed packages.
 - Install packages from a stored list.
 
-** Build instructions
+** Installation
+
+This package is available through the AUR, linked here [[https://aur.archlinux.org/packages/manafiles-git/][manafiles-git]].
+
+** Building
+
+*** Build requirements
+
++ ~gcc-libs~
++ (make) ~cmake~
++ (make) ~git~
++ (make) ~gzip~
++ (optional) ~grep~
++ (optional) ~pacman-contrib~
++ (optional) ~apt-cache~, ~apt-mark~, ~dpkg-query~
+
+The optional requirements are for the package tracking functionality.
+
+*** Build instructions
 
 #+BEGIN_SRC shell-script
 $ mkdir build
@@ -19,7 +37,7 @@ $ cmake ..
 $ make
 #+END_SRC
 
-** Installation
+*** Build installation
 
 #+BEGIN_SRC shell-script
 $ sudo make install
