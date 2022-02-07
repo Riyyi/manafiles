@@ -11,9 +11,11 @@
 #include <string>
 #include <vector>
 
-class Package {
+#include "util/singleton.h"
+
+class Package : public Util::Singleton<Package> {
 public:
-	Package();
+	Package(s);
 	virtual ~Package();
 
 	enum class Distro {

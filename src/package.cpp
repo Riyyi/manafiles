@@ -20,7 +20,7 @@
 #include "util/shell.h"
 #include "util/system.h"
 
-Package::Package()
+Package::Package(s)
 {
 }
 

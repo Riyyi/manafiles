@@ -83,19 +83,17 @@ int main(int argc, const char* argv[])
 		}
 	}
 	else if (packageOperation) {
-		Package package;
-
 		if (addOrAur) {
-			package.aurInstall();
+			Package::the().aurInstall();
 		}
 		if (install) {
-			package.install();
+			Package::the().install();
 		}
 		if (pushOrStore) {
-			package.store();
+			Package::the().store();
 		}
 		if (!addOrAur && !install && !pushOrStore) {
-			package.list(targets);
+			Package::the().list(targets);
 		}
 	}
 	else if (helpOperation) {
