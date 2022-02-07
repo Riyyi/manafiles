@@ -21,8 +21,6 @@
 #include "util/file.h"
 
 Dotfile::Dotfile(s)
-	: m_workingDirectory(std::filesystem::current_path())
-	, m_workingDirectorySize(m_workingDirectory.string().size())
 {
 }
 
@@ -82,18 +80,18 @@ void Dotfile::add(const std::vector<std::string>& targets)
 
 void Dotfile::list(const std::vector<std::string>& targets)
 {
-	if (m_workingDirectory.empty()) {
+	if (Config::the().workingDirectory().empty()) {
 		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is unset\n");
 		return;
 	}
 
-	if (!std::filesystem::is_directory(m_workingDirectory)) {
+	if (!std::filesystem::is_directory(Config::the().workingDirectory())) {
 		fprintf(stderr, "\033[31;1mDotfile:\033[0m working directory is not a directory\n");
 		return;
 	}
 
-	forEachDotfile(targets, [this](std::filesystem::directory_entry path, size_t) {
-		printf("%s\n", path.path().c_str() + m_workingDirectorySize + 1);
+	forEachDotfile(targets, [](std::filesystem::directory_entry path, size_t) {
+		printf("%s\n", path.path().c_str() + Config::the().workingDirectorySize() + 1);
 	});
 }
 
@@ -129,33 +127,33 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 	if (type == SyncType::Pull) {
 		sync(
 			type, dotfiles, homeIndices, systemIndices,
-			[this](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+			[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 				// homeFile = /home/<user>/dotfiles/<file>
 			    // copy: /home/<user>/<file>  ->  /home/<user>/dotfiles/<file>
-				paths[0] = homeDirectory + homeFile.substr(m_workingDirectorySize);
+				paths[0] = homeDirectory + homeFile.substr(Config::the().workingDirectorySize());
 				paths[1] = homeFile;
 			},
-			[this](std::string* paths, const std::string& systemFile) {
+			[](std::string* paths, const std::string& systemFile) {
 				// systemFile = /home/<user>/dotfiles/<file>
 			    // copy: <file>  ->  /home/<user>/dotfiles/<file>
-				paths[0] = systemFile.substr(m_workingDirectorySize);
+				paths[0] = systemFile.substr(Config::the().workingDirectorySize());
 				paths[1] = systemFile;
 			});
 	}
 	else {
 		sync(
 			type, dotfiles, homeIndices, systemIndices,
-			[this](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
+			[](std::string* paths, const std::string& homeFile, const std::string& homeDirectory) {
 				// homeFile = /home/<user>/dotfiles/<file>
 			    // copy: /home/<user>/dotfiles/<file>  ->  /home/<user>/<file>
 				paths[0] = homeFile;
-				paths[1] = homeDirectory + homeFile.substr(m_workingDirectorySize);
+				paths[1] = homeDirectory + homeFile.substr(Config::the().workingDirectorySize());
 			},
-			[this](std::string* paths, const std::string& systemFile) {
+			[](std::string* paths, const std::string& systemFile) {
 				// systemFile = /home/<user>/dotfiles/<file>
 			    // copy: /home/<user>/dotfiles/<file>  ->  <file>
 				paths[0] = systemFile;
-				paths[1] = systemFile.substr(m_workingDirectorySize);
+				paths[1] = systemFile.substr(Config::the().workingDirectorySize());
 			});
 	}
 }
@@ -169,7 +167,7 @@ void Dotfile::sync(SyncType type,
 	if (!systemIndices.empty() && !root) {
 		for (size_t i : systemIndices) {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m need root privileges to copy system file '%s'\n",
-			        paths.at(i).c_str() + m_workingDirectorySize);
+			        paths.at(i).c_str() + Config::the().workingDirectorySize());
 		}
 		return;
 	}
@@ -342,7 +340,7 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback)
 {
 	size_t index = 0;
-	for (const auto& path : std::filesystem::recursive_directory_iterator { m_workingDirectory }) {
+	for (const auto& path : std::filesystem::recursive_directory_iterator { Config::the().workingDirectory() }) {
 		if (path.is_directory() || filter(path)) {
 			continue;
 		}
@@ -357,12 +355,12 @@ bool Dotfile::filter(const std::filesystem::path& path)
 {
 	for (auto& excludePath : m_excludePaths) {
 		if (excludePath.type == ExcludeType::File) {
-			if (path.string() == m_workingDirectory / excludePath.path) {
+			if (path.string() == Config::the().workingDirectory() / excludePath.path) {
 				return true;
 			}
 		}
 		else if (excludePath.type == ExcludeType::Directory) {
-			if (path.string().find(m_workingDirectory / excludePath.path) == 0) {
+			if (path.string().find(Config::the().workingDirectory() / excludePath.path) == 0) {
 				return true;
 			}
 		}
@@ -379,7 +377,7 @@ bool Dotfile::filter(const std::filesystem::path& path)
 bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::string>& targets)
 {
 	for (const auto& target : targets) {
-		if (path.string().find(m_workingDirectory / target) == 0) {
+		if (path.string().find(Config::the().workingDirectory() / target) == 0) {
 			return true;
 		}
 	}
@@ -396,7 +394,7 @@ bool Dotfile::isSystemTarget(const std::string& target)
 		}
 		// FIXME: The second filesystem::path cant have a "/" as the first character,
 		//        as it will think the path is at the root.
-		if (target.find(m_workingDirectory.string() + systemDirectory.string()) == 0) {
+		if (target.find(Config::the().workingDirectory().string() + systemDirectory.string()) == 0) {
 			return true;
 		}
 	}

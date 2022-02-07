@@ -10,6 +10,7 @@
 #include <unistd.h> // geteuid, setegid, seteuid
 #include <vector>
 
+#include "config.h"
 #include "dotfile.h"
 #include "machine.h"
 #include "macro.h"
@@ -329,8 +330,8 @@ TEST_CASE(AddSystemDotfiles)
 	EXPECT(std::filesystem::exists("etc/group"));
 	EXPECT(std::filesystem::exists("usr/lib/os-release"));
 
-	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "etc");
-	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "usr");
+	std::filesystem::remove_all(Config::the().workingDirectory() / "etc");
+	std::filesystem::remove_all(Config::the().workingDirectory() / "usr");
 }
 
 TEST_CASE(PullSystemDotfiles)
@@ -344,8 +345,8 @@ TEST_CASE(PullSystemDotfiles)
 	Dotfile::the().setSystemDirectories({});
 
 	Util::File lhs("/etc/group");
-	Util::File rhs(Dotfile::the().workingDirectory() / "etc/group");
+	Util::File rhs(Config::the().workingDirectory() / "etc/group");
 	EXPECT_EQ(lhs.data(), rhs.data());
 
-	std::filesystem::remove_all(Dotfile::the().workingDirectory() / "etc");
+	std::filesystem::remove_all(Config::the().workingDirectory() / "etc");
 }
