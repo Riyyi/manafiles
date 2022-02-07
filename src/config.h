@@ -24,10 +24,14 @@ public:
 	bool verbose() const { return m_verbose; }
 
 private:
+	void findConfigFile();
+
 	bool m_verbose { false };
 
 	std::filesystem::path m_workingDirectory {};
 	size_t m_workingDirectorySize { 0 };
+
+	std::filesystem::path m_config;
 };
 
 #endif // CONFIG_H
