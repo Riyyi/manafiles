@@ -25,24 +25,10 @@ public:
 		Push,
 	};
 
-	enum class ExcludeType {
-		File,
-		Directory,
-		EndsWith,
-	};
-
-	struct ExcludePath {
-		ExcludeType type;
-		std::string path;
-	};
-
 	void add(const std::vector<std::string>& targets = {});
 	void list(const std::vector<std::string>& targets = {});
 	void pull(const std::vector<std::string>& targets = {});
 	void push(const std::vector<std::string>& targets = {});
-
-	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_systemDirectories = systemDirectories; }
-	void setExcludePaths(const std::vector<ExcludePath>& excludePaths) { m_excludePaths = excludePaths; }
 
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
@@ -56,9 +42,6 @@ private:
 	bool filter(const std::filesystem::path& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 	bool isSystemTarget(const std::string& target);
-
-	std::vector<ExcludePath> m_excludePaths;
-	std::vector<std::filesystem::path> m_systemDirectories;
 };
 
 #endif // DOTFILE_H

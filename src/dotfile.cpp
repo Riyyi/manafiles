@@ -353,19 +353,19 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 
 bool Dotfile::filter(const std::filesystem::path& path)
 {
-	for (auto& excludePath : m_excludePaths) {
-		if (excludePath.type == ExcludeType::File) {
-			if (path.string() == Config::the().workingDirectory() / excludePath.path) {
+	for (auto& excludePath : Config::the().excludePaths()) {
+		if (excludePath.second == "file") {
+			if (path.string() == Config::the().workingDirectory() / excludePath.first) {
 				return true;
 			}
 		}
-		else if (excludePath.type == ExcludeType::Directory) {
-			if (path.string().find(Config::the().workingDirectory() / excludePath.path) == 0) {
+		else if (excludePath.second == "directory") {
+			if (path.string().find(Config::the().workingDirectory() / excludePath.first) == 0) {
 				return true;
 			}
 		}
-		else if (excludePath.type == ExcludeType::EndsWith) {
-			if (path.string().find(excludePath.path) == path.string().size() - excludePath.path.size()) {
+		else if (excludePath.second == "endsWith") {
+			if (path.string().find(excludePath.first) == path.string().size() - excludePath.first.size()) {
 				return true;
 			}
 		}
@@ -387,7 +387,7 @@ bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::
 
 bool Dotfile::isSystemTarget(const std::string& target)
 {
-	for (const auto& systemDirectory : m_systemDirectories) {
+	for (const auto& systemDirectory : Config::the().systemDirectories()) {
 
 		if (target.find(systemDirectory) == 0) {
 			return true;

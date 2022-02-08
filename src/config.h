@@ -37,6 +37,8 @@ public:
 	Config(s);
 	virtual ~Config();
 
+	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_settings.systemDirectories = systemDirectories; }
+	void setExcludePaths(const std::map<std::string, std::string>& excludePaths) { m_settings.excludePaths = excludePaths; }
 	void setVerbose(bool verbose) { m_verbose = verbose; }
 
 	const std::map<std::string, std::string>& excludePaths() const { return m_settings.excludePaths; }

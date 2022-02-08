@@ -54,21 +54,6 @@ int main(int argc, const char* argv[])
 	Config::the().setVerbose(verbose);
 
 	if (fileOperation) {
-		Dotfile::the().setExcludePaths({
-			{ Dotfile::ExcludeType::File, "dotfiles.sh" },
-			{ Dotfile::ExcludeType::File, "packages" },
-			{ Dotfile::ExcludeType::EndsWith, ".md" },
-			{ Dotfile::ExcludeType::EndsWith, "README.org" },
-			{ Dotfile::ExcludeType::Directory, ".git" },
-			{ Dotfile::ExcludeType::File, "screenshot.png" },
-
-			{ Dotfile::ExcludeType::Directory, ".cache" },
-			{ Dotfile::ExcludeType::Directory, "CMakeFiles" },
-			{ Dotfile::ExcludeType::Directory, "cppcheck-cppcheck-build-dir" },
-		});
-
-		Dotfile::the().setSystemDirectories({ "/boot", "/etc", "/usr/share" });
-
 		if (addOrAur) {
 			Dotfile::the().add(targets);
 		}

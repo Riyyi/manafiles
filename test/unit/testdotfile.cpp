@@ -209,13 +209,13 @@ TEST_CASE(PushDotfilesWithExcludePath)
 
 	createTestDotfiles(fileNames, { "", "", "", "" });
 
-	Dotfile::the().setExcludePaths({
-		{ Dotfile::ExcludeType::File, "__test-file-1" },
-		{ Dotfile::ExcludeType::Directory, "__subdir" },
-		{ Dotfile::ExcludeType::EndsWith, ".test" },
+	Config::the().setExcludePaths({
+		{ "__test-file-1", "file" },
+		{ "__subdir", "directory" },
+		{ ".test", "endsWith" },
 	});
 	Dotfile::the().push(fileNames);
-	Dotfile::the().setExcludePaths({});
+	Config::the().setExcludePaths({});
 
 	for (const auto& file : fileNames) {
 		EXPECT(!std::filesystem::exists(homeDirectory / file));
@@ -323,9 +323,9 @@ TEST_CASE(AddSystemDotfiles)
 {
 	VERIFY(geteuid() == 0, return);
 
-	Dotfile::the().setSystemDirectories({ "/etc", "/usr/lib" });
+	Config::the().setSystemDirectories({ "/etc", "/usr/lib" });
 	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
-	Dotfile::the().setSystemDirectories({});
+	Config::the().setSystemDirectories({});
 
 	EXPECT(std::filesystem::exists("etc/group"));
 	EXPECT(std::filesystem::exists("usr/lib/os-release"));
@@ -340,9 +340,9 @@ TEST_CASE(PullSystemDotfiles)
 
 	createTestDotfiles({ "etc/group" }, { "" }, true);
 
-	Dotfile::the().setSystemDirectories({ "/etc" });
+	Config::the().setSystemDirectories({ "/etc" });
 	Dotfile::the().pull({ "etc/group" });
-	Dotfile::the().setSystemDirectories({});
+	Config::the().setSystemDirectories({});
 
 	Util::File lhs("/etc/group");
 	Util::File rhs(Config::the().workingDirectory() / "etc/group");
