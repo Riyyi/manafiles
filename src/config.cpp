@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <csignal> // raise
+#include <cstdio>  // fprintf
+#include <fstream> // ifstream
 #include <string>
+#include <vector>
+
+#include "nlohmann/json.hpp"
 
 #include "config.h"
 
@@ -13,6 +19,7 @@ Config::Config(s)
 	, m_workingDirectorySize(m_workingDirectory.string().size())
 {
 	findConfigFile();
+	parseConfigFile();
 }
 
 Config::~Config()
@@ -35,4 +42,58 @@ void Config::findConfigFile()
 #ifndef NDEBUG
 	printf("Found config file @ %s\n", m_config.c_str() + m_workingDirectorySize + 1);
 #endif
+}
+
+void Config::parseConfigFile()
+{
+	if (m_config.empty()) {
+		return;
+	}
+
+	nlohmann::json json;
+
+	std::ifstream file(m_config);
+	if (!file.is_open()) {
+		return;
+	}
+
+	try {
+		file >> json;
+	}
+	catch (...) {
+		fprintf(stderr, "\033[31;1mConfig:\033[0m json syntax error\n");
+		raise(SIGABRT);
+		return;
+	}
+
+	m_settings = json.get<Settings>();
+}
+
+// -----------------------------------------
+
+void to_json(nlohmann::json& object, const Settings& settings)
+{
+	object = nlohmann::json {
+		{ "excludePaths", settings.excludePaths },
+		{ "systemDirectories", settings.systemDirectories }
+	};
+}
+
+void from_json(const nlohmann::json& object, Settings& settings)
+{
+	if (object.find("excludePaths") != object.end()) {
+		object.at("excludePaths").get_to(settings.excludePaths);
+	}
+
+	if (object.find("systemDirectories") != object.end()) {
+		object.at("systemDirectories").get_to(settings.systemDirectories);
+	}
+
+	// Check for correct exclude type values
+	for (const auto& path : settings.excludePaths) {
+		if (path.second != "file" && path.second != "directory" && path.second != "endsWith") {
+			fprintf(stderr, "\033[31;1mConfig:\033[0m invalid exclude type '%s'\n", path.second.c_str());
+			raise(SIGABRT);
+		}
+	}
 }
