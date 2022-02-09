@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <csignal> // raise
-#include <cstdio>  // fprintf
-#include <fstream> // ifstream
+#include <csignal>    // raise
+#include <cstdio>     // fprintf
+#include <filesystem> // current_path, recursive_directory
+#include <fstream>    // ifstream
 #include <string>
 #include <vector>
 
