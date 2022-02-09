@@ -56,7 +56,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(
 	"src"
 	"test"
-	"vendor/json/include"
 )
 
 # Define source files
