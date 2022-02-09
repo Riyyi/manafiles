@@ -1,0 +1,14 @@
+{
+	"excludePaths" : {
+		".git": "directory",
+		".md": "endsWith",
+		"packages": "file",
+		"README.org": "endsWith",
+		"screenshot.png": "file"
+	},
+	"systemDirectories": [
+		"/boot",
+		"/etc",
+		"/usr/share"
+	]
+}
