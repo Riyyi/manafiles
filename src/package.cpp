@@ -207,7 +207,6 @@ bool Package::distroDependencies()
 		dependencies.push_back({ "dpkg-query", "dpkg" });
 	}
 
-	Util::System $;
 	for (const auto& dependency : dependencies) {
 		if (!findDependency(dependency.at(0))) {
 			fprintf(stderr, "\033[31;1mPackage:\033[0m required dependency '%s' is missing\n", dependency.at(1).c_str());
