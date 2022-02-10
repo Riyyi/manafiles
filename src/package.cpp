@@ -96,7 +96,7 @@ std::optional<std::string> Package::fetchAurHelper()
 		"trizen",
 	};
 
-	for(const auto& helper : helpers) {
+	for (const auto& helper : helpers) {
 		if (findDependency(helper)) {
 			return { helper };
 		}
@@ -112,15 +112,14 @@ void Package::installOrAurInstall(InstallType type)
 
 	std::optional<std::string> aurHelper;
 	if (type == InstallType::AurInstall) {
-		if (m_distro == Distro::Arch) {
-			aurHelper = fetchAurHelper();
-			if (!aurHelper.has_value()) {
-				fprintf(stderr, "\033[31;1mPackage:\033[0m no supported AUR helper found\n");
-				return;
-			}
-		}
-		else {
+		if (m_distro != Distro::Arch) {
 			fprintf(stderr, "\033[31;1mPackage:\033[0m AUR is not supported on this distribution\n");
+			return;
+		}
+
+		aurHelper = fetchAurHelper();
+		if (!aurHelper.has_value()) {
+			fprintf(stderr, "\033[31;1mPackage:\033[0m no supported AUR helper found\n");
 			return;
 		}
 	}
