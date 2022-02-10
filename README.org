@@ -10,43 +10,61 @@ Config file and package tracking utility.
 - Store a list of all installed packages.
 - Install packages from a stored list.
 
-** Installation
+** Getting started
 
-This package is available through the AUR, linked here [[https://aur.archlinux.org/packages/manafiles-git/][manafiles-git]].
+*** Installation
 
-** Building
+If you are using *Arch Linux*, you can install the AUR package [[https://aur.archlinux.org/packages/manafiles-git/][manafiles-git]].
 
-*** Build requirements
+Alternatively, you will have to [[#building][build from source]].
 
-- ~gcc-libs~
-- (make) ~cmake~
-- (make) ~git~
-- (make) ~gzip~
-- (make) ~nlohmann-json~ [[https://archlinux.org/packages/community/any/nlohmann-json/][arch]], [[https://packages.debian.org/search?keywords=nlohmann-json][debian]], [[https://packages.ubuntu.com/search?keywords=nlohmann-json][ubuntu]]
-- (optional) ~grep~
-- (optional) ~pacman~ + ~pacman-contrib~
-- (optional) ~apt~ + ~dpkg~
+*** Configuration
 
-The optional requirements are for the package tracking functionality.
+**** Install the example configuration
 
-*** Build instructions
+During installation, manafiles will install the example config to: \\
+~/usr/share/doc/manafiles/examples/manafiles.json~
 
-#+BEGIN_SRC shell-script
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
+From there you can copy it to anywhere in the working directory,
+the config file is searched recursively. \\
+~$HOME/<dotfiles>/<anywhere>~
+
+**** Exclude paths
+
+Everything in this list will get excluded when pushing config files from the working directory to the system. \\
+Currently three types of file matching are supported:
+
+- ~file~ full name of the file matches
+- ~directory~ full name of the directory matches
+- ~endsWith~ end of the path matches
+
+The excluded paths from the example config:
+#+BEGIN_SRC javascript
+"excludePaths" : {
+	".git": "directory",
+	".md": "endsWith",
+	"packages": "file",
+	"README.org": "endsWith",
+	"screenshot.png": "file"
+}
 #+END_SRC
 
-*** Build installation
+**** System config files
 
-#+BEGIN_SRC shell-script
-$ sudo make install
+Directories in this list will be pushed to the root ~/~ of the system, instead of ~$HOME~.
+
+The system directories from the example config:
+#+BEGIN_SRC javascript
+"systemDirectories": [
+	"/boot",
+	"/etc",
+	"/usr/share"
+]
 #+END_SRC
 
-** Usage
+*** Usage
 
-*** Selectively comment and uncomment
+**** Selectively comment and uncomment
 
 Config files can be pushed from the working directory to the system like so:
 
@@ -71,5 +89,32 @@ If *all* of the given configurations match, manafiles will make sure that the
 contents of the block are uncommented. If *any* of them do *not* match, then
 manafiles will make sure that the contents of the block are commented.
 
-*** COMMENT System config files
-*** COMMENT Exclude paths
+** Building
+
+*** Build dependencies
+
+- ~gcc-libs~
+- (make) ~cmake~
+- (make) ~git~
+- (make) ~gzip~
+- (make) ~nlohmann-json~ [[https://archlinux.org/packages/community/any/nlohmann-json/][arch]], [[https://packages.debian.org/search?keywords=nlohmann-json][debian]], [[https://packages.ubuntu.com/search?keywords=nlohmann-json][ubuntu]]
+- (optional) ~grep~
+- (optional) ~pacman~ + ~pacman-contrib~
+- (optional) ~apt~ + ~dpkg~
+
+The optional requirements are for the package tracking functionality.
+
+*** Build compilation
+
+#+BEGIN_SRC shell-script
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+#+END_SRC
+
+*** Build installation
+
+#+BEGIN_SRC shell-script
+$ sudo make install
+#+END_SRC
