@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstdio> // stderr
-#include <filesystem>
+#include <cstddef>    // size_t
+#include <cstdint>    // uint32_t
+#include <cstdio>     // stderr
+#include <filesystem> // path
 #include <string>
 #include <unistd.h> // geteuid, setegid, seteuid
 #include <vector>
@@ -226,15 +228,10 @@ TEST_CASE(PushDotfilesWithExcludePath)
 
 TEST_CASE(PushDotfilesSelectivelyComment)
 {
-	std::vector<std::string> fileNames = {
-		"__test-file-1",
-		"__test-file-2",
-		"__test-file-3",
-		"__test-file-4",
-		"__test-file-5",
-		"__test-file-6",
-		"__test-file-7",
-	};
+	std::vector<std::string> fileNames;
+	for (size_t i = 0; i < 36; ++i) {
+		fileNames.push_back( "__test-file-" + std::to_string(i + 1));
+	}
 
 	auto distro = Machine::the().distroId();
 	auto hostname = Machine::the().hostname();
@@ -242,64 +239,338 @@ TEST_CASE(PushDotfilesSelectivelyComment)
 	std::string placeholder = "@@@@";
 
 	std::vector<std::string> fileContents = {
+		// Untouched #
 		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
-# this should be uncommented
+test data # untouched
 # <<<
 )",
-		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
-# this should remain commented
-# <<<
-)",
-		"# >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
-# this should remain commented
-# <<<
-)",
-		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
-this should be commented
-# <<<
-)",
-		"  # >>> distro=" + distro + R"(
-  # this should be uncommented
+		"  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data # untouched
   # <<<
 )",
-		"	# >>> user=" + username + R"(
-	# this should be uncommented
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data # untouched
 	# <<<
 )",
-		"	  # >>> hostname=" + hostname + R"(
-	  this should remain uncommented
+		"	  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data # untouched
 	  # <<<
+)",
+
+		// Comment #
+		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+test data # comment
+# <<<
+)",
+		"  # >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+  test data # comment
+  # <<<
+)",
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+	test data # comment
+	# <<<
+)",
+		"	  # >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+	  test data # comment
+	  # <<<
+)",
+
+		// Uncomment #
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+# test data # uncomment
+# <<<
+)",
+		"  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  #  test data # uncomment
+  # <<<
+)",
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	#	test data # uncomment
+	# <<<
+)",
+		"	  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  #	  test data # uncomment
+	  # <<<
+)",
+
+		// -----------------------------------------
+
+		// Untouched //
+		"// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+test data // untouched
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data // untouched
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data // untouched
+	// <<<
+)",
+		"	  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data // untouched
+	  // <<<
+)",
+
+		// Comment //
+		"// >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+test data // comment
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+  test data // comment
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+	test data // comment
+	// <<<
+)",
+		"	  // >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+	  test data // comment
+	  // <<<
+)",
+
+		// Uncomment //
+		"// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+// test data // uncomment
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  //  test data // uncomment
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	//	test data // uncomment
+	// <<<
+)",
+		"	  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  //	  test data // uncomment
+	  // <<<
+)",
+
+		// -----------------------------------------
+
+		// Untouched /**/
+		"/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+test data /**/ untouched
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+  test data /**/ untouched
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	test data /**/ untouched
+	/* <<< */
+)",
+		"	  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  test data /**/ untouched
+	  /* <<< */
+)",
+
+		// Comment /**/
+		"/* >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " */" + R"(
+test data /**/ comment
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + " */" + R"(
+  test data /**/ comment
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + " */" + R"(
+	test data /**/ comment
+	/* <<< */
+)",
+		"	  /* >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  test data /**/ comment
+	  /* <<< */
+)",
+
+		// Uncomment /**/
+		"/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+/* test data /**/ uncomment */
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+  /*  test data /**/ uncomment  */
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	/*	test data /**/ uncomment	*/
+	/* <<< */
+)",
+		"	  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  /*	  test data /**/ uncomment	  */
+	  /* <<< */
 )",
 	};
 
 	std::vector<std::string> pushedFileContents = {
+		// Untouched #
 		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
-this should be uncommented
+test data # untouched
 # <<<
 )",
-		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
-# this should remain commented
-# <<<
-)",
-		"# >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
-# this should remain commented
-# <<<
-)",
-		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
-# this should be commented
-# <<<
-)",
-		"  # >>> distro=" + distro + R"(
-  this should be uncommented
+		"  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data # untouched
   # <<<
 )",
-		"	# >>> user=" + username + R"(
-	this should be uncommented
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data # untouched
 	# <<<
 )",
-		"	  # >>> hostname=" + hostname + R"(
-	  this should remain uncommented
+		"	  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data # untouched
 	  # <<<
+)",
+
+		// Comment #
+		"# >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+# test data # comment
+# <<<
+)",
+		"  # >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+  # test data # comment
+  # <<<
+)",
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+	# test data # comment
+	# <<<
+)",
+		"	  # >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+	  # test data # comment
+	  # <<<
+)",
+
+		// Uncomment #
+		"# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+test data # uncomment
+# <<<
+)",
+		"  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data # uncomment
+  # <<<
+)",
+		"	# >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data # uncomment
+	# <<<
+)",
+		"	  # >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data # uncomment
+	  # <<<
+)",
+
+		// -----------------------------------------
+
+		// Untouched //
+		"// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+test data // untouched
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data // untouched
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data // untouched
+	// <<<
+)",
+		"	  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data // untouched
+	  // <<<
+)",
+
+		// Comment //
+		"// >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+// test data // comment
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + R"(
+  // test data // comment
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + R"(
+	// test data // comment
+	// <<<
+)",
+		"	  // >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + R"(
+	  // test data // comment
+	  // <<<
+)",
+
+		// Uncomment //
+		"// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+test data // uncomment
+// <<<
+)",
+		"  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+  test data // uncomment
+  // <<<
+)",
+		"	// >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	test data // uncomment
+	// <<<
+)",
+		"	  // >>> distro=" + distro + " hostname=" + hostname + " user=" + username + R"(
+	  test data // uncomment
+	  // <<<
+)",
+
+		// -----------------------------------------
+
+		// Untouched /**/
+		"/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+test data /**/ untouched
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+  test data /**/ untouched
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	test data /**/ untouched
+	/* <<< */
+)",
+		"	  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  test data /**/ untouched
+	  /* <<< */
+)",
+
+		// Comment /**/
+		"/* >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " */" + R"(
+/* test data /**/ comment */
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + " */" + R"(
+  /* test data /**/ comment */
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + " */" + R"(
+	/* test data /**/ comment */
+	/* <<< */
+)",
+		"	  /* >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  /* test data /**/ comment */
+	  /* <<< */
+)",
+
+		// Uncomment /**/
+		"/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+test data /**/ uncomment
+/* <<< */
+)",
+		"  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+  test data /**/ uncomment
+  /* <<< */
+)",
+		"	/* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	test data /**/ uncomment
+	/* <<< */
+)",
+		"	  /* >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " */" + R"(
+	  test data /**/ uncomment
+	  /* <<< */
 )",
 	};
 
