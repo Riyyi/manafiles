@@ -254,12 +254,15 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 	bool isFiltering = false;
 	std::string filter[3];
 	std::string commentCharacter;
+	std::string commentTerminationCharacter;
 	size_t positionInFile = 0;
 
 	auto commentOrUncommentLine = [&](std::string& line, bool addComment) {
 		size_t lineLength = line.size();
-		size_t whiteSpaceBeforeComment = line.find_first_of(commentCharacter);
-		size_t contentAfterComment = line.find_first_not_of(commentCharacter + " \t");
+		size_t whiteSpaceBeforeComment = line.find_first_not_of(" \t");
+		size_t contentAfterComment = line.find_first_not_of(" \t" + commentCharacter);
+		// NOTE: The +1 is needed to take the newline into account
+		size_t contentLength = lineLength + 1 - contentAfterComment - (lineLength - line.find_last_not_of(" \t" + commentTerminationCharacter));
 
 		// If there was no comment, grab whitespace correctly
 		if (whiteSpaceBeforeComment == std::string::npos) {
@@ -268,12 +271,13 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 
 		if (!addComment) {
 			line = line.substr(0, whiteSpaceBeforeComment)
-			       + line.substr(contentAfterComment);
+			       + line.substr(contentAfterComment, contentLength);
 		}
 		else {
 			line = line.substr(0, whiteSpaceBeforeComment)
 			       + commentCharacter + ' '
-			       + line.substr(contentAfterComment);
+			       + line.substr(contentAfterComment, contentLength)
+			       + (!commentTerminationCharacter.empty() ? ' ' + commentTerminationCharacter : "");
 		}
 
 		dotfile.replace(positionInFile, lineLength, line);
@@ -296,6 +300,11 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 			// Get the characters used for commenting in this file-type
 			commentCharacter = line.substr(0, line.find_first_of(">>>"));
 			for (size_t i = commentCharacter.size() - 1; i != std::string::npos; --i) {
+				// Support for /* C-style comments */
+				if (i > 0 && commentCharacter.at(i - 1) == '/' && commentCharacter.at(i) == '*') {
+					commentTerminationCharacter = "*/";
+				}
+				// NOTE: Modification of the string should be at the end of the iteration to prevent 'out of range' errors
 				if (commentCharacter.at(i) == ' ' || commentCharacter.at(i) == '\t') {
 					commentCharacter.erase(i, 1);
 				}
@@ -311,6 +320,7 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 			filter[1] = "";
 			filter[2] = "";
 			commentCharacter.clear();
+			commentTerminationCharacter.clear();
 			continue;
 		}
 
