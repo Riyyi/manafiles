@@ -64,13 +64,13 @@ void removeTestDotfiles(const std::vector<std::string>& files)
 		file = file.substr(0, file.find_first_of('/'));
 
 		// Delete recursively in working directory
-		if (std::filesystem::exists(file)) {
+		if (std::filesystem::exists(file) || std::filesystem::is_symlink(file)) {
 			std::filesystem::remove_all(file);
 		}
 
 		// Delete recursively in home directory
 		file = homeDirectory / file;
-		if (std::filesystem::exists(file)) {
+		if (std::filesystem::exists(file) || std::filesystem::is_symlink(file)) {
 			std::filesystem::remove_all(file);
 		}
 	}
