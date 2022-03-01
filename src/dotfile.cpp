@@ -195,7 +195,7 @@ void Dotfile::sync(SyncType type,
 
 		// Create directory for the file
 		std::error_code error;
-		if (std::filesystem::is_regular_file(from)) {
+		if (std::filesystem::is_regular_file(from) || std::filesystem::is_symlink(from)) {
 			auto directory = to.parent_path();
 			if (!directory.empty() && !std::filesystem::exists(directory)) {
 				if (Config::the().verbose()) {
