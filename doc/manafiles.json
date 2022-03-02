@@ -2,6 +2,7 @@
 	"excludePaths" : {
 		".git": "directory",
 		".md": "endsWith",
+		"manafiles.json": "endsWith",
 		"packages": "file",
 		"README.org": "endsWith",
 		"screenshot.png": "file"
