@@ -621,3 +621,58 @@ TEST_CASE(PullSystemDotfiles)
 
 	std::filesystem::remove_all(Config::the().workingDirectory() / "etc");
 }
+
+TEST_CASE(AddSymlinkDotfiles)
+{
+	std::filesystem::path fileInHome = homeDirectory / "__the-add-file";
+	std::filesystem::path symlinkFileName = "__the-add-symlink";
+	std::filesystem::path symlinkInHome = homeDirectory / symlinkFileName;
+
+	createTestDotfiles({ fileInHome }, { "the file contents" });
+	std::filesystem::create_symlink(fileInHome, symlinkInHome);
+
+	Dotfile::the().add({ symlinkInHome });
+
+	EXPECT(std::filesystem::is_symlink(symlinkFileName));
+	EXPECT_EQ(std::filesystem::read_symlink(symlinkFileName).string(), fileInHome);
+	EXPECT_EQ(Util::File(symlinkFileName).data(), "the file contents");
+
+	removeTestDotfiles({ symlinkInHome, fileInHome });
+}
+
+TEST_CASE(PullSymlinkDotfiles)
+{
+	std::filesystem::path fileInHome = homeDirectory / "__the-pull-file";
+	std::filesystem::path symlinkFileName = "__the-pull-symlink";
+	std::filesystem::path symlinkInHome = homeDirectory / symlinkFileName;
+
+	createTestDotfiles({ fileInHome }, { "the file contents" });
+	std::filesystem::create_symlink(fileInHome, symlinkInHome);
+	std::filesystem::create_symlink("doesnt-exist", symlinkFileName);
+
+	Dotfile::the().pull({ symlinkFileName });
+
+	EXPECT(std::filesystem::is_symlink(symlinkFileName));
+	EXPECT_EQ(std::filesystem::read_symlink(symlinkFileName).string(), fileInHome);
+	EXPECT_EQ(Util::File(symlinkFileName).data(), "the file contents");
+
+	removeTestDotfiles({ symlinkInHome, fileInHome });
+}
+
+TEST_CASE(PushSymlinkDotfiles)
+{
+	std::filesystem::path fileInHome = homeDirectory / "__the-push-file";
+	std::filesystem::path symlinkFileName = "__the-push-symlink";
+	std::filesystem::path symlinkInHome = homeDirectory / symlinkFileName;
+
+	createTestDotfiles({ fileInHome }, { "the file contents" });
+	std::filesystem::create_symlink(fileInHome, symlinkFileName);
+
+	Dotfile::the().push({ symlinkFileName });
+
+	EXPECT(std::filesystem::is_symlink(symlinkInHome));
+	EXPECT_EQ(std::filesystem::read_symlink(symlinkInHome).string(), fileInHome);
+	EXPECT_EQ(Util::File(symlinkInHome).data(), "the file contents");
+
+	removeTestDotfiles({ symlinkInHome, fileInHome });
+}
