@@ -173,7 +173,6 @@ void Dotfile::sync(SyncType type,
 	}
 
 	auto printError = [](const std::filesystem::path& path, const std::error_code& error) -> void {
-		// std::filesystem::copy doesnt respect 'overwrite_existing' for symlinks
 		if (error.value() && error.message() != "File exists") {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m '%s': %c%s\n",
 			        path.c_str(),
@@ -210,8 +209,17 @@ void Dotfile::sync(SyncType type,
 		if (Config::the().verbose()) {
 			printf("'%s' -> '%s'\n", from.c_str(), to.c_str());
 		}
-		std::filesystem::copy(from, to, copyOptions, error);
-		printError(to, error);
+		if (std::filesystem::is_symlink(from)) {
+			// NOTE: std::filesystem::copy doesnt respect 'overwrite_existing' for symlinks
+			std::filesystem::remove(to, error);
+			printError(to, error);
+			std::filesystem::copy_symlink(from, to, error);
+			printError(from, error);
+		}
+		else {
+			std::filesystem::copy(from, to, copyOptions, error);
+			printError(from, error);
+		}
 
 		if (homePath && root) {
 			seteuid(0);
