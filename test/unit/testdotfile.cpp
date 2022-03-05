@@ -27,7 +27,7 @@ const size_t homeDirectorySize = homeDirectory.string().size();
 
 void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents, bool asRoot = false)
 {
-	VERIFY(fileNames.size() == fileContents.size(), return);
+	EXPECT(fileNames.size() == fileContents.size(), return );
 
 	if (root && !asRoot) {
 		setegid(Machine::the().gid());
@@ -100,8 +100,8 @@ TEST_CASE(AddDotfiles)
 	Dotfile::the().add(fileNames);
 
 	for (const auto& file : fileNames) {
-		VERIFY(std::filesystem::exists(file), continue);
-		VERIFY(std::filesystem::exists(file.substr(homeDirectorySize + 1)), continue);
+		EXPECT(std::filesystem::exists(file), continue);
+		EXPECT(std::filesystem::exists(file.substr(homeDirectorySize + 1)), continue);
 
 		Util::File lhs(file);
 		Util::File rhs(file.substr(homeDirectorySize + 1));
@@ -156,8 +156,8 @@ TEST_CASE(PullDotfiles)
 	Dotfile::the().pull(fileNames);
 
 	for (size_t i = 0; i < fileNames.size(); ++i) {
-		VERIFY(std::filesystem::exists(homeFileNames.at(i)), continue);
-		VERIFY(std::filesystem::exists(fileNames.at(i)), continue);
+		EXPECT(std::filesystem::exists(homeFileNames.at(i)), continue);
+		EXPECT(std::filesystem::exists(fileNames.at(i)), continue);
 
 		Util::File lhs(homeFileNames.at(i));
 		Util::File rhs(fileNames.at(i));
@@ -189,8 +189,8 @@ TEST_CASE(PushDotfiles)
 	Dotfile::the().push(fileNames);
 
 	for (const auto& file : fileNames) {
-		VERIFY(std::filesystem::exists(file), continue);
-		VERIFY(std::filesystem::exists(homeDirectory / file), continue);
+		EXPECT(std::filesystem::exists(file), continue);
+		EXPECT(std::filesystem::exists(homeDirectory / file), continue);
 
 		Util::File lhs(file);
 		Util::File rhs(homeDirectory / file);
@@ -580,8 +580,8 @@ test data /**/ uncomment
 
 	for (size_t i = 0; i < fileNames.size(); ++i) {
 		const auto& file = fileNames.at(i);
-		VERIFY(std::filesystem::exists(file), continue);
-		VERIFY(std::filesystem::exists(homeDirectory / file), continue);
+		EXPECT(std::filesystem::exists(file), continue);
+		EXPECT(std::filesystem::exists(homeDirectory / file), continue);
 
 		Util::File lhs(homeDirectory / file);
 		EXPECT_EQ(lhs.data(), pushedFileContents.at(i));
@@ -592,7 +592,7 @@ test data /**/ uncomment
 
 TEST_CASE(AddSystemDotfiles)
 {
-	VERIFY(geteuid() == 0, return);
+	EXPECT(geteuid() == 0, return);
 
 	Config::the().setSystemDirectories({ "/etc", "/usr/lib" });
 	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
@@ -607,7 +607,7 @@ TEST_CASE(AddSystemDotfiles)
 
 TEST_CASE(PullSystemDotfiles)
 {
-	VERIFY(geteuid() == 0, return);
+	EXPECT(geteuid() == 0, return);
 
 	createTestDotfiles({ "etc/group" }, { "" }, true);
 
