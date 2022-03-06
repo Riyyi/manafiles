@@ -54,7 +54,7 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 	}
 }
 
-void removeTestDotfiles(const std::vector<std::string>& files)
+void removeTestDotfiles(const std::vector<std::string>& files, bool deleteInHome = true)
 {
 	for (auto file : files) {
 		// Get the top-level directory
@@ -66,6 +66,10 @@ void removeTestDotfiles(const std::vector<std::string>& files)
 		// Delete recursively in working directory
 		if (std::filesystem::exists(file) || std::filesystem::is_symlink(file)) {
 			std::filesystem::remove_all(file);
+		}
+
+		if (!deleteInHome) {
+			continue;
 		}
 
 		// Delete recursively in home directory
