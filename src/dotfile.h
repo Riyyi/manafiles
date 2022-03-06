@@ -30,6 +30,8 @@ public:
 	void pull(const std::vector<std::string>& targets = {});
 	void push(const std::vector<std::string>& targets = {});
 
+	bool filter(const std::filesystem::directory_entry& path);
+
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});
 	void sync(SyncType type,
@@ -39,7 +41,6 @@ private:
 	void selectivelyCommentOrUncomment(const std::string& path);
 
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
-	bool filter(const std::filesystem::directory_entry& path);
 	bool include(const std::filesystem::path& path, const std::vector<std::string>& targets);
 	bool isSystemTarget(const std::string& target);
 };
