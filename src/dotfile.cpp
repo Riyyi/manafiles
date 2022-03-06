@@ -115,8 +115,7 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
 	pathString = pathString.substr(cutFrom);
 
-	for (const auto& excludePathMapEntry : Config::the().excludePaths()) {
-		const auto& excludePath = excludePathMapEntry.first;
+	for (const auto& excludePath : Config::the().excludePaths()) {
 
 		if (pathString == excludePath) {
 			return true;

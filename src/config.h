@@ -9,7 +9,6 @@
 
 #include <cstddef>    // size_t
 #include <filesystem> // path
-#include <map>
 #include <string>
 #include <vector>
 
@@ -18,12 +17,13 @@
 #include "util/singleton.h"
 
 struct Settings {
-	std::map<std::string, std::string> excludePaths {
-		{ ".git", "directory" },
-		{ ".md", "endsWith" },
-		{ "packages", "file" },
-		{ "README.org", "endsWith" },
-		{ "screenshot.png", "file" },
+	std::vector<std::string> excludePaths {
+		".git/",
+		"*.md",
+		"manafiles.json",
+		"packages",
+		"README.org",
+		"screenshot.png",
 	};
 	std::vector<std::filesystem::path> systemDirectories {
 		"/boot",
@@ -38,10 +38,10 @@ public:
 	virtual ~Config();
 
 	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_settings.systemDirectories = systemDirectories; }
-	void setExcludePaths(const std::map<std::string, std::string>& excludePaths) { m_settings.excludePaths = excludePaths; }
+	void setExcludePaths(const std::vector<std::string>& excludePaths) { m_settings.excludePaths = excludePaths; }
 	void setVerbose(bool verbose) { m_verbose = verbose; }
 
-	const std::map<std::string, std::string>& excludePaths() const { return m_settings.excludePaths; }
+	const std::vector<std::string>& excludePaths() const { return m_settings.excludePaths; }
 	const std::vector<std::filesystem::path>& systemDirectories() const { return m_settings.systemDirectories; }
 
 	const std::filesystem::path& workingDirectory() const { return m_workingDirectory; }

@@ -31,23 +31,29 @@ the config file is searched recursively. \\
 
 **** Exclude paths
 
-Everything in this list will get excluded when pushing config files from the working directory to the system. \\
-Currently three types of file matching are supported:
+Everything in this list will get excluded when pulling/pushing config files from the working directory. \\
+Currently two types of file matching are supported:
 
-- ~file~ full name of the file matches
-- ~directory~ full name of the directory matches
-- ~endsWith~ end of the path matches
+- ~literal~ matches a file or directory literally
+- ~wildcard~ the asterisk matches zero or more characters
+
+These behave similarly to a ~.gitignore~ pattern.
+
+- If the pattern starts with a slash, it matches files and directories in the working directory root only.
+- If the pattern doesn’t start with a slash, it matches files and directories in any directory or subdirectory.
+- If the pattern ends with a slash, it matches only directories. When a directory is ignored, \\
+  all of its files and subdirectories are also ignored.
 
 The excluded paths from the example config:
 #+BEGIN_SRC javascript
-"excludePaths" : {
-	".git": "directory",
-	".md": "endsWith",
-	"manafiles.json": "endsWith",
-	"packages": "file",
-	"README.org": "endsWith",
-	"screenshot.png": "file"
-}
+"excludePaths" : [
+	".git/",
+	"*.md",
+	"manafiles.json",
+	"packages",
+	"README.org",
+	"screenshot.png"
+]
 #+END_SRC
 
 **** System config files

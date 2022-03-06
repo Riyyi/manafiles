@@ -1,12 +1,12 @@
 {
-	"excludePaths" : {
-		".git": "directory",
-		".md": "endsWith",
-		"manafiles.json": "endsWith",
-		"packages": "file",
-		"README.org": "endsWith",
-		"screenshot.png": "file"
-	},
+	"excludePaths" : [
+		".git/",
+		"*.md",
+		"manafiles.json",
+		"packages",
+		"README.org",
+		"screenshot.png"
+	],
 	"systemDirectories": [
 		"/boot",
 		"/etc",

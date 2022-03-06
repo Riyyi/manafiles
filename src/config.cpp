@@ -89,12 +89,4 @@ void from_json(const nlohmann::json& object, Settings& settings)
 	if (object.find("systemDirectories") != object.end()) {
 		object.at("systemDirectories").get_to(settings.systemDirectories);
 	}
-
-	// Check for correct exclude type values
-	for (const auto& path : settings.excludePaths) {
-		if (path.second != "file" && path.second != "directory" && path.second != "endsWith") {
-			fprintf(stderr, "\033[31;1mConfig:\033[0m invalid exclude type '%s'\n", path.second.c_str());
-			raise(SIGABRT);
-		}
-	}
 }

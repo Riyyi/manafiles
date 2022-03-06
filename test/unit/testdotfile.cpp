@@ -82,7 +82,7 @@ void removeTestDotfiles(const std::vector<std::string>& files, bool deleteInHome
 }
 
 void testDotfileFilters(const std::unordered_map<std::string, bool>& tests,
-                        const std::unordered_map<std::string, std::string>& testFilters)
+                        const std::vector<std::string>& testFilters)
 {
 	std::vector<std::string> fileNames;
 	std::vector<std::string> fileContents;
@@ -117,8 +117,8 @@ TEST_CASE(DotfilesLiteralIgnoreAllFiles)
 		{ "error.log", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "access.log", "" },
+	std::vector<std::string> testFilters = {
+		"access.log",
 	};
 
 	testDotfileFilters(tests, testFilters);
@@ -133,8 +133,8 @@ TEST_CASE(DotfilesLiteralIgnoreFileInRoot)
 		{ "error.log", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "/access.log", "" },
+	std::vector<std::string> testFilters = {
+		"/access.log",
 	};
 
 	testDotfileFilters(tests, testFilters);
@@ -147,14 +147,15 @@ TEST_CASE(DotfilesLiteralIgnoreDirectories)
 		{ "doc/build", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "build/", "" },
+	std::vector<std::string> testFilters = {
+		"build/",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllFilesWithExtension) {
+TEST_CASE(DotfilesWildcardIgnoreAllFilesWithExtension)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "error.log", true },
 		{ "logs/debug.log", true },
@@ -164,14 +165,15 @@ TEST_CASE(DotfilesWildcardIgnoreAllFilesWithExtension) {
 		{ "log.txt", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "*.log", "" },
+	std::vector<std::string> testFilters = {
+		"*.log",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllFilesInRootWithExtension) {
+TEST_CASE(DotfilesWildcardIgnoreAllFilesInRootWithExtension)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "error.log", true },
 		{ "logs/debug.log", false },
@@ -181,14 +183,15 @@ TEST_CASE(DotfilesWildcardIgnoreAllFilesInRootWithExtension) {
 		{ "log.txt", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "/*.log", "" },
+	std::vector<std::string> testFilters = {
+		"/*.log",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreFileWithAllExtensions) {
+TEST_CASE(DotfilesWildcardIgnoreFileWithAllExtensions)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "README.md", true },
 		{ "doc/README.org", true },
@@ -198,14 +201,15 @@ TEST_CASE(DotfilesWildcardIgnoreFileWithAllExtensions) {
 		{ "Config.org", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "README.*", "" },
+	std::vector<std::string> testFilters = {
+		"README.*",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllWithStartingPattern) {
+TEST_CASE(DotfilesWildcardIgnoreAllWithStartingPattern)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "cmake/uninstall.cmake.in", true },
 		{ "cmake/templates/template.cmake.in", true },
@@ -214,14 +218,15 @@ TEST_CASE(DotfilesWildcardIgnoreAllWithStartingPattern) {
 		{ "CMakeLists.txt", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "cmake*", "" },
+	std::vector<std::string> testFilters = {
+		"cmake*",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllInRootWithStartingPattern) {
+TEST_CASE(DotfilesWildcardIgnoreAllInRootWithStartingPattern)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "project-directory/README.org", true },
 		{ "project-directory/build/executable", true },
@@ -229,28 +234,30 @@ TEST_CASE(DotfilesWildcardIgnoreAllInRootWithStartingPattern) {
 		{ "doc/project-instructions.txt", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "/project*", "" },
+	std::vector<std::string> testFilters = {
+		"/project*",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllInDirectory) {
+TEST_CASE(DotfilesWildcardIgnoreAllInDirectory)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "build/x32/executable", true },
 		{ "build/x64/executable", true },
 		{ "build/executable", true },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "build/*", "" },
+	std::vector<std::string> testFilters = {
+		"build/*",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreFileInSubDirectory) {
+TEST_CASE(DotfilesWildcardIgnoreFileInSubDirectory)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "build/x32/executable", true },
 		{ "build/x64/executable", true },
@@ -259,14 +266,15 @@ TEST_CASE(DotfilesWildcardIgnoreFileInSubDirectory) {
 		{ "build/executable", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "build/*/executable", "" },
+	std::vector<std::string> testFilters = {
+		"build/*/executable",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllInSubDirectory) {
+TEST_CASE(DotfilesWildcardIgnoreAllInSubDirectory)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "build/x32/executable", true },
 		{ "build/x64/executable", true },
@@ -275,14 +283,15 @@ TEST_CASE(DotfilesWildcardIgnoreAllInSubDirectory) {
 		{ "build/executable", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "build/*/*", "" },
+	std::vector<std::string> testFilters = {
+		"build/*/*",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesWithStartingPattern) {
+TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesWithStartingPattern)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "include/header.h", true },
 		{ "include-dependency/header.h", true },
@@ -290,14 +299,15 @@ TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesWithStartingPattern) {
 		{ "src/include/header.h", true },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "include*/", "" },
+	std::vector<std::string> testFilters = {
+		"include*/",
 	};
 
 	testDotfileFilters(tests, testFilters);
 }
 
-TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesInRootWithStartingPattern) {
+TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesInRootWithStartingPattern)
+{
 	std::unordered_map<std::string, bool> tests = {
 		{ "include/header.h", true },
 		{ "include-dependency/header.h", true },
@@ -305,8 +315,8 @@ TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesInRootWithStartingPattern) {
 		{ "src/include/header.h", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "/include*/", "" },
+	std::vector<std::string> testFilters = {
+		"/include*/",
 	};
 
 	testDotfileFilters(tests, testFilters);
@@ -321,8 +331,8 @@ TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesWithEndingPattern)
 		{ "src/include/header.h", true },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "*include/", "" },
+	std::vector<std::string> testFilters = {
+		"*include/",
 	};
 
 	testDotfileFilters(tests, testFilters);
@@ -337,8 +347,8 @@ TEST_CASE(DotfilesWildcardIgnoreAllDirectoriesInRootWithEndingPattern)
 		{ "src/include/header.h", false },
 	};
 
-	std::unordered_map<std::string, std::string> testFilters = {
-		{ "/*include/", "" },
+	std::vector<std::string> testFilters = {
+		"/*include/",
 	};
 
 	testDotfileFilters(tests, testFilters);
@@ -478,9 +488,9 @@ TEST_CASE(PushDotfilesWithExcludePath)
 	createTestDotfiles(fileNames, { "", "", "", "" });
 
 	Config::the().setExcludePaths({
-		{ "__test-file-1", "file" },
-		{ "__subdir/", "directory" },
-		{ "*.test", "endsWith" },
+		"__test-file-1",
+		"__subdir/",
+		"*.test",
 	});
 	Dotfile::the().push(fileNames);
 	Config::the().setExcludePaths({});
