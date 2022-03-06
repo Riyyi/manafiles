@@ -106,6 +106,132 @@ void Dotfile::push(const std::vector<std::string>& targets)
 	pullOrPush(SyncType::Push, targets);
 }
 
+bool Dotfile::filter(const std::filesystem::directory_entry& path)
+{
+	std::string pathString = path.path().string();
+	assert(pathString.front() == '/');
+
+	// Cut off working directory
+	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
+	pathString = pathString.substr(cutFrom);
+
+	for (const auto& excludePathMapEntry : Config::the().excludePaths()) {
+		const auto& excludePath = excludePathMapEntry.first;
+
+		if (pathString == excludePath) {
+			return true;
+		}
+
+		// If starts with '/', only match in the working directory root
+		bool onlyMatchInRoot = false;
+		if (excludePath.front() == '/') {
+			onlyMatchInRoot = true;
+		}
+
+		// If ends with '/', only match directories
+		bool onlyMatchDirectories = false;
+		if (excludePath.back() == '/') {
+			onlyMatchDirectories = true;
+		}
+
+		// Parsing
+
+		bool tryPatternState = true;
+
+		size_t pathIterator = 0;
+		size_t excludeIterator = 0;
+
+		if (!onlyMatchInRoot) {
+			pathIterator++;
+		}
+
+		// Current path charter 'x' == next ignore pattern characters '*x'
+		// Example, iterator at []: [.]log/output.txt
+		//                          [*].log
+		if (pathIterator < pathString.length()
+		    && excludeIterator < excludePath.length() - 1
+		    && excludePath.at(excludeIterator) == '*'
+		    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
+			excludeIterator++;
+		}
+
+		for (; pathIterator < pathString.length() && excludeIterator < excludePath.length();) {
+			char character = pathString.at(pathIterator);
+			pathIterator++;
+
+			if (!tryPatternState && character == '/') {
+				tryPatternState = true;
+				continue;
+			}
+
+			if (!tryPatternState) {
+				continue;
+			}
+
+			if (character == excludePath.at(excludeIterator)) {
+				// Fail if the final match hasn't reached the end of the ignore pattern
+				// Example, iterator at []: doc/buil[d]
+				//                          buil[d]/
+				if (pathIterator == pathString.length() && excludeIterator < excludePath.length() - 1) {
+					break;
+				}
+
+				// Next path character 'x' == next ignore pattern characters '*x', skip the '*'
+				// Example, iterator at []: /includ[e]/header.h
+				//                          /includ[e]*/
+				if (pathIterator < pathString.length()
+				    && excludeIterator < excludePath.length() - 2
+				    && excludePath.at(excludeIterator + 1) == '*'
+				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 2)) {
+					excludeIterator++;
+				}
+
+				excludeIterator++;
+				continue;
+			}
+
+			if (excludePath.at(excludeIterator) == '*') {
+				// Fail if we're entering a subdirectory and we should only match in the root
+				// Example, iterator at []: /src[/]include/header.h
+				//                          /[*]include/
+				if (onlyMatchInRoot && character == '/') {
+					break;
+				}
+
+				// Next path character == next ignore pattern character
+				if (pathIterator < pathString.length()
+				    && excludeIterator + 1 < excludePath.length()
+				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
+					excludeIterator++;
+				}
+
+				continue;
+			}
+
+			// Reset filter pattern if it hasnt been completed at this point
+			// Example, iterator at []: /[s]rc/include/header.h
+			//                          /[i]nclude*/
+			if (excludeIterator < excludePath.length() - 1) {
+				excludeIterator = 0;
+			}
+
+			tryPatternState = false;
+		}
+
+		if (excludeIterator == excludePath.length()) {
+			return true;
+		}
+		if (excludePath.back() == '*' && excludeIterator == excludePath.length() - 1) {
+			return true;
+		}
+		if (onlyMatchDirectories && excludeIterator == excludePath.length() - 1) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // -----------------------------------------
 
 void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
@@ -368,132 +494,6 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 		}
 		callback(path, index++);
 	}
-}
-
-bool Dotfile::filter(const std::filesystem::directory_entry& path)
-{
-	std::string pathString = path.path().string();
-	assert(pathString.front() == '/');
-
-	// Cut off working directory
-	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
-	pathString = pathString.substr(cutFrom);
-
-	for (const auto& excludePathMapEntry : Config::the().excludePaths()) {
-		const auto& excludePath = excludePathMapEntry.first;
-
-		if (pathString == excludePath) {
-			return true;
-		}
-
-		// If starts with '/', only match in the working directory root
-		bool onlyMatchInRoot = false;
-		if (excludePath.front() == '/') {
-			onlyMatchInRoot = true;
-		}
-
-		// If ends with '/', only match directories
-		bool onlyMatchDirectories = false;
-		if (excludePath.back() == '/') {
-			onlyMatchDirectories = true;
-		}
-
-		// Parsing
-
-		bool tryPatternState = true;
-
-		size_t pathIterator = 0;
-		size_t excludeIterator = 0;
-
-		if (!onlyMatchInRoot) {
-			pathIterator++;
-		}
-
-		// Current path charter 'x' == next ignore pattern characters '*x'
-		// Example, iterator at []: [.]log/output.txt
-		//                          [*].log
-		if (pathIterator < pathString.length()
-		    && excludeIterator < excludePath.length() - 1
-		    && excludePath.at(excludeIterator) == '*'
-		    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
-			excludeIterator++;
-		}
-
-		for (; pathIterator < pathString.length() && excludeIterator < excludePath.length();) {
-			char character = pathString.at(pathIterator);
-			pathIterator++;
-
-			if (!tryPatternState && character == '/') {
-				tryPatternState = true;
-				continue;
-			}
-
-			if (!tryPatternState) {
-				continue;
-			}
-
-			if (character == excludePath.at(excludeIterator)) {
-				// Fail if the final match hasn't reached the end of the ignore pattern
-				// Example, iterator at []: doc/buil[d]
-				//                          buil[d]/
-				if (pathIterator == pathString.length() && excludeIterator < excludePath.length() - 1) {
-					break;
-				}
-
-				// Next path character 'x' == next ignore pattern characters '*x', skip the '*'
-				// Example, iterator at []: /includ[e]/header.h
-				//                          /includ[e]*/
-				if (pathIterator < pathString.length()
-				    && excludeIterator < excludePath.length() - 2
-				    && excludePath.at(excludeIterator + 1) == '*'
-				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 2)) {
-					excludeIterator++;
-				}
-
-				excludeIterator++;
-				continue;
-			}
-
-			if (excludePath.at(excludeIterator) == '*') {
-				// Fail if we're entering a subdirectory and we should only match in the root
-				// Example, iterator at []: /src[/]include/header.h
-				//                          /[*]include/
-				if (onlyMatchInRoot && character == '/') {
-					break;
-				}
-
-				// Next path character == next ignore pattern character
-				if (pathIterator < pathString.length()
-				    && excludeIterator + 1 < excludePath.length()
-				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
-					excludeIterator++;
-				}
-
-				continue;
-			}
-
-			// Reset filter pattern if it hasnt been completed at this point
-			// Example, iterator at []: /[s]rc/include/header.h
-			//                          /[i]nclude*/
-			if (excludeIterator < excludePath.length() - 1) {
-				excludeIterator = 0;
-			}
-
-			tryPatternState = false;
-		}
-
-		if (excludeIterator == excludePath.length()) {
-			return true;
-		}
-		if (excludePath.back() == '*' && excludeIterator == excludePath.length() - 1) {
-			return true;
-		}
-		if (onlyMatchDirectories && excludeIterator == excludePath.length() - 1) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::string>& targets)
