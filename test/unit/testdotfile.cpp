@@ -213,8 +213,8 @@ TEST_CASE(PushDotfilesWithExcludePath)
 
 	Config::the().setExcludePaths({
 		{ "__test-file-1", "file" },
-		{ "__subdir", "directory" },
-		{ ".test", "endsWith" },
+		{ "__subdir/", "directory" },
+		{ "*.test", "endsWith" },
 	});
 	Dotfile::the().push(fileNames);
 	Config::the().setExcludePaths({});
