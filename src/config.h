@@ -17,7 +17,7 @@
 #include "util/singleton.h"
 
 struct Settings {
-	std::vector<std::string> excludePaths {
+	std::vector<std::string> ignorePatterns {
 		".git/",
 		"*.md",
 		"manafiles.json",
@@ -38,10 +38,10 @@ public:
 	virtual ~Config();
 
 	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_settings.systemDirectories = systemDirectories; }
-	void setExcludePaths(const std::vector<std::string>& excludePaths) { m_settings.excludePaths = excludePaths; }
+	void setIgnorePatterns(const std::vector<std::string>& ignorePatterns) { m_settings.ignorePatterns = ignorePatterns; }
 	void setVerbose(bool verbose) { m_verbose = verbose; }
 
-	const std::vector<std::string>& excludePaths() const { return m_settings.excludePaths; }
+	const std::vector<std::string>& ignorePatterns() const { return m_settings.ignorePatterns; }
 	const std::vector<std::filesystem::path>& systemDirectories() const { return m_settings.systemDirectories; }
 
 	const std::filesystem::path& workingDirectory() const { return m_workingDirectory; }

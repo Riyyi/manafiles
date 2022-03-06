@@ -75,15 +75,15 @@ void Config::parseConfigFile()
 void to_json(nlohmann::json& object, const Settings& settings)
 {
 	object = nlohmann::json {
-		{ "excludePaths", settings.excludePaths },
+		{ "ignorePatterns", settings.ignorePatterns },
 		{ "systemDirectories", settings.systemDirectories }
 	};
 }
 
 void from_json(const nlohmann::json& object, Settings& settings)
 {
-	if (object.find("excludePaths") != object.end()) {
-		object.at("excludePaths").get_to(settings.excludePaths);
+	if (object.find("ignorePatterns") != object.end()) {
+		object.at("ignorePatterns").get_to(settings.ignorePatterns);
 	}
 
 	if (object.find("systemDirectories") != object.end()) {

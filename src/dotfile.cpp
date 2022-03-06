@@ -115,21 +115,21 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
 	pathString = pathString.substr(cutFrom);
 
-	for (const auto& excludePath : Config::the().excludePaths()) {
+	for (const auto& ignorePattern : Config::the().ignorePatterns()) {
 
-		if (pathString == excludePath) {
+		if (pathString == ignorePattern) {
 			return true;
 		}
 
 		// If starts with '/', only match in the working directory root
 		bool onlyMatchInRoot = false;
-		if (excludePath.front() == '/') {
+		if (ignorePattern.front() == '/') {
 			onlyMatchInRoot = true;
 		}
 
 		// If ends with '/', only match directories
 		bool onlyMatchDirectories = false;
-		if (excludePath.back() == '/') {
+		if (ignorePattern.back() == '/') {
 			onlyMatchDirectories = true;
 		}
 
@@ -138,7 +138,7 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 		bool tryPatternState = true;
 
 		size_t pathIterator = 0;
-		size_t excludeIterator = 0;
+		size_t ignoreIterator = 0;
 
 		if (!onlyMatchInRoot) {
 			pathIterator++;
@@ -148,13 +148,13 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 		// Example, iterator at []: [.]log/output.txt
 		//                          [*].log
 		if (pathIterator < pathString.length()
-		    && excludeIterator < excludePath.length() - 1
-		    && excludePath.at(excludeIterator) == '*'
-		    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
-			excludeIterator++;
+		    && ignoreIterator < ignorePattern.length() - 1
+		    && ignorePattern.at(ignoreIterator) == '*'
+		    && pathString.at(pathIterator) == ignorePattern.at(ignoreIterator + 1)) {
+			ignoreIterator++;
 		}
 
-		for (; pathIterator < pathString.length() && excludeIterator < excludePath.length();) {
+		for (; pathIterator < pathString.length() && ignoreIterator < ignorePattern.length();) {
 			char character = pathString.at(pathIterator);
 			pathIterator++;
 
@@ -167,11 +167,11 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 				continue;
 			}
 
-			if (character == excludePath.at(excludeIterator)) {
+			if (character == ignorePattern.at(ignoreIterator)) {
 				// Fail if the final match hasn't reached the end of the ignore pattern
 				// Example, iterator at []: doc/buil[d]
 				//                          buil[d]/
-				if (pathIterator == pathString.length() && excludeIterator < excludePath.length() - 1) {
+				if (pathIterator == pathString.length() && ignoreIterator < ignorePattern.length() - 1) {
 					break;
 				}
 
@@ -179,17 +179,17 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 				// Example, iterator at []: /includ[e]/header.h
 				//                          /includ[e]*/
 				if (pathIterator < pathString.length()
-				    && excludeIterator < excludePath.length() - 2
-				    && excludePath.at(excludeIterator + 1) == '*'
-				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 2)) {
-					excludeIterator++;
+				    && ignoreIterator < ignorePattern.length() - 2
+				    && ignorePattern.at(ignoreIterator + 1) == '*'
+				    && pathString.at(pathIterator) == ignorePattern.at(ignoreIterator + 2)) {
+					ignoreIterator++;
 				}
 
-				excludeIterator++;
+				ignoreIterator++;
 				continue;
 			}
 
-			if (excludePath.at(excludeIterator) == '*') {
+			if (ignorePattern.at(ignoreIterator) == '*') {
 				// Fail if we're entering a subdirectory and we should only match in the root
 				// Example, iterator at []: /src[/]include/header.h
 				//                          /[*]include/
@@ -199,9 +199,9 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 
 				// Next path character == next ignore pattern character
 				if (pathIterator < pathString.length()
-				    && excludeIterator + 1 < excludePath.length()
-				    && pathString.at(pathIterator) == excludePath.at(excludeIterator + 1)) {
-					excludeIterator++;
+				    && ignoreIterator + 1 < ignorePattern.length()
+				    && pathString.at(pathIterator) == ignorePattern.at(ignoreIterator + 1)) {
+					ignoreIterator++;
 				}
 
 				continue;
@@ -210,20 +210,20 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 			// Reset filter pattern if it hasnt been completed at this point
 			// Example, iterator at []: /[s]rc/include/header.h
 			//                          /[i]nclude*/
-			if (excludeIterator < excludePath.length() - 1) {
-				excludeIterator = 0;
+			if (ignoreIterator < ignorePattern.length() - 1) {
+				ignoreIterator = 0;
 			}
 
 			tryPatternState = false;
 		}
 
-		if (excludeIterator == excludePath.length()) {
+		if (ignoreIterator == ignorePattern.length()) {
 			return true;
 		}
-		if (excludePath.back() == '*' && excludeIterator == excludePath.length() - 1) {
+		if (ignorePattern.back() == '*' && ignoreIterator == ignorePattern.length() - 1) {
 			return true;
 		}
-		if (onlyMatchDirectories && excludeIterator == excludePath.length() - 1) {
+		if (onlyMatchDirectories && ignoreIterator == ignorePattern.length() - 1) {
 			return true;
 		}
 	}

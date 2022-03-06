@@ -1,5 +1,5 @@
 {
-	"excludePaths" : [
+	"ignorePatterns" : [
 		".git/",
 		"*.md",
 		"manafiles.json",

@@ -29,9 +29,9 @@ From there you can copy it to anywhere in the working directory,
 the config file is searched recursively. \\
 ~$HOME/<dotfiles>/<anywhere>~
 
-**** Exclude paths
+**** Ignore patterns
 
-Everything in this list will get excluded when pulling/pushing config files from the working directory. \\
+Everything in this list will get ignored when pulling/pushing config files from the working directory. \\
 Currently two types of file matching are supported:
 
 - ~literal~ matches a file or directory literally
@@ -44,9 +44,9 @@ These behave similarly to a ~.gitignore~ pattern.
 - If the pattern ends with a slash, it matches only directories. When a directory is ignored, \\
   all of its files and subdirectories are also ignored.
 
-The excluded paths from the example config:
+The ignore patterns from the example config:
 #+BEGIN_SRC javascript
-"excludePaths" : [
+"ignorePatterns" : [
 	".git/",
 	"*.md",
 	"manafiles.json",

@@ -82,7 +82,7 @@ void removeTestDotfiles(const std::vector<std::string>& files, bool deleteInHome
 }
 
 void testDotfileFilters(const std::unordered_map<std::string, bool>& tests,
-                        const std::vector<std::string>& testFilters)
+                        const std::vector<std::string>& testIgnorePatterns)
 {
 	std::vector<std::string> fileNames;
 	std::vector<std::string> fileContents;
@@ -93,15 +93,15 @@ void testDotfileFilters(const std::unordered_map<std::string, bool>& tests,
 
 	createTestDotfiles(fileNames, fileContents);
 
-	auto excludePaths = Config::the().excludePaths();
-	Config::the().setExcludePaths(testFilters);
+	auto ignorePatterns = Config::the().ignorePatterns();
+	Config::the().setIgnorePatterns(testIgnorePatterns);
 
 	for (const auto& path : fileNames) {
 		bool result = Dotfile::the().filter(std::filesystem::directory_entry { "/" + path });
 		EXPECT_EQ(result, tests.at(path), printf("        path = '%s'\n", path.c_str()));
 	}
 
-	Config::the().setExcludePaths(excludePaths);
+	Config::the().setIgnorePatterns(ignorePatterns);
 
 	removeTestDotfiles(fileNames, false);
 }
@@ -476,7 +476,7 @@ TEST_CASE(PushDotfiles)
 	removeTestDotfiles(fileNames);
 }
 
-TEST_CASE(PushDotfilesWithExcludePath)
+TEST_CASE(PushDotfilesWithIgnorePattern)
 {
 	std::vector<std::string> fileNames = {
 		"__test-file-1",
@@ -487,13 +487,16 @@ TEST_CASE(PushDotfilesWithExcludePath)
 
 	createTestDotfiles(fileNames, { "", "", "", "" });
 
-	Config::the().setExcludePaths({
+	auto ignorePatterns = Config::the().ignorePatterns();
+	Config::the().setIgnorePatterns({
 		"__test-file-1",
 		"__subdir/",
 		"*.test",
 	});
+
 	Dotfile::the().push(fileNames);
-	Config::the().setExcludePaths({});
+
+	Config::the().setIgnorePatterns(ignorePatterns);
 
 	for (const auto& file : fileNames) {
 		EXPECT(!std::filesystem::exists(homeDirectory / file));
