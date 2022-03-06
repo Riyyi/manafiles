@@ -509,7 +509,7 @@ TEST_CASE(PushDotfilesSelectivelyComment)
 {
 	std::vector<std::string> fileNames;
 	for (size_t i = 0; i < 36; ++i) {
-		fileNames.push_back( "__test-file-" + std::to_string(i + 1));
+		fileNames.push_back("__test-file-" + std::to_string(i + 1));
 	}
 
 	auto distro = Machine::the().distroId();
@@ -871,7 +871,7 @@ test data /**/ uncomment
 
 TEST_CASE(AddSystemDotfiles)
 {
-	EXPECT(geteuid() == 0, return);
+	EXPECT(geteuid() == 0, return );
 
 	Config::the().setSystemDirectories({ "/etc", "/usr/lib" });
 	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
@@ -886,7 +886,7 @@ TEST_CASE(AddSystemDotfiles)
 
 TEST_CASE(PullSystemDotfiles)
 {
-	EXPECT(geteuid() == 0, return);
+	EXPECT(geteuid() == 0, return );
 
 	createTestDotfiles({ "etc/group" }, { "" }, true);
 
