@@ -108,7 +108,7 @@ void Dotfile::push(const std::vector<std::string>& targets)
 }
 
 bool Dotfile::match(const std::filesystem::directory_entry& path,
-                     const std::vector<std::string>& patterns)
+                    const std::vector<std::string>& patterns)
 {
 	std::string pathString = path.path().string();
 	assert(pathString.front() == '/');
