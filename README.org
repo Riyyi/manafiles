@@ -58,14 +58,15 @@ The ignore patterns from the example config:
 
 **** System config files
 
-Directories in this list will be pushed to the root ~/~ of the system, instead of ~$HOME~.
+Everything in this list will be pushed to the root ~/~ of the system, instead of ~$HOME~. \\
+These support the same file matching as explained in the [[#ignore-patterns][Ignore patterns]] section.
 
-The system directories from the example config:
+The system patterns from the example config:
 #+BEGIN_SRC javascript
-"systemDirectories": [
-	"/boot",
-	"/etc",
-	"/usr/share"
+"systemPatterns": [
+	"/boot/",
+	"/etc/",
+	"/usr/share/"
 ]
 #+END_SRC
 

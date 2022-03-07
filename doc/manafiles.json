@@ -7,9 +7,9 @@
 		"README.org",
 		"screenshot.png"
 	],
-	"systemDirectories": [
-		"/boot",
-		"/etc",
-		"/usr/share"
+	"systemPatterns": [
+		"/boot/",
+		"/etc/",
+		"/usr/share/"
 	]
 }

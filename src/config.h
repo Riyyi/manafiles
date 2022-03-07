@@ -25,10 +25,10 @@ struct Settings {
 		"README.org",
 		"screenshot.png",
 	};
-	std::vector<std::filesystem::path> systemDirectories {
-		"/boot",
-		"/etc",
-		"/usr/share"
+	std::vector<std::string> systemPatterns {
+		"/boot/",
+		"/etc/",
+		"/usr/share/"
 	};
 };
 
@@ -37,12 +37,12 @@ public:
 	Config(s);
 	virtual ~Config();
 
-	void setSystemDirectories(const std::vector<std::filesystem::path>& systemDirectories) { m_settings.systemDirectories = systemDirectories; }
+	void setSystemPatterns(const std::vector<std::string>& systemPatterns) { m_settings.systemPatterns = systemPatterns; }
 	void setIgnorePatterns(const std::vector<std::string>& ignorePatterns) { m_settings.ignorePatterns = ignorePatterns; }
 	void setVerbose(bool verbose) { m_verbose = verbose; }
 
 	const std::vector<std::string>& ignorePatterns() const { return m_settings.ignorePatterns; }
-	const std::vector<std::filesystem::path>& systemDirectories() const { return m_settings.systemDirectories; }
+	const std::vector<std::string>& systemPatterns() const { return m_settings.systemPatterns; }
 
 	const std::filesystem::path& workingDirectory() const { return m_workingDirectory; }
 	size_t workingDirectorySize() const { return m_workingDirectorySize; }

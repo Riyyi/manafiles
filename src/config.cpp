@@ -76,7 +76,7 @@ void to_json(nlohmann::json& object, const Settings& settings)
 {
 	object = nlohmann::json {
 		{ "ignorePatterns", settings.ignorePatterns },
-		{ "systemDirectories", settings.systemDirectories }
+		{ "systemPatterns", settings.systemPatterns }
 	};
 }
 
@@ -86,7 +86,7 @@ void from_json(const nlohmann::json& object, Settings& settings)
 		object.at("ignorePatterns").get_to(settings.ignorePatterns);
 	}
 
-	if (object.find("systemDirectories") != object.end()) {
-		object.at("systemDirectories").get_to(settings.systemDirectories);
+	if (object.find("systemPatterns") != object.end()) {
+		object.at("systemPatterns").get_to(settings.systemPatterns);
 	}
 }

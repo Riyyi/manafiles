@@ -868,9 +868,9 @@ TEST_CASE(AddSystemDotfiles)
 {
 	EXPECT(geteuid() == 0, return );
 
-	Config::the().setSystemDirectories({ "/etc", "/usr/lib" });
+	Config::the().setSystemPatterns({ "/etc/", "/usr/lib/" });
 	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
-	Config::the().setSystemDirectories({});
+	Config::the().setSystemPatterns({});
 
 	EXPECT(std::filesystem::exists("etc/group"));
 	EXPECT(std::filesystem::exists("usr/lib/os-release"));
@@ -885,9 +885,9 @@ TEST_CASE(PullSystemDotfiles)
 
 	createTestDotfiles({ "etc/group" }, { "" }, true);
 
-	Config::the().setSystemDirectories({ "/etc" });
+	Config::the().setSystemPatterns({ "/etc/" });
 	Dotfile::the().pull({ "etc/group" });
-	Config::the().setSystemDirectories({});
+	Config::the().setSystemPatterns({});
 
 	Util::File lhs("/etc/group");
 	Util::File rhs(Config::the().workingDirectory() / "etc/group");

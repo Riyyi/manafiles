@@ -42,7 +42,6 @@ private:
 	void selectivelyCommentOrUncomment(const std::string& path);
 
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
-	bool isSystemTarget(const std::string& target);
 };
 
 #endif // DOTFILE_H

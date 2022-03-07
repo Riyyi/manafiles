@@ -51,7 +51,8 @@ void Dotfile::add(const std::vector<std::string>& targets)
 			continue;
 		}
 
-		if (isSystemTarget(targets.at(i))) {
+		if (match(std::filesystem::directory_entry { targets.at(i) },
+		          Config::the().systemPatterns())) {
 			systemIndices.push_back(i);
 		}
 		else {
@@ -243,7 +244,7 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 	// Separate home and system targets
 	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
 		dotfiles.push_back(path.path().string());
-		if (isSystemTarget(path.path().string())) {
+		if (match(path, Config::the().systemPatterns())) {
 			systemIndices.push_back(index);
 		}
 		else {
@@ -499,21 +500,4 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 		}
 		callback(path, index++);
 	}
-}
-
-bool Dotfile::isSystemTarget(const std::string& target)
-{
-	for (const auto& systemDirectory : Config::the().systemDirectories()) {
-
-		if (target.find(systemDirectory) == 0) {
-			return true;
-		}
-		// FIXME: The second filesystem::path cant have a "/" as the first character,
-		//        as it will think the path is at the root.
-		if (target.find(Config::the().workingDirectory().string() + systemDirectory.string()) == 0) {
-			return true;
-		}
-	}
-
-	return false;
 }
