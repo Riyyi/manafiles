@@ -106,7 +106,7 @@ void Dotfile::push(const std::vector<std::string>& targets)
 	pullOrPush(SyncType::Push, targets);
 }
 
-bool Dotfile::filter(const std::filesystem::directory_entry& path,
+bool Dotfile::match(const std::filesystem::directory_entry& path,
                      const std::vector<std::string>& patterns)
 {
 	std::string pathString = path.path().string();
@@ -490,11 +490,11 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 			continue;
 		}
 		// Ignore pattern check
-		if (filter(path, Config::the().ignorePatterns())) {
+		if (match(path, Config::the().ignorePatterns())) {
 			continue;
 		}
 		// Include check
-		if (!targets.empty() && !filter(path, targets)) {
+		if (!targets.empty() && !match(path, targets)) {
 			continue;
 		}
 		callback(path, index++);
