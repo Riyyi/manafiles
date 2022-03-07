@@ -94,7 +94,7 @@ void testDotfileFilters(const std::unordered_map<std::string, bool>& tests,
 	createTestDotfiles(fileNames, fileContents);
 
 	for (const auto& path : fileNames) {
-		bool result = Dotfile::the().match(std::filesystem::directory_entry { "/" + path }, testIgnorePatterns);
+		bool result = Dotfile::the().match("/" + path, testIgnorePatterns);
 		EXPECT_EQ(result, tests.at(path), printf("        path = '%s'\n", path.c_str()));
 	}
 

@@ -30,8 +30,7 @@ public:
 	void pull(const std::vector<std::string>& targets = {});
 	void push(const std::vector<std::string>& targets = {});
 
-	bool match(const std::filesystem::directory_entry& path,
-	           const std::vector<std::string>& patterns);
+	bool match(const std::string& path, const std::vector<std::string>& patterns);
 
 private:
 	void pullOrPush(SyncType type, const std::vector<std::string>& targets = {});

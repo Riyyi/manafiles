@@ -51,8 +51,7 @@ void Dotfile::add(const std::vector<std::string>& targets)
 			continue;
 		}
 
-		if (match(std::filesystem::directory_entry { targets.at(i) },
-		          Config::the().systemPatterns())) {
+		if (match(targets.at(i), Config::the().systemPatterns())) {
 			systemIndices.push_back(i);
 		}
 		else {
@@ -107,15 +106,13 @@ void Dotfile::push(const std::vector<std::string>& targets)
 	pullOrPush(SyncType::Push, targets);
 }
 
-bool Dotfile::match(const std::filesystem::directory_entry& path,
-                    const std::vector<std::string>& patterns)
+bool Dotfile::match(const std::string& path, const std::vector<std::string>& patterns)
 {
-	std::string pathString = path.path().string();
-	assert(pathString.front() == '/');
+	assert(path.front() == '/');
 
 	// Cut off working directory
-	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
-	pathString = pathString.substr(cutFrom);
+	size_t cutFrom = path.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
+	std::string pathString = path.substr(cutFrom);
 
 	for (const auto& pattern : patterns) {
 
@@ -244,7 +241,7 @@ void Dotfile::pullOrPush(SyncType type, const std::vector<std::string>& targets)
 	// Separate home and system targets
 	forEachDotfile(targets, [&](const std::filesystem::directory_entry& path, size_t index) {
 		dotfiles.push_back(path.path().string());
-		if (match(path, Config::the().systemPatterns())) {
+		if (match(path.path().string(), Config::the().systemPatterns())) {
 			systemIndices.push_back(index);
 		}
 		else {
@@ -487,15 +484,17 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 {
 	size_t index = 0;
 	for (const auto& path : std::filesystem::recursive_directory_iterator { Config::the().workingDirectory() }) {
+		std::string pathString = path.path().string();
+
 		if (path.is_directory()) {
 			continue;
 		}
 		// Ignore pattern check
-		if (match(path, Config::the().ignorePatterns())) {
+		if (match(pathString, Config::the().ignorePatterns())) {
 			continue;
 		}
 		// Include check
-		if (!targets.empty() && !match(path, targets)) {
+		if (!targets.empty() && !match(pathString, targets)) {
 			continue;
 		}
 		callback(path, index++);
