@@ -106,7 +106,8 @@ void Dotfile::push(const std::vector<std::string>& targets)
 	pullOrPush(SyncType::Push, targets);
 }
 
-bool Dotfile::filter(const std::filesystem::directory_entry& path)
+bool Dotfile::filter(const std::filesystem::directory_entry& path,
+                     const std::vector<std::string>& patterns)
 {
 	std::string pathString = path.path().string();
 	assert(pathString.front() == '/');
@@ -115,7 +116,7 @@ bool Dotfile::filter(const std::filesystem::directory_entry& path)
 	size_t cutFrom = pathString.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
 	pathString = pathString.substr(cutFrom);
 
-	for (const auto& ignorePattern : Config::the().ignorePatterns()) {
+	for (const auto& ignorePattern : patterns) {
 
 		if (pathString == ignorePattern) {
 			return true;
@@ -485,25 +486,19 @@ void Dotfile::forEachDotfile(const std::vector<std::string>& targets, const std:
 {
 	size_t index = 0;
 	for (const auto& path : std::filesystem::recursive_directory_iterator { Config::the().workingDirectory() }) {
-		if (path.is_directory() || filter(path)) {
+		if (path.is_directory()) {
 			continue;
 		}
-		if (!targets.empty() && !include(path.path(), targets)) {
+		// Ignore pattern check
+		if (filter(path, Config::the().ignorePatterns())) {
+			continue;
+		}
+		// Include check
+		if (!targets.empty() && !filter(path, targets)) {
 			continue;
 		}
 		callback(path, index++);
 	}
-}
-
-bool Dotfile::include(const std::filesystem::path& path, const std::vector<std::string>& targets)
-{
-	for (const auto& target : targets) {
-		if (path.string().find(Config::the().workingDirectory() / target) == 0) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 bool Dotfile::isSystemTarget(const std::string& target)

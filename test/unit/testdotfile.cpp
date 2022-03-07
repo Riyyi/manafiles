@@ -93,15 +93,10 @@ void testDotfileFilters(const std::unordered_map<std::string, bool>& tests,
 
 	createTestDotfiles(fileNames, fileContents);
 
-	auto ignorePatterns = Config::the().ignorePatterns();
-	Config::the().setIgnorePatterns(testIgnorePatterns);
-
 	for (const auto& path : fileNames) {
-		bool result = Dotfile::the().filter(std::filesystem::directory_entry { "/" + path });
+		bool result = Dotfile::the().filter(std::filesystem::directory_entry { "/" + path }, testIgnorePatterns);
 		EXPECT_EQ(result, tests.at(path), printf("        path = '%s'\n", path.c_str()));
 	}
-
-	Config::the().setIgnorePatterns(ignorePatterns);
 
 	removeTestDotfiles(fileNames, false);
 }
