@@ -21,6 +21,7 @@ public:
 	virtual ~Dotfile();
 
 	enum class SyncType {
+		Add,
 		Pull,
 		Push,
 	};

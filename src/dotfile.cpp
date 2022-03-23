@@ -67,7 +67,7 @@ void Dotfile::add(const std::vector<std::string>& targets)
 	}
 
 	sync(
-		SyncType::Pull, targets, homeIndices, systemIndices,
+		SyncType::Add, targets, homeIndices, systemIndices,
 		[](std::string* paths, const std::string& homePath, const std::string& homeDirectory) {
 			paths[0] = homePath;
 			paths[1] = homePath.substr(homeDirectory.size() + 1);
@@ -291,7 +291,7 @@ void Dotfile::sync(SyncType type,
 	if (!systemIndices.empty() && !root) {
 		for (size_t i : systemIndices) {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m need root privileges to copy system file '%s'\n",
-			        paths.at(i).c_str() + Config::the().workingDirectorySize());
+			        paths.at(i).c_str() + (type == SyncType::Add ? 0 : Config::the().workingDirectorySize()));
 		}
 		return;
 	}
