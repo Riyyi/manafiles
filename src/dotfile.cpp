@@ -293,7 +293,6 @@ void Dotfile::sync(SyncType type,
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m need root privileges to copy system file '%s'\n",
 			        paths.at(i).c_str() + (type == SyncType::Add ? 0 : Config::the().workingDirectorySize()));
 		}
-		return;
 	}
 
 	auto printError = [](const std::filesystem::path& path, const std::error_code& error) -> void {
