@@ -64,7 +64,6 @@ void Dotfile::add(const std::vector<std::string>& targets)
 		for (size_t i : noExistIndices) {
 			fprintf(stderr, "\033[31;1mDotfile:\033[0m '%s': no such file or directory\n", targets.at(i).c_str());
 		}
-		return;
 	}
 
 	sync(
