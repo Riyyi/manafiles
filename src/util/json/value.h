@@ -40,6 +40,10 @@ public:
 	Value(const Array& value);
 	Value(const Object& value);
 
+	// Array index operator
+	Value operator[](size_t index);
+	Value operator[](const std::string& key);
+
 	bool asBool() const { return m_value.asBool; }
 	double asDouble() const { return m_value.asDouble; }
 	const std::string& asString() const { return *m_value.asString; }

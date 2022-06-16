@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <cassert> // assert
 #include <string>
 #include <utility> // move
 
@@ -62,6 +63,18 @@ Value::Value(const Object& value)
 	: m_type(Type::Object)
 {
 	m_value.asObject = new Object(value);
+}
+
+Value Value::operator[](size_t index)
+{
+	assert(m_type == Type::Array);
+	return m_value.asArray->values().at(index);
+}
+
+Value Value::operator[](const std::string& key)
+{
+	assert(m_type == Type::Object);
+	return m_value.asObject->members().at(key);
 }
 
 // ------------------------------------------

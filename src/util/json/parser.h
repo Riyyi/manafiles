@@ -24,7 +24,7 @@ public:
 	Parser(const std::string& input);
 	virtual ~Parser();
 
-	void parse();
+	Value parse();
 
 private:
 	Token peek();

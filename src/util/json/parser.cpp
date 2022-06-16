@@ -28,7 +28,7 @@ Parser::~Parser()
 
 // -----------------------------------------
 
-void Parser::parse()
+Value Parser::parse()
 {
 	Lexer lexer(m_input);
 	lexer.analyze();
@@ -81,6 +81,8 @@ void Parser::parse()
 
 		break;
 	}
+
+	return result;
 }
 
 // -----------------------------------------

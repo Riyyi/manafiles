@@ -29,6 +29,8 @@ public:
 		m_values.emplace_back(std::move(value));
 	}
 
+	const std::vector<Value>& values() const { return m_values; }
+
 private:
 	std::vector<Value> m_values;
 };
