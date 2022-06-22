@@ -44,6 +44,8 @@ public:
 	Value operator[](size_t index);
 	Value operator[](const std::string& key);
 
+	Type type() const { return m_type; }
+
 	bool asBool() const { return m_value.asBool; }
 	double asDouble() const { return m_value.asDouble; }
 	const std::string& asString() const { return *m_value.asString; }
