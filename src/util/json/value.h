@@ -7,6 +7,8 @@
 #ifndef JSON_VALUE_H
 #define JSON_VALUE_H
 
+#include <cstdint> // uint32_t
+#include <iostream> // istream, ostream
 #include <string>
 
 namespace Json {
@@ -25,7 +27,7 @@ public:
 		Object, // {}
 	};
 
-	Value() {}
+	Value(std::nullptr_t = nullptr) {}
 	virtual ~Value() { clear(); }
 
 	// Copy constructor
@@ -39,6 +41,11 @@ public:
 	Value(const std::string& value);
 	Value(const Array& value);
 	Value(const Object& value);
+
+	// ------------------------------------------
+
+	static Value parse(const std::string& input);
+	std::string dump(const uint32_t indent = 0, const char indentCharacter = ' ') const;
 
 	// Array index operator
 	Value operator[](size_t index);
@@ -64,8 +71,11 @@ private:
 		std::string* asString;
 		Array* asArray;
 		Object* asObject;
-	} m_value;
+	} m_value {};
 };
+
+std::istream& operator>>(std::istream& input, Value& value);
+std::ostream& operator<<(std::ostream& output, const Value& value);
 
 } // namespace Json
 

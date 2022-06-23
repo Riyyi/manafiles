@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cassert> // assert
+#include <cassert>   // assert
+#include <cstdint>   // uint32_t
+#include <iostream>
 #include <string>
 #include <utility> // move
 
 #include "util/json/array.h"
 #include "util/json/object.h"
+#include "util/json/stringify.h"
 #include "util/json/value.h"
 
 namespace Json {
@@ -66,6 +69,24 @@ Value::Value(const Object& value)
 }
 
 Value Value::operator[](size_t index)
+// ------------------------------------------
+
+Value Value::parse(const std::string& input)
+{
+	Parser parser(input);
+
+	Value value;
+	value = parser.parse();
+
+	return value;
+}
+
+std::string Value::dump(const uint32_t indent, const char indentCharacter) const
+{
+	Stringify stringify(*this, indent, indentCharacter);
+	return stringify.dump();
+}
+
 {
 	assert(m_type == Type::Array);
 	return m_value.asArray->values().at(index);
@@ -115,6 +136,29 @@ void Value::copyFrom(const Value& other)
 	default:
 		break;
 	}
+}
+
+// ------------------------------------------
+
+std::istream& operator>>(std::istream& input, Value& value)
+{
+	std::string inputString;
+
+	char buffer[4096];
+	while (input.read(buffer, sizeof(buffer))) {
+		inputString.append(buffer, sizeof(buffer));
+	}
+	inputString.append(buffer, input.gcount());
+
+	Parser parser(inputString);
+	value = parser.parse();
+
+	return input;
+}
+
+std::ostream& operator<<(std::ostream& output, const Value& value)
+{
+	return output << value.dump(4);
 }
 
 } // namespace Json
