@@ -51,6 +51,9 @@ public:
 	static Value parse(const std::string& input);
 	std::string dump(const uint32_t indent = 0, const char indentCharacter = ' ') const;
 
+	void emplace_back(Value value);
+	void emplace(const std::string& key, Value value);
+
 	// ------------------------------------------
 
 	// Array index operator

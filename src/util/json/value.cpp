@@ -116,17 +116,47 @@ std::string Value::dump(const uint32_t indent, const char indentCharacter) const
 	return stringify.dump();
 }
 
+void Value::emplace_back(Value value)
+{
+	// Implicitly convert null to an array
+	if (m_type == Type::Null) {
+		m_type = Type::Array;
+		m_value.asArray = new Array;
+	}
+
+	assert(m_type == Type::Array);
+	m_value.asArray->emplace_back(value);
+}
+
+void Value::emplace(const std::string& key, Value value)
+{
+	// Implicitly convert null to an object
+	if (m_type == Type::Null) {
+		m_type = Type::Object;
+		m_value.asObject = new Object;
+	}
+
+	assert(m_type == Type::Array);
+	m_value.asObject->emplace(key, value);
+}
+
 // ------------------------------------------
 
 Value& Value::operator[](size_t index)
 {
+	// Implicitly convert null to an array
+	if (m_type == Type::Null) {
+		m_type = Type::Array;
+		m_value.asArray = new Array;
+	}
+
 	assert(m_type == Type::Array);
 	return m_value.asArray->at(index);
 }
 
 Value& Value::operator[](const std::string& key)
 {
-	// Implicit conversion to an object
+	// Implicitly convert null to an object
 	if (m_type == Type::Null) {
 		m_type = Type::Object;
 		m_value.asObject = new Object;
