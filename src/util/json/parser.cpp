@@ -114,7 +114,7 @@ Value Parser::getArray()
 	size_t index = m_index;
 	m_index++;
 
-	Array array;
+	Value array;
 
 	Token token;
 	for (;;) {
@@ -124,30 +124,30 @@ Value Parser::getArray()
 		case Token::Type::Literal:
 			printf("Adding literal to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
 			if (token.symbol == "null") {
-				array.emplace(Value {});
+				array.emplace_back(nullptr);
 			}
 			else if (token.symbol == "true") {
-				array.emplace(Value { true });
+				array.emplace_back(true);
 			}
 			else if (token.symbol == "false") {
-				array.emplace(Value { false });
+				array.emplace_back(false);
 			}
 			break;
 		case Token::Type::Number:
 			printf("Adding number to array.. v:{%s}, t:{%d} -> %f\n", token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
-			array.emplace(Value { std::stod(token.symbol) });
+			array.emplace_back(std::stod(token.symbol));
 			break;
 		case Token::Type::String:
 			printf("Adding string to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
-			array.emplace(Value { token.symbol });
+			array.emplace_back(token.symbol);
 			break;
 		case Token::Type::BracketOpen:
 			m_index--;
-			array.emplace(Value { getArray() });
+			array.emplace_back(getArray());
 			break;
 		case Token::Type::BraceOpen:
 			m_index--;
-			array.emplace(Value { getObject() });
+			array.emplace_back(getObject());
 			break;
 		default:
 			// Error!
@@ -170,7 +170,7 @@ Value Parser::getArray()
 		}
 	}
 
-	return Value { array };
+	return array;
 }
 
 Value Parser::getObject()
@@ -178,7 +178,7 @@ Value Parser::getObject()
 	size_t index = m_index;
 	m_index++;
 
-	Object object;
+	Value object;
 
 	Token token;
 	std::string key;
@@ -227,30 +227,30 @@ Value Parser::getObject()
 		case Token::Type::Literal:
 			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
 			if (token.symbol == "null") {
-				object.emplace(key, Value {});
+				object[key] = nullptr;
 			}
 			else if (token.symbol == "true") {
-				object.emplace(key, Value { true });
+				object[key] = true;
 			}
 			else if (token.symbol == "false") {
-				object.emplace(key, Value { false });
+				object[key] = false;
 			}
 			break;
 		case Token::Type::Number:
 			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", key.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
-			object.emplace(key, Value { std::stod(token.symbol) });
+			object[key] = std::stod(token.symbol);
 			break;
 		case Token::Type::String:
 			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
-			object.emplace(key, Value { token.symbol });
+			object[key] = token.symbol;
 			break;
 		case Token::Type::BracketOpen:
 			m_index--;
-			object.emplace(key, Value { getArray() });
+			object[key] = getArray();
 			break;
 		case Token::Type::BraceOpen:
 			m_index--;
-			object.emplace(key, Value { getObject() });
+			object[key] = getObject();
 			break;
 		default:
 			// Error!
@@ -273,7 +273,7 @@ Value Parser::getObject()
 		}
 	}
 
-	return Value { object };
+	return object;
 }
 
 } // namespace Json

@@ -29,7 +29,7 @@ public:
 	{
 	}
 
-	void emplace(Value value)
+	void emplace_back(Value value)
 	{
 		m_values.emplace_back(std::move(value));
 	}
