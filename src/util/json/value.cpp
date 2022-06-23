@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <algorithm> // all_of
 #include <cassert>   // assert
 #include <cstdint>   // uint32_t
 #include <iostream>
@@ -38,6 +39,12 @@ Value::Value(bool value)
 	m_value.asBool = value;
 }
 
+Value::Value(int value)
+	: m_type(Type::Number)
+{
+	m_value.asDouble = value;
+}
+
 Value::Value(double value)
 	: m_type(Type::Number)
 {
@@ -68,7 +75,29 @@ Value::Value(const Object& value)
 	m_value.asObject = new Object(value);
 }
 
-Value Value::operator[](size_t index)
+Value::Value(const std::initializer_list<Value>& values)
+{
+	bool isObject = std::all_of(values.begin(), values.end(), [](const Value& value) {
+		return value.type() == Type::Array
+		       && value.m_value.asArray->size() == 2
+		       && value[0].m_type == Type::String;
+	});
+
+	if (!isObject) {
+		m_type = Type::Array;
+		m_value.asArray = new Array(values);
+	}
+	else {
+		m_type = Type::Object;
+		m_value.asObject = new Object;
+
+		for (auto& value : values) {
+			m_value.asObject->emplace(std::move(*value[0].m_value.asString),
+			                          std::move(value[1]));
+		}
+	}
+}
+
 // ------------------------------------------
 
 Value Value::parse(const std::string& input)
@@ -87,15 +116,36 @@ std::string Value::dump(const uint32_t indent, const char indentCharacter) const
 	return stringify.dump();
 }
 
+// ------------------------------------------
+
+Value& Value::operator[](size_t index)
 {
 	assert(m_type == Type::Array);
-	return m_value.asArray->values().at(index);
+	return m_value.asArray->at(index);
 }
 
-Value Value::operator[](const std::string& key)
+Value& Value::operator[](const std::string& key)
+{
+	// Implicit conversion to an object
+	if (m_type == Type::Null) {
+		m_type = Type::Object;
+		m_value.asObject = new Object;
+	}
+
+	assert(m_type == Type::Object);
+	return m_value.asObject->at(key);
+}
+
+const Value& Value::operator[](size_t index) const
+{
+	assert(m_type == Type::Array);
+	return m_value.asArray->at(index);
+}
+
+const Value& Value::operator[](const std::string& key) const
 {
 	assert(m_type == Type::Object);
-	return m_value.asObject->members().at(key);
+	return m_value.asObject->at(key);
 }
 
 // ------------------------------------------

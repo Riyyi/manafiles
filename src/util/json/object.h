@@ -30,6 +30,18 @@ public:
 		m_members.emplace(key, std::move(value));
 	}
 
+	Value& at(const std::string& key)
+	{
+		if (m_members.find(key) == m_members.end()) {
+			emplace(key, {});
+		}
+
+		return m_members.at(key);
+	}
+	Value& operator[](const std::string& key) { return at(key); }
+	const Value& at(const std::string& key) const { return m_members.at(key); }
+	const Value& operator[](const std::string& key) const { return m_members.at(key); }
+
 	const std::map<std::string, Value>& members() const { return m_members; }
 
 private:
