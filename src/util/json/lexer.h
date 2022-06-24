@@ -11,10 +11,13 @@
 // home/rick/code/cpp/manafiles/ https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
 
 #include <cstddef> // size_t
+#include <memory>  // shared_ptr
 #include <string>
 #include <vector>
 
 namespace Json {
+
+class Job;
 
 struct Token {
 	enum class Type {
@@ -39,7 +42,7 @@ struct Token {
 // Lexical analyzer
 class Lexer {
 public:
-	Lexer(const std::string& input);
+	Lexer(std::shared_ptr<Job> job);
 	virtual ~Lexer();
 
 	void analyze();
@@ -57,7 +60,8 @@ private:
 	bool getNumber();
 	bool getLiteral();
 
-	std::string m_input;
+	std::shared_ptr<Job> m_job { nullptr };
+
 	size_t m_index { 0 };
 	size_t m_column { 1 };
 	size_t m_line { 1 };

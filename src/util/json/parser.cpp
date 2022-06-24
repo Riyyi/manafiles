@@ -6,19 +6,21 @@
 
 #include <cstddef> // size_t
 #include <cstdint> // uint32_t
-#include <cstdio>  // printf
+#include <cstdio>  // printf, sprintf
 #include <map>
+#include <memory> // shared_ptr
 #include <string> // stod
 
 #include "util/json/array.h"
+#include "util/json/job.h"
 #include "util/json/lexer.h"
 #include "util/json/object.h"
 #include "util/json/parser.h"
 
 namespace Json {
 
-Parser::Parser(const std::string& input)
-	: m_input(input)
+Parser::Parser(std::shared_ptr<Job> job)
+	: m_job(job)
 {
 }
 
@@ -30,7 +32,7 @@ Parser::~Parser()
 
 Value Parser::parse()
 {
-	Lexer lexer(m_input);
+	Lexer lexer(m_job);
 	lexer.analyze();
 	m_tokens = lexer.tokens();
 
@@ -73,13 +75,14 @@ Value Parser::parse()
 		case Token::Type::Comma:
 			// Error!
 			// Multiple JSON root elements
+			m_job->printErrorLine(token, "multiple root elements");
+			m_index++;
 			break;
 		default:
 			// Error!
+			m_index++;
 			break;
 		}
-
-		break;
 	}
 
 	return result;

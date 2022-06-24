@@ -7,12 +7,13 @@
 #include <cstddef>
 #include <string>
 
+#include "util/json/job.h"
 #include "util/json/lexer.h"
 
 namespace Json {
 
-Lexer::Lexer(const std::string& input)
-	: m_input(input)
+Lexer::Lexer(std::shared_ptr<Job> job)
+	: m_job(job)
 {
 }
 
@@ -25,11 +26,11 @@ Lexer::~Lexer()
 void Lexer::analyze()
 {
 	printf("---------\n");
-	printf("Input JSON:\n%s\n", m_input.c_str());
+	printf("Input JSON:\n%s\n", m_job->input().c_str());
 	printf("---------\n");
 	printf("Lexing:\n");
 
-	while (m_index < m_input.length()) {
+	while (m_index < m_job->input().length()) {
 		switch (peek()) {
 		case '{':
 			printf("Pushing ->    BraceOpen:  \"{\"\t%zu[%zu]\n", m_line, m_column);
@@ -112,18 +113,21 @@ void Lexer::analyze()
 		m_index++;
 		m_column++;
 	}
+
+	// FIXME: handle case where the file doenst have a trailing newline
+	m_job->setLineNumbersWidth(std::to_string(m_line - 1).length());
 }
 
 // -----------------------------------------
 
 char Lexer::peek()
 {
-	return m_input[m_index];
+	return m_job->input()[m_index];
 }
 
 char Lexer::peekNext()
 {
-	return m_input[m_index + 1];
+	return m_job->input()[m_index + 1];
 }
 
 char Lexer::consume()

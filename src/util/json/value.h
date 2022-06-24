@@ -46,7 +46,7 @@ public:
 	Value(const Object& value);
 	Value(const std::initializer_list<Value>& values);
 
-	// ------------------------------------------
+	// --------------------------------------
 
 	static Value parse(const std::string& input);
 	std::string dump(const uint32_t indent = 0, const char indentCharacter = ' ') const;
@@ -54,7 +54,7 @@ public:
 	void emplace_back(Value value);
 	void emplace(const std::string& key, Value value);
 
-	// ------------------------------------------
+	// --------------------------------------
 
 	// Array index operator
 	Value& operator[](size_t index);
@@ -62,7 +62,7 @@ public:
 	const Value& operator[](size_t index) const;
 	const Value& operator[](const std::string& key) const;
 
-	// ------------------------------------------
+	// --------------------------------------
 
 	Type type() const { return m_type; }
 

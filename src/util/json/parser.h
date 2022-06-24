@@ -9,6 +9,7 @@
 
 #include <cstddef> // size_t
 #include <map>
+#include <memory> // shared_ptr
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -19,9 +20,11 @@
 
 namespace Json {
 
+class Job;
+
 class Parser {
 public:
-	Parser(const std::string& input);
+	Parser(std::shared_ptr<Job> job);
 	virtual ~Parser();
 
 	Value parse();
@@ -35,7 +38,7 @@ private:
 	Value getArray();
 	Value getObject();
 
-	std::string m_input;
+	std::shared_ptr<Job> m_job { nullptr };
 
 	std::vector<Token> m_tokens;
 	size_t m_index { 0 };

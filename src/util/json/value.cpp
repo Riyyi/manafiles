@@ -8,10 +8,12 @@
 #include <cassert>   // assert
 #include <cstdint>   // uint32_t
 #include <iostream>
+#include <memory> // make_shared, shared_ptr
 #include <string>
 #include <utility> // move
 
 #include "util/json/array.h"
+#include "util/json/job.h"
 #include "util/json/object.h"
 #include "util/json/stringify.h"
 #include "util/json/value.h"
@@ -102,10 +104,10 @@ Value::Value(const std::initializer_list<Value>& values)
 
 Value Value::parse(const std::string& input)
 {
-	Parser parser(input);
+	std::shared_ptr<Job> job = std::make_shared<Job>(input);
 
-	Value value;
-	value = parser.parse();
+	Parser parser(job);
+	Value value = parser.parse();
 
 	return value;
 }
@@ -230,7 +232,9 @@ std::istream& operator>>(std::istream& input, Value& value)
 	}
 	inputString.append(buffer, input.gcount());
 
-	Parser parser(inputString);
+	std::shared_ptr<Job> job = std::make_shared<Job>(inputString);
+
+	Parser parser(job);
 	value = parser.parse();
 
 	return input;
