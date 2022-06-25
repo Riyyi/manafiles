@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <sstream> // istringstream
-#include <string>  // getline
+#include <algorithm> // count
+#include <sstream>   // istringstream
+#include <string>    // getline
 
 #include "util/json/job.h"
 
@@ -13,6 +14,8 @@ namespace Json {
 
 Job::Job(const std::string& input)
 	: m_input(input)
+	// FIXME: handle case where the file doenst have a trailing newline
+	, m_lineNumbersWidth(std::to_string(std::count(m_input.begin(), m_input.end(), '\n') - 1).length())
 {
 }
 
@@ -47,6 +50,13 @@ void Job::printErrorLine(Token token, const char* message)
 			break;
 		}
 	}
+	// Replace tab indentation with spaces
+	size_t oldLineLength = line.length();
+	size_t tabs = line.find_first_not_of('\t');
+	if (tabs > 0 && tabs < line.size()) {
+		line = std::string(tabs * 4, ' ') + line.substr(tabs);
+	}
+	token.column += line.length() - oldLineLength;
 
 	// JSON line
 	std::string lineFormat = " %"

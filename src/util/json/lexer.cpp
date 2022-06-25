@@ -113,9 +113,6 @@ void Lexer::analyze()
 		m_index++;
 		m_column++;
 	}
-
-	// FIXME: handle case where the file doenst have a trailing newline
-	m_job->setLineNumbersWidth(std::to_string(m_line - 1).length());
 }
 
 // -----------------------------------------

@@ -30,8 +30,6 @@ public:
 
 	void printErrorLine(Token token, const char* message);
 
-	void setLineNumbersWidth(size_t width) { m_lineNumbersWidth = width; }
-
 	const std::string& input() { return m_input; }
 
 private:
