@@ -9,6 +9,9 @@
 #include <string>    // getline
 
 #include "util/json/job.h"
+#include "util/json/lexer.h"
+#include "util/json/parser.h"
+#include "util/json/value.h"
 
 namespace Json {
 
@@ -25,8 +28,25 @@ Job::~Job()
 
 // ------------------------------------------
 
+Value Job::fire()
+{
+	Lexer lexer(this);
+	lexer.analyze();
+
+	Parser parser(this);
+	Value value = parser.parse();
+
+	if (!m_success) {
+		return { nullptr };
+	}
+
+	return value;
+}
+
 void Job::printErrorLine(Token token, const char* message)
 {
+	m_success = false;
+
 	// Error message
 	std::string errorFormat = "\033[;1m" // Bold
 							  "JSON:%zu:%zu: "

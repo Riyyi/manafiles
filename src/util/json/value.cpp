@@ -104,10 +104,8 @@ Value::Value(const std::initializer_list<Value>& values)
 
 Value Value::parse(const std::string& input)
 {
-	std::shared_ptr<Job> job = std::make_shared<Job>(input);
-
-	Parser parser(job);
-	Value value = parser.parse();
+	Job job(input);
+	Value value = job.fire();
 
 	return value;
 }
@@ -232,10 +230,8 @@ std::istream& operator>>(std::istream& input, Value& value)
 	}
 	inputString.append(buffer, input.gcount());
 
-	std::shared_ptr<Job> job = std::make_shared<Job>(inputString);
-
-	Parser parser(job);
-	value = parser.parse();
+	Job job(inputString);
+	value = job.fire();
 
 	return input;
 }

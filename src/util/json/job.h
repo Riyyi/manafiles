@@ -9,10 +9,13 @@
 
 #include <cstddef> // size_t
 #include <string>
+#include <vector>
 
 #include "util/json/lexer.h"
 
 namespace Json {
+
+class Value;
 
 class Job {
 public:
@@ -28,13 +31,21 @@ public:
 		Comment,
 	};
 
+	Value fire();
+
 	void printErrorLine(Token token, const char* message);
 
-	const std::string& input() { return m_input; }
+	bool success() const { return m_success; }
+	const std::string& input() const { return m_input; }
+	std::vector<Token>* tokens() { return &m_tokens; }
 
 private:
+	bool m_success { true };
+
 	std::string m_input;
 	size_t m_lineNumbersWidth { 0 };
+
+	std::vector<Token> m_tokens;
 };
 
 } // namespace Json

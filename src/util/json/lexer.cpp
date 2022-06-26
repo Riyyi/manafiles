@@ -12,8 +12,9 @@
 
 namespace Json {
 
-Lexer::Lexer(std::shared_ptr<Job> job)
+Lexer::Lexer(Job* job)
 	: m_job(job)
+	, m_tokens(job->tokens())
 {
 }
 
@@ -34,27 +35,27 @@ void Lexer::analyze()
 		switch (peek()) {
 		case '{':
 			printf("Pushing ->    BraceOpen:  \"{\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::BraceOpen, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::BraceOpen, m_line, m_column, "{" });
 			break;
 		case '}':
 			printf("Pushing ->   BraceClose:  \"}\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::BraceClose, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::BraceClose, m_line, m_column, "}" });
 			break;
 		case '[':
 			printf("Pushing ->  BracketOpen:  \"[\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::BracketOpen, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::BracketOpen, m_line, m_column, "[" });
 			break;
 		case ']':
 			printf("Pushing -> BracketClose:  \"]\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::BracketClose, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::BracketClose, m_line, m_column, "]" });
 			break;
 		case ':':
 			printf("Pushing ->        Colon:  \":\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::Colon, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::Colon, m_line, m_column, ":" });
 			break;
 		case ',':
 			printf("Pushing ->        Comma:  \",\"\t%zu[%zu]\n", m_line, m_column);
-			m_tokens.push_back({ Token::Type::Comma, m_line, m_column, "" });
+			m_tokens->push_back({ Token::Type::Comma, m_line, m_column, "," });
 			break;
 		case '"':
 			if (!getString()) {
@@ -168,7 +169,7 @@ bool Lexer::getString()
 	}
 
 	printf("Pushing ->       String:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
-	m_tokens.push_back({ Token::Type::String, m_line, column, symbol });
+	m_tokens->push_back({ Token::Type::String, m_line, column, symbol });
 
 	return true;
 }
@@ -211,7 +212,7 @@ bool Lexer::getNumber()
 	m_column--;
 
 	printf("Pushing ->       Number:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
-	m_tokens.push_back({ Token::Type::Number, m_line, column, symbol });
+	m_tokens->push_back({ Token::Type::Number, m_line, column, symbol });
 
 	return true;
 }
@@ -247,7 +248,7 @@ bool Lexer::getLiteral()
 	}
 
 	printf("Pushing ->      Literal:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
-	m_tokens.push_back({ Token::Type::Literal, m_line, column, symbol });
+	m_tokens->push_back({ Token::Type::Literal, m_line, column, symbol });
 
 	return true;
 }

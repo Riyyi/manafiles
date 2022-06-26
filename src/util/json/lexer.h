@@ -42,12 +42,10 @@ struct Token {
 // Lexical analyzer
 class Lexer {
 public:
-	Lexer(std::shared_ptr<Job> job);
+	Lexer(Job* job);
 	virtual ~Lexer();
 
 	void analyze();
-
-	const std::vector<Token>& tokens() const { return m_tokens; }
 
 private:
 	char peek();
@@ -60,13 +58,13 @@ private:
 	bool getNumber();
 	bool getLiteral();
 
-	std::shared_ptr<Job> m_job { nullptr };
+	Job* m_job { nullptr };
 
 	size_t m_index { 0 };
 	size_t m_column { 1 };
 	size_t m_line { 1 };
 
-	std::vector<Token> m_tokens;
+	std::vector<Token>* m_tokens { nullptr };
 };
 
 } // namespace Json

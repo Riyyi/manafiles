@@ -24,7 +24,7 @@ class Job;
 
 class Parser {
 public:
-	Parser(std::shared_ptr<Job> job);
+	Parser(Job* job);
 	virtual ~Parser();
 
 	Value parse();
@@ -38,10 +38,11 @@ private:
 	Value getArray();
 	Value getObject();
 
-	std::shared_ptr<Job> m_job { nullptr };
+	Job* m_job { nullptr };
 
-	std::vector<Token> m_tokens;
 	size_t m_index { 0 };
+
+	std::vector<Token>* m_tokens { nullptr };
 };
 
 } // namespace Json

@@ -19,8 +19,9 @@
 
 namespace Json {
 
-Parser::Parser(std::shared_ptr<Job> job)
+Parser::Parser(Job* job)
 	: m_job(job)
+	, m_tokens(m_job->tokens())
 {
 }
 
@@ -32,17 +33,13 @@ Parser::~Parser()
 
 Value Parser::parse()
 {
-	Lexer lexer(m_job);
-	lexer.analyze();
-	m_tokens = lexer.tokens();
-
 	printf("---------\n");
 	printf("Parsing:\n");
 
 	Value result;
 
 	Token token;
-	while (m_index < m_tokens.size()) {
+	while (m_index < m_tokens->size()) {
 		token = peek();
 
 		switch (token.type) {
@@ -92,7 +89,7 @@ Value Parser::parse()
 
 Token Parser::peek()
 {
-	return m_tokens[m_index];
+	return (*m_tokens)[m_index];
 }
 
 Token Parser::consume()
