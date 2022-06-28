@@ -34,14 +34,14 @@ Value Job::fire()
 	lexer.analyze();
 
 	if (!m_success) {
-		return { nullptr };
+		return nullptr;
 	}
 
 	Parser parser(this);
 	Value value = parser.parse();
 
 	if (!m_success) {
-		return { nullptr };
+		return nullptr;
 	}
 
 	return value;
