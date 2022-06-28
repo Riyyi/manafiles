@@ -59,8 +59,6 @@ void Lexer::analyze()
 			break;
 		case '"':
 			if (!getString()) {
-				// Error!
-				printf("Invalid JSON!\n");
 				return;
 			}
 			break;
@@ -150,8 +148,17 @@ bool Lexer::consumeSpecific(char character)
 bool Lexer::getString()
 {
 	size_t column = m_column;
-	std::string symbol = "";
 
+	auto isValidStringCharacter = [](char check) -> bool {
+		std::string invalidCharacters = "{}[]:,";
+		if (invalidCharacters.find(check) != std::string::npos) {
+			return false;
+		}
+
+		return true;
+	};
+
+	std::string symbol = "";
 	char character = consume();
 	for (;;) {
 		character = peek();
@@ -159,6 +166,11 @@ bool Lexer::getString()
 		// TODO: Escape logic goes here
 		// ", \, /, b(ackspace), f(orm feed), l(ine feed), c(arriage return), t(ab), u(nicode) \u0021
 
+		if (!isValidStringCharacter(character)) {
+			m_tokens->push_back({ Token::Type::None, m_line, column, "" });
+			m_job->printErrorLine(m_job->tokens()->back(), "strings should be wrapped in double quotes");
+			return false;
+		}
 		if (character == '"') {
 			break;
 		}

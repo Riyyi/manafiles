@@ -33,6 +33,10 @@ Value Job::fire()
 	Lexer lexer(this);
 	lexer.analyze();
 
+	if (!m_success) {
+		return { nullptr };
+	}
+
 	Parser parser(this);
 	Value value = parser.parse();
 
