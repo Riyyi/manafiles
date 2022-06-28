@@ -45,13 +45,13 @@ Value Parser::parse()
 		switch (token.type) {
 		case Token::Type::Literal:
 			if (token.symbol == "null") {
-				result = Value {};
+				result = nullptr;
 			}
 			else if (token.symbol == "true") {
-				result = Value { true };
+				result = true;
 			}
 			else if (token.symbol == "false") {
-				result = Value { false };
+				result = false;
 			}
 			m_index++;
 			break;
@@ -120,8 +120,7 @@ Value Parser::getArray()
 	for (;;) {
 		token = consume();
 
-		switch (token.type) {
-		case Token::Type::Literal:
+		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
 			if (token.symbol == "null") {
 				array.emplace_back(nullptr);
@@ -132,30 +131,33 @@ Value Parser::getArray()
 			else if (token.symbol == "false") {
 				array.emplace_back(false);
 			}
-			break;
-		case Token::Type::Number:
+		}
+		else if (token.type == Token::Type::Number) {
 			printf("Adding number to array.. v:{%s}, t:{%d} -> %f\n", token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
 			array.emplace_back(std::stod(token.symbol));
-			break;
-		case Token::Type::String:
+		}
+		else if (token.type == Token::Type::String) {
 			printf("Adding string to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
 			array.emplace_back(token.symbol);
-			break;
-		case Token::Type::BracketOpen:
+		}
+		else if (token.type == Token::Type::BracketOpen) {
 			m_index--;
 			array.emplace_back(getArray());
-			break;
-		case Token::Type::BraceOpen:
+		}
+		else if (token.type == Token::Type::BraceOpen) {
 			m_index--;
 			array.emplace_back(getObject());
+		}
+		else if (token.type == Token::Type::BracketClose) {
 			break;
-		default:
 			// Error!
 			printf("Invalid JSON! array:1\n");
+		}
+		else {
 			break;
 		}
 
-		// Find , or }
+		// Find , or ]
 		token = consume();
 		if (token.type == Token::Type::Comma) {
 			continue;
@@ -222,9 +224,9 @@ Value Parser::getObject()
 			break;
 		}
 
-		// Add member to object
-		switch (token.type) {
-		case Token::Type::Literal:
+		// Add member (name:value pair) to object
+		token = consume();
+		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
 			if (token.symbol == "null") {
 				object[key] = nullptr;
@@ -235,26 +237,26 @@ Value Parser::getObject()
 			else if (token.symbol == "false") {
 				object[key] = false;
 			}
-			break;
-		case Token::Type::Number:
+		}
+		else if (token.type == Token::Type::Number) {
 			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", key.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
 			object[key] = std::stod(token.symbol);
-			break;
-		case Token::Type::String:
+		}
+		else if (token.type == Token::Type::String) {
 			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
 			object[key] = token.symbol;
-			break;
-		case Token::Type::BracketOpen:
+		}
+		else if (token.type == Token::Type::BracketOpen) {
 			m_index--;
 			object[key] = getArray();
-			break;
-		case Token::Type::BraceOpen:
+		}
+		else if (token.type == Token::Type::BraceOpen) {
 			m_index--;
 			object[key] = getObject();
-			break;
-		default:
 			// Error!
 			printf("Invalid JSON! 5\n");
+		}
+		else {
 			break;
 		}
 
