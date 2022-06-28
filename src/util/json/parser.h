@@ -31,6 +31,7 @@ public:
 
 private:
 	Token peek();
+	bool seekForward(Token::Type type);
 
 	Token consume();
 	bool consumeSpecific(Token::Type type);

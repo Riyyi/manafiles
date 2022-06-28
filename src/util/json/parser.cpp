@@ -69,14 +69,16 @@ Value Parser::parse()
 		case Token::Type::BraceOpen:
 			result = getObject();
 			break;
-		case Token::Type::Comma:
-			// Error!
-			// Multiple JSON root elements
-			m_job->printErrorLine(token, "multiple root elements");
+		case Token::Type::BracketClose:
+			m_job->printErrorLine(token, "expecting value, not ']'");
+			m_index++;
+			break;
+		case Token::Type::BraceClose:
+			m_job->printErrorLine(token, "expecting string, not '}'");
 			m_index++;
 			break;
 		default:
-			// Error!
+			m_job->printErrorLine(token, "multiple root elements");
 			m_index++;
 			break;
 		}
@@ -90,6 +92,18 @@ Value Parser::parse()
 Token Parser::peek()
 {
 	return (*m_tokens)[m_index];
+}
+
+bool Parser::seekForward(Token::Type type)
+{
+	for (size_t index = m_index; index < m_tokens->size(); ++index) {
+		if ((*m_tokens)[index].type == type) {
+			m_index = index;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 Token Parser::consume()
@@ -111,11 +125,17 @@ bool Parser::consumeSpecific(Token::Type type)
 
 Value Parser::getArray()
 {
-	size_t index = m_index;
 	m_index++;
 
-	Value array;
+	auto reportError = [this](Token token, const std::string& message) -> void {
+		m_job->printErrorLine(token, message.c_str());
 
+		// After an error, try to find the closing bracket
+		seekForward(Token::Type::BracketClose);
+		consumeSpecific(Token::Type::BracketClose);
+	};
+
+	Value array = Value::Type::Array;
 	Token token;
 	for (;;) {
 		token = consume();
@@ -149,11 +169,14 @@ Value Parser::getArray()
 			array.emplace_back(getObject());
 		}
 		else if (token.type == Token::Type::BracketClose) {
+			// Trailing comma
+			if (array.asArray().size() > 0) {
+				reportError((*m_tokens)[m_index - 2], "invalid comma, expecting ']'");
+			}
 			break;
-			// Error!
-			printf("Invalid JSON! array:1\n");
 		}
 		else {
+			reportError(token, "expecting value or ']', not '" + token.symbol + "'");
 			break;
 		}
 
@@ -166,8 +189,7 @@ Value Parser::getArray()
 			break;
 		}
 		else {
-			// Error!
-			printf("Invalid JSON! array:2\n");
+			reportError(token, "expecting comma or ']', not '" + token.symbol + "'");
 			break;
 		}
 	}
@@ -177,50 +199,49 @@ Value Parser::getArray()
 
 Value Parser::getObject()
 {
-	size_t index = m_index;
 	m_index++;
 
-	Value object;
+	auto reportError = [this](Token token, const std::string& message) -> void {
+		m_job->printErrorLine(token, message.c_str());
 
+		// After an error, try to find the closing bracket
+		seekForward(Token::Type::BraceClose);
+		consumeSpecific(Token::Type::BraceClose);
+	};
+
+	Value object = Value::Type::Object;
 	Token token;
 	std::string key;
 	std::map<std::string, uint32_t> unique;
 	for (;;) {
-		// Find string key
 		token = consume();
+		// Empty object
+		if (token.type == Token::Type::BraceClose) {
+			// Trailing comma
+			if (object.asObject().size() > 0) {
+				reportError((*m_tokens)[m_index - 2], "invalid comma, expecting '}'");
+			}
+			break;
+		}
+		// Find string key
 		if (token.type != Token::Type::String) {
-			// Error!
-			printf("Invalid JSON! 1\n");
+			reportError(token, "expecting string, or '}' not '" + token.symbol + "'");
 			break;
 		}
 
 		// Check if key exists in hashmap
 		key = token.symbol;
 		if (unique.find(key) != unique.end()) {
-			// If exists, unique key fail!
-			// Error!
-			printf("Invalid JSON! 2\n");
+			reportError(token, "duplicate key '" + token.symbol + "', names should be unique");
 			break;
 		}
 		// Add key to hashmap
 		unique.insert({ key, 0 });
 
 		// Find :
-		if (!consumeSpecific(Token::Type::Colon)) {
-			// Error!
-			printf("Invalid JSON! 3\n");
-			break;
-		}
-
-		// Find string/number/literal value
 		token = consume();
-		if (token.type != Token::Type::String
-		    && token.type != Token::Type::Number
-		    && token.type != Token::Type::Literal
-		    && token.type != Token::Type::BracketOpen
-		    && token.type != Token::Type::BraceOpen) {
-			// Error!
-			printf("Invalid JSON! 4\n");
+		if (token.type != Token::Type::Colon) {
+			reportError(token, "expecting colon, not '" + token.symbol + "'");
 			break;
 		}
 
@@ -253,10 +274,9 @@ Value Parser::getObject()
 		else if (token.type == Token::Type::BraceOpen) {
 			m_index--;
 			object[key] = getObject();
-			// Error!
-			printf("Invalid JSON! 5\n");
 		}
 		else {
+			reportError(token, "expecting value, not '" + token.symbol + "'");
 			break;
 		}
 
@@ -269,8 +289,7 @@ Value Parser::getObject()
 			break;
 		}
 		else {
-			// Error!
-			printf("Invalid JSON! 6\n");
+			reportError(token, "expecting comma or '}', not '" + token.symbol + "'");
 			break;
 		}
 	}
