@@ -35,6 +35,12 @@ Value& Value::operator=(const Value& other)
 	return *this;
 }
 
+Value::Value(Type type)
+	: m_type(type)
+{
+	create();
+}
+
 Value::Value(bool value)
 	: m_type(Type::Bool)
 {
@@ -180,16 +186,43 @@ const Value& Value::operator[](const std::string& key) const
 
 // ------------------------------------------
 
+void Value::create()
+{
+	switch (m_type) {
+	case Type::Bool:
+		m_value.asBool = false;
+		break;
+	case Type::Number:
+		m_value.asDouble = 0.0;
+		break;
+	case Type::String:
+		m_value.asString = new std::string;
+		break;
+	case Type::Array:
+		m_value.asArray = new Array;
+		break;
+	case Type::Object:
+		m_value.asObject = new Object;
+		break;
+	default:
+		break;
+	}
+}
+
 void Value::clear()
 {
-	if (m_type == Type::String) {
+	switch (m_type) {
+	case Type::String:
 		delete m_value.asString;
-	}
-	if (m_type == Type::Array) {
+		break;
+	case Type::Array:
 		delete m_value.asArray;
-	}
-	if (m_type == Type::Object) {
+		break;
+	case Type::Object:
 		delete m_value.asObject;
+		break;
+	default:
+		break;
 	}
 }
 

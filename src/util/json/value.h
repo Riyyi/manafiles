@@ -37,6 +37,7 @@ public:
 	// Assignment operator
 	Value& operator=(const Value& other);
 
+	Value(Type type);
 	Value(bool value);
 	Value(int value);
 	Value(double value);
@@ -73,6 +74,7 @@ public:
 	const Object& asObject() const { return *m_value.asObject; }
 
 private:
+	void create();
 	void clear();
 	void copyFrom(const Value& other);
 
