@@ -74,8 +74,6 @@ void Lexer::analyze()
 		case '8':
 		case '9':
 			if (!getNumber()) {
-				// Error!
-				printf("Invalid JSON!\n");
 				return;
 			}
 			break;
@@ -190,32 +188,16 @@ bool Lexer::getString()
 
 bool Lexer::getNumber()
 {
-	size_t index = m_index;
 	size_t column = m_column;
 	std::string symbol = "";
+	std::string breakOnGrammar = std::string() + "{}[]:,\"" + '\n';
 
-	bool seenDot = false;
-	char character;
-	for (;;) {
+	for (char character;;) {
 		character = peek();
 
-		// FIXME: Break on separator }], rather than valid number symbols to
-		//        get the entire thing, resulting in better error handling
-		// FIXME: e/E and exponent are also valid characters (?)
-		if (character != 45                          // -
-		    && character != 46                       // .
-		    && (character < 48 || character > 57)) { // 0-9
+		// Break on all valid JSON grammar thats not a number
+		if (breakOnGrammar.find(character) != std::string::npos) {
 			break;
-		}
-
-		// Fail if '.' is used more than once
-		if (seenDot == true && character == 46) { // .
-			m_index = index;
-			m_column = column;
-			return false;
-		}
-		if (character == 46) { // .
-			seenDot = true;
 		}
 
 		m_index++;

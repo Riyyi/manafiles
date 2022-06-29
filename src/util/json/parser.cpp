@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstddef> // size_t
 #include <cstdint> // uint32_t
-#include <cstdio>  // printf, sprintf
+#include <algorithm> // count
+#include <cstddef>   // size_t
+#include <cstdio>    // printf, sprintf
 #include <map>
 #include <memory> // shared_ptr
-#include <string> // stod
+#include <string>  // stod
 
 #include "util/json/array.h"
 #include "util/json/job.h"
@@ -56,7 +57,7 @@ Value Parser::parse()
 			m_index++;
 			break;
 		case Token::Type::Number:
-			result = Value { std::stod(token.symbol) };
+			result = getNumber();
 			m_index++;
 			break;
 		case Token::Type::String:
@@ -123,6 +124,102 @@ bool Parser::consumeSpecific(Token::Type type)
 	return true;
 }
 
+Value Parser::getNumber()
+{
+	Token token = consume();
+
+	auto reportError = [this](Token token, const std::string& message) -> void {
+		m_job->printErrorLine(token, message.c_str());
+	};
+
+	// Validation
+	// number = [ minus ] int [ frac ] [ exp ]
+
+	size_t minusPrefix = token.symbol[0] == '-' ? 1 : 0;
+
+	// Leading 0s
+	if (token.symbol[minusPrefix] == '0'
+	    && token.symbol[minusPrefix + 1] > '0' && token.symbol[minusPrefix + 1] < '9') {
+		reportError(token, "invalid leading zero");
+		return nullptr;
+	}
+
+	enum class State {
+		Int,
+		Fraction,
+		Exponent
+	};
+
+	State state = State::Int;
+	std::string validCharacters = "0123456789-";
+
+	size_t fractionPosition = 0;
+	size_t exponentPosition = 0;
+	size_t length = token.symbol.length();
+	for (size_t i = 0; i < length; ++i) {
+		char character = token.symbol[i];
+
+		// Int -> Fraction
+		if (character == '.' && state == State::Int) {
+			state = State::Fraction;
+			validCharacters = "0123456789";
+			fractionPosition = i;
+			continue;
+		}
+		// Int/Fraction -> Exponent
+		else if ((character == 'e' || character == 'E') && state != State::Exponent) {
+			state = State::Exponent;
+			validCharacters = "0123456789+-";
+			exponentPosition = i;
+			continue;
+		}
+
+		if (state == State::Int) {
+			if (character == '-') {
+				if (i == length - 1) {
+					reportError(token, "expected number after minus");
+					return nullptr;
+				}
+				if (i != 0) {
+					reportError(token, "invalid minus");
+					return nullptr;
+				}
+			}
+		}
+		else if (state == State::Fraction) {
+		}
+		else if (state == State::Exponent) {
+			if (character == '-' || character == '+') {
+				if (i == length - 1) {
+					reportError(token, "expected number after plus/minus");
+					return nullptr;
+				}
+				if (i > exponentPosition + 1) {
+					reportError(token, "invalid plus/minus");
+					return nullptr;
+				}
+			}
+		}
+
+		if (validCharacters.find(character) == std::string::npos) {
+			reportError(token, std::string() + "invalid number, unexpected '" + character + '\'');
+			return nullptr;
+		}
+	}
+
+	if (fractionPosition == exponentPosition - 1) {
+		reportError(token, "invalid exponent sign, expected number");
+		return nullptr;
+	}
+
+	if (fractionPosition == length - 1 || exponentPosition == length - 1) {
+		reportError(token, "invalid number");
+		return nullptr;
+	}
+
+	return std::stod(token.symbol);
+}
+
 Value Parser::getArray()
 {
 	m_index++;
@@ -138,7 +235,7 @@ Value Parser::getArray()
 	Value array = Value::Type::Array;
 	Token token;
 	for (;;) {
-		token = consume();
+		token = peek();
 
 		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
@@ -151,27 +248,27 @@ Value Parser::getArray()
 			else if (token.symbol == "false") {
 				array.emplace_back(false);
 			}
+			m_index++;
 		}
 		else if (token.type == Token::Type::Number) {
 			printf("Adding number to array.. v:{%s}, t:{%d} -> %f\n", token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
-			array.emplace_back(std::stod(token.symbol));
+			array.emplace_back(getNumber());
 		}
 		else if (token.type == Token::Type::String) {
 			printf("Adding string to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
 			array.emplace_back(token.symbol);
+			m_index++;
 		}
 		else if (token.type == Token::Type::BracketOpen) {
-			m_index--;
 			array.emplace_back(getArray());
 		}
 		else if (token.type == Token::Type::BraceOpen) {
-			m_index--;
 			array.emplace_back(getObject());
 		}
 		else if (token.type == Token::Type::BracketClose) {
 			// Trailing comma
 			if (array.asArray().size() > 0) {
-				reportError((*m_tokens)[m_index - 2], "invalid comma, expecting ']'");
+				reportError((*m_tokens)[m_index - 1], "invalid comma, expecting ']'");
 			}
 			break;
 		}
@@ -260,8 +357,9 @@ Value Parser::getObject()
 			}
 		}
 		else if (token.type == Token::Type::Number) {
-			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", key.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
-			object[key] = std::stod(token.symbol);
+			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", name.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
+			m_index--;
+			object[key] = getNumber();
 		}
 		else if (token.type == Token::Type::String) {
 			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
