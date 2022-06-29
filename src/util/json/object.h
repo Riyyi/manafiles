@@ -42,6 +42,7 @@ public:
 	const Value& at(const std::string& key) const { return m_members.at(key); }
 	const Value& operator[](const std::string& key) const { return m_members.at(key); }
 
+	size_t size() const { return m_members.size(); }
 	const std::map<std::string, Value>& members() const { return m_members; }
 
 private:
