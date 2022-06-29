@@ -25,22 +25,22 @@ public:
 	{
 	}
 
-	void emplace(const std::string& key, Value value)
+	void emplace(const std::string& name, Value value)
 	{
-		m_members.emplace(key, std::move(value));
+		m_members.emplace(name, std::move(value));
 	}
 
-	Value& at(const std::string& key)
+	Value& at(const std::string& name)
 	{
-		if (m_members.find(key) == m_members.end()) {
-			emplace(key, {});
+		if (m_members.find(name) == m_members.end()) {
+			emplace(name, {});
 		}
 
-		return m_members.at(key);
+		return m_members.at(name);
 	}
-	Value& operator[](const std::string& key) { return at(key); }
-	const Value& at(const std::string& key) const { return m_members.at(key); }
-	const Value& operator[](const std::string& key) const { return m_members.at(key); }
+	Value& operator[](const std::string& name) { return at(name); }
+	const Value& at(const std::string& name) const { return m_members.at(name); }
+	const Value& operator[](const std::string& name) const { return m_members.at(name); }
 
 	size_t size() const { return m_members.size(); }
 	const std::map<std::string, Value>& members() const { return m_members; }

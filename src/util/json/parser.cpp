@@ -307,7 +307,7 @@ Value Parser::getObject()
 
 	Value object = Value::Type::Object;
 	Token token;
-	std::string key;
+	std::string name;
 	std::map<std::string, uint8_t> unique;
 	for (;;) {
 		token = consume();
@@ -319,20 +319,20 @@ Value Parser::getObject()
 			}
 			break;
 		}
-		// Find string key
+		// Find string name
 		if (token.type != Token::Type::String) {
 			reportError(token, "expecting string, or '}' not '" + token.symbol + "'");
 			break;
 		}
 
-		// Check if key exists in hashmap
-		key = token.symbol;
-		if (unique.find(key) != unique.end()) {
-			reportError(token, "duplicate key '" + token.symbol + "', names should be unique");
+		// Check if name exists in hashmap
+		name = token.symbol;
+		if (unique.find(name) != unique.end()) {
+			reportError(token, "duplicate name '" + token.symbol + "', names should be unique");
 			break;
 		}
-		// Add key to hashmap
-		unique.insert({ key, 0 });
+		// Add name to hashmap
+		unique.insert({ name, 0 });
 
 		// Find :
 		token = consume();
@@ -344,26 +344,28 @@ Value Parser::getObject()
 		// Add member (name:value pair) to object
 		token = consume();
 		if (token.type == Token::Type::Literal) {
-			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
+			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", name.c_str(), token.symbol.c_str(), (int)token.type);
 			m_index--;
-			object[key] = getLiteral();
+			object[name] = getLiteral();
 		}
 		else if (token.type == Token::Type::Number) {
 			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", name.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
 			m_index--;
-			object[key] = getNumber();
+			object[name] = getNumber();
 		}
 		else if (token.type == Token::Type::String) {
-			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
-			object[key] = token.symbol;
+#ifdef JSON_DEBUG
+			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", name.c_str(), token.symbol.c_str(), (int)token.type);
+#endif
+			object[name] = token.symbol;
 		}
 		else if (token.type == Token::Type::BracketOpen) {
 			m_index--;
-			object[key] = getArray();
+			object[name] = getArray();
 		}
 		else if (token.type == Token::Type::BraceOpen) {
 			m_index--;
-			object[key] = getObject();
+			object[name] = getObject();
 		}
 		else {
 			reportError(token, "expecting value, not '" + token.symbol + "'");
