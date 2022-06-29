@@ -55,6 +55,7 @@ private:
 	bool consumeSpecific(char character);
 
 	bool getString();
+	bool getNumberOrLiteral(Token::Type type);
 	bool getNumber();
 	bool getLiteral();
 

@@ -44,16 +44,7 @@ Value Parser::parse()
 
 		switch (token.type) {
 		case Token::Type::Literal:
-			if (token.symbol == "null") {
-				result = nullptr;
-			}
-			else if (token.symbol == "true") {
-				result = true;
-			}
-			else if (token.symbol == "false") {
-				result = false;
-			}
-			m_index++;
+			result = getLiteral();
 			break;
 		case Token::Type::Number:
 			result = getNumber();
@@ -121,6 +112,24 @@ bool Parser::consumeSpecific(Token::Type type)
 
 	m_index++;
 	return true;
+}
+
+Value Parser::getLiteral()
+{
+	Token token = consume();
+
+	if (token.symbol == "null") {
+		return nullptr;
+	}
+	else if (token.symbol == "true") {
+		return true;
+	}
+	else if (token.symbol == "false") {
+		return false;
+	}
+
+	m_job->printErrorLine(token, "invalid literal");
+	return nullptr;
 }
 
 Value Parser::getNumber()
@@ -238,16 +247,7 @@ Value Parser::getArray()
 
 		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
-			if (token.symbol == "null") {
-				array.emplace_back(nullptr);
-			}
-			else if (token.symbol == "true") {
-				array.emplace_back(true);
-			}
-			else if (token.symbol == "false") {
-				array.emplace_back(false);
-			}
-			m_index++;
+			array.emplace_back(getLiteral());
 		}
 		else if (token.type == Token::Type::Number) {
 			printf("Adding number to array.. v:{%s}, t:{%d} -> %f\n", token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
@@ -345,15 +345,8 @@ Value Parser::getObject()
 		token = consume();
 		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", key.c_str(), token.symbol.c_str(), (int)token.type);
-			if (token.symbol == "null") {
-				object[key] = nullptr;
-			}
-			else if (token.symbol == "true") {
-				object[key] = true;
-			}
-			else if (token.symbol == "false") {
-				object[key] = false;
-			}
+			m_index--;
+			object[key] = getLiteral();
 		}
 		else if (token.type == Token::Type::Number) {
 			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", name.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));

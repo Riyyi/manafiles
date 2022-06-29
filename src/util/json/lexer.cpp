@@ -77,12 +77,33 @@ void Lexer::analyze()
 				return;
 			}
 			break;
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
 		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
 		case 'n':
+		case 'o':
+		case 'p':
+		case 'q':
+		case 'r':
+		case 's':
 		case 't':
+		case 'u':
+		case 'v':
+		case 'w':
+		case 'x':
+		case 'y':
+		case 'z':
 			if (!getLiteral()) {
-				// Error!
-				printf("Invalid JSON!\n");
 				return;
 			}
 			break;
@@ -104,7 +125,7 @@ void Lexer::analyze()
 			// Error!
 			m_tokens->push_back({ Token::Type::None, m_line, m_column, std::string(1, peek()) });
 			m_job->printErrorLine(m_tokens->back(),
-			                      ("unexpected character '" + std::string(1, peek()) + "'").c_str());
+			                      (std::string() + "unexpected character '" + peek() + "'").c_str());
 			return;
 			break;
 		}
@@ -186,16 +207,16 @@ bool Lexer::getString()
 	return true;
 }
 
-bool Lexer::getNumber()
+bool Lexer::getNumberOrLiteral(Token::Type type)
 {
 	size_t column = m_column;
 	std::string symbol = "";
-	std::string breakOnGrammar = std::string() + "{}[]:,\"" + '\n';
+	std::string breakOnGrammar = std::string() + "{}[]:,\" " + '\t' + '\r' + '\n';
 
 	for (char character;;) {
 		character = peek();
 
-		// Break on all valid JSON grammar thats not a number
+		// Break on all valid JSON grammar thats not a number or literal
 		if (breakOnGrammar.find(character) != std::string::npos) {
 			break;
 		}
@@ -207,46 +228,19 @@ bool Lexer::getNumber()
 	m_index--;
 	m_column--;
 
-	printf("Pushing ->       Number:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
-	m_tokens->push_back({ Token::Type::Number, m_line, column, symbol });
+	m_tokens->push_back({ type, m_line, column, symbol });
 
 	return true;
 }
 
+bool Lexer::getNumber()
+{
+	return getNumberOrLiteral(Token::Type::Number);
+}
+
 bool Lexer::getLiteral()
 {
-	size_t index = m_index;
-	size_t column = m_column;
-
-	std::string symbol = "";
-
-	char character;
-	for (;;) {
-		character = peek();
-
-		// Literals can only contain lower-case letters
-		if (character < 97 || character > 122) { // a-z
-			break;
-		}
-
-		m_index++;
-		m_column++;
-		symbol += character;
-	}
-	m_index--;
-	m_column--;
-
-	// Literal name validation
-	if (symbol != "false" && symbol != "null" && symbol != "true") {
-		m_index = index;
-		m_column = column;
-		return false;
-	}
-
-	printf("Pushing ->      Literal:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
-	m_tokens->push_back({ Token::Type::Literal, m_line, column, symbol });
-
-	return true;
+	return getNumberOrLiteral(Token::Type::Literal);
 }
 
 } // namespace Json

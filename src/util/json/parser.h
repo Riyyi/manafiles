@@ -31,6 +31,7 @@ private:
 	Token consume();
 	bool consumeSpecific(Token::Type type);
 
+	Value getLiteral();
 	Value getNumber();
 	Value getArray();
 	Value getObject();
