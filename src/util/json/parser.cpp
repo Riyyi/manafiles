@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstdint> // uint32_t
 #include <algorithm> // count
 #include <cstddef>   // size_t
-#include <cstdio>    // printf, sprintf
+#include <cstdint>   // uint8_t
+#include <cstdio>    // printf
 #include <map>
-#include <memory> // shared_ptr
-#include <string>  // stod
+#include <string> // stod
 
 #include "util/json/array.h"
 #include "util/json/job.h"
@@ -309,7 +308,7 @@ Value Parser::getObject()
 	Value object = Value::Type::Object;
 	Token token;
 	std::string key;
-	std::map<std::string, uint32_t> unique;
+	std::map<std::string, uint8_t> unique;
 	for (;;) {
 		token = consume();
 		// Empty object

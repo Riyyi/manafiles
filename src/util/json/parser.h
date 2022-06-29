@@ -8,11 +8,6 @@
 #define JSON_PARSER_H
 
 #include <cstddef> // size_t
-#include <map>
-#include <memory> // shared_ptr
-#include <string>
-#include <type_traits>
-#include <typeinfo>
 #include <vector>
 
 #include "util/json/lexer.h"
