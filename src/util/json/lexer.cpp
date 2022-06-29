@@ -104,7 +104,9 @@ void Lexer::analyze()
 			break;
 		default:
 			// Error!
-			printf("Invalid JSON!\n");
+			m_tokens->push_back({ Token::Type::None, m_line, m_column, std::string(1, peek()) });
+			m_job->printErrorLine(m_tokens->back(),
+			                      ("unexpected character '" + std::string(1, peek()) + "'").c_str());
 			return;
 			break;
 		}
