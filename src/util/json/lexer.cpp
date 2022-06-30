@@ -130,8 +130,7 @@ void Lexer::analyze()
 			break;
 		}
 
-		m_index++;
-		m_column++;
+		increment();
 	}
 }
 
@@ -147,11 +146,22 @@ char Lexer::peekNext()
 	return m_job->input()[m_index + 1];
 }
 
+void Lexer::increment()
+{
+	m_index++;
+	m_column++;
+}
+
+void Lexer::decrement()
+{
+	m_index--;
+	m_column--;
+}
+
 char Lexer::consume()
 {
 	char character = peek();
-	m_index++;
-	m_column++;
+	increment();
 	return character;
 }
 
@@ -161,8 +171,7 @@ bool Lexer::consumeSpecific(char character)
 		return false;
 	}
 
-	m_index++;
-	m_column++;
+	increment();
 	return true;
 }
 
@@ -196,9 +205,8 @@ bool Lexer::getString()
 			break;
 		}
 
-		m_index++;
-		m_column++;
 		symbol += character;
+		increment();
 	}
 
 	printf("Pushing ->       String:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
@@ -221,12 +229,10 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 			break;
 		}
 
-		m_index++;
-		m_column++;
 		symbol += character;
+		increment();
 	}
-	m_index--;
-	m_column--;
+	decrement();
 
 	m_tokens->push_back({ type, m_line, column, symbol });
 

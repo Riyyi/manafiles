@@ -51,6 +51,8 @@ private:
 	char peek();
 	char peekNext();
 
+	void increment();
+	void decrement();
 	char consume();
 	bool consumeSpecific(char character);
 
