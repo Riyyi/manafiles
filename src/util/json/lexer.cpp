@@ -178,39 +178,45 @@ bool Lexer::consumeSpecific(char character)
 bool Lexer::getString()
 {
 	size_t column = m_column;
-
-	auto isValidStringCharacter = [](char check) -> bool {
-		std::string invalidCharacters = "{}[]:,";
-		if (invalidCharacters.find(check) != std::string::npos) {
-			return false;
-		}
-
-		return true;
-	};
-
 	std::string symbol = "";
+
+	// Break on "\/ and any control character
+	std::string breakOnGrammar = "\"\\/";
+	for (size_t i = 0; i < 32; ++i) {
+		breakOnGrammar += i;
+	}
+
+	bool escape = false;
 	char character = consume();
 	for (;;) {
 		character = peek();
 
-		// TODO: Escape logic goes here
-		// ", \, /, b(ackspace), f(orm feed), l(ine feed), c(arriage return), t(ab), u(nicode) \u0021
-
-		if (!isValidStringCharacter(character)) {
-			m_tokens->push_back({ Token::Type::None, m_line, column, "" });
-			m_job->printErrorLine(m_job->tokens()->back(), "strings should be wrapped in double quotes");
-			return false;
+		if (!escape && character == '\\') {
+			symbol += '\\';
+			increment();
+			escape = true;
+			continue;
 		}
-		if (character == '"') {
+
+		if (!escape && breakOnGrammar.find(character) != std::string::npos) {
 			break;
 		}
 
 		symbol += character;
 		increment();
+
+		if (escape) {
+			escape = false;
+		}
 	}
 
 	printf("Pushing ->       String:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
 	m_tokens->push_back({ Token::Type::String, m_line, column, symbol });
+
+	if (character != '"') {
+		m_job->printErrorLine(m_job->tokens()->back(), "strings should be wrapped in double quotes");
+		return false;
+	}
 
 	return true;
 }
