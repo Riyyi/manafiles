@@ -154,16 +154,6 @@ char Lexer::consume()
 	return character;
 }
 
-bool Lexer::consumeSpecific(char character)
-{
-	if (peek() != character) {
-		return false;
-	}
-
-	increment();
-	return true;
-}
-
 bool Lexer::getString()
 {
 	size_t column = m_column;

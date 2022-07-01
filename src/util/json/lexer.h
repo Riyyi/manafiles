@@ -54,7 +54,6 @@ private:
 	void increment();
 	void decrement();
 	char consume();
-	bool consumeSpecific(char character);
 
 	bool getString();
 	bool getNumberOrLiteral(Token::Type type);
