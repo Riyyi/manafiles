@@ -211,14 +211,16 @@ Value Parser::getNumber()
 		}
 	}
 
-	if (fractionPosition == exponentPosition - 1) {
-		reportError(token, "invalid exponent sign, expected number");
-		return nullptr;
-	}
+	if (fractionPosition != 0 || exponentPosition != 0) {
+		if (fractionPosition == exponentPosition - 1) {
+			reportError(token, "invalid exponent sign, expected number");
+			return nullptr;
+		}
 
-	if (fractionPosition == length - 1 || exponentPosition == length - 1) {
-		reportError(token, "invalid number");
-		return nullptr;
+		if (fractionPosition == length - 1 || exponentPosition == length - 1) {
+			reportError(token, "invalid number");
+			return nullptr;
+		}
 	}
 
 	return std::stod(token.symbol);
