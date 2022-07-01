@@ -180,12 +180,6 @@ bool Lexer::getString()
 	size_t column = m_column;
 	std::string symbol = "";
 
-	// Break on "\/ and any control character
-	std::string breakOnGrammar = "\"\\/";
-	for (size_t i = 0; i < 32; ++i) {
-		breakOnGrammar += i;
-	}
-
 	bool escape = false;
 	char character = consume();
 	for (;;) {
@@ -198,7 +192,7 @@ bool Lexer::getString()
 			continue;
 		}
 
-		if (!escape && breakOnGrammar.find(character) != std::string::npos) {
+		if (!escape && character == '"') {
 			break;
 		}
 
