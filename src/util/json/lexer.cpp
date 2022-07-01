@@ -26,35 +26,24 @@ Lexer::~Lexer()
 
 void Lexer::analyze()
 {
-	printf("---------\n");
-	printf("Input JSON:\n%s\n", m_job->input().c_str());
-	printf("---------\n");
-	printf("Lexing:\n");
-
 	while (m_index < m_job->input().length()) {
 		switch (peek()) {
 		case '{':
-			printf("Pushing ->    BraceOpen:  \"{\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::BraceOpen, m_line, m_column, "{" });
 			break;
 		case '}':
-			printf("Pushing ->   BraceClose:  \"}\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::BraceClose, m_line, m_column, "}" });
 			break;
 		case '[':
-			printf("Pushing ->  BracketOpen:  \"[\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::BracketOpen, m_line, m_column, "[" });
 			break;
 		case ']':
-			printf("Pushing -> BracketClose:  \"]\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::BracketClose, m_line, m_column, "]" });
 			break;
 		case ':':
-			printf("Pushing ->        Colon:  \":\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::Colon, m_line, m_column, ":" });
 			break;
 		case ',':
-			printf("Pushing ->        Comma:  \",\"\t%zu[%zu]\n", m_line, m_column);
 			m_tokens->push_back({ Token::Type::Comma, m_line, m_column, "," });
 			break;
 		case '"':
@@ -207,7 +196,6 @@ bool Lexer::getString()
 		}
 	}
 
-	printf("Pushing ->       String:  \"%s\"\t%zu[%zu]\n", symbol.c_str(), m_line, column);
 	m_tokens->push_back({ Token::Type::String, m_line, column, symbol });
 
 	if (character != '"') {

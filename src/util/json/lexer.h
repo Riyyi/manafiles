@@ -8,7 +8,7 @@
 #define JSON_LEXER_H
 
 // The JavaScript Object Notation (JSON) Data Interchange Format
-// home/rick/code/cpp/manafiles/ https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
+// https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
 
 #include <cstddef> // size_t
 #include <memory>  // shared_ptr
