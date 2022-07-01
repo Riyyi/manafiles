@@ -63,8 +63,8 @@ private:
 	Job* m_job { nullptr };
 
 	size_t m_index { 0 };
-	size_t m_column { 1 };
-	size_t m_line { 1 };
+	size_t m_column { 0 };
+	size_t m_line { 0 };
 
 	std::vector<Token>* m_tokens { nullptr };
 };

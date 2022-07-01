@@ -60,17 +60,15 @@ void Job::printErrorLine(Token token, const char* message)
 							  "%s"
 							  "\n";
 	printf(errorFormat.c_str(),
-	       token.line,
-	       token.column,
+	       token.line + 1,
+	       token.column + 1,
 	       message);
 
 	// Get the JSON line that caused the error
 	std::istringstream input(m_input);
 	std::string line;
-	size_t count = 0;
-	while (std::getline(input, line)) {
-		count++;
-		if (count == token.line) {
+	for (size_t i = 0; std::getline(input, line); ++i) {
+		if (i == token.line) {
 			break;
 		}
 	}
@@ -92,9 +90,9 @@ void Job::printErrorLine(Token token, const char* message)
 	                           "\033[0m" // Reset
 	                           "\n";
 	printf(lineFormat.c_str(),
-	       token.line,
-	       line.substr(0, token.column - 1).c_str(),
-	       line.substr(token.column - 1).c_str());
+	       token.line + 1,
+	       line.substr(0, token.column).c_str(),
+	       line.substr(token.column).c_str());
 
 	// Arrow pointer
 	std::string arrowFormat = " %s | "
@@ -104,7 +102,7 @@ void Job::printErrorLine(Token token, const char* message)
 							  "\n";
 	printf(arrowFormat.c_str(),
 	       std::string(m_lineNumbersWidth, ' ').c_str(),
-	       std::string(token.column - 1, ' ').c_str(),
+	       std::string(token.column, ' ').c_str(),
 	       std::string(line.length() - token.column, '~').c_str());
 }
 

@@ -103,11 +103,11 @@ void Lexer::analyze()
 			if (peekNext() == '\n') { // CRLF \r\n
 				break;
 			}
-			m_column = 0;
+			m_column = -1;
 			m_line++;
 			break;
 		case '\n':
-			m_column = 0;
+			m_column = -1;
 			m_line++;
 			break;
 		default:
