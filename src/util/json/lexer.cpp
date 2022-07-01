@@ -180,6 +180,9 @@ bool Lexer::getString()
 	size_t column = m_column;
 	std::string symbol = "";
 
+	// Break on "\r\n
+	std::string breakOnGrammar = std::string("\"") + '\r' + '\n';
+
 	bool escape = false;
 	char character = consume();
 	for (;;) {
@@ -192,7 +195,7 @@ bool Lexer::getString()
 			continue;
 		}
 
-		if (!escape && character == '"') {
+		if (!escape && breakOnGrammar.find(character) != std::string::npos) {
 			break;
 		}
 
@@ -219,7 +222,7 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 {
 	size_t column = m_column;
 	std::string symbol = "";
-	std::string breakOnGrammar = std::string() + "{}[]:,\" " + '\t' + '\r' + '\n';
+	std::string breakOnGrammar = std::string("{}[]:,\" ") + '\t' + '\r' + '\n';
 
 	for (char character;;) {
 		character = peek();
