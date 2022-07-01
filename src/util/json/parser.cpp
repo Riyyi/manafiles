@@ -422,30 +422,25 @@ Value Parser::getObject()
 		}
 
 		// Add member (name:value pair) to object
-		token = consume();
+		token = peek();
 		if (token.type == Token::Type::Literal) {
 			printf("Adding literal to object.. k:{%s}, v:{%s}, t:{%d}\n", name.c_str(), token.symbol.c_str(), (int)token.type);
-			m_index--;
 			object[name] = getLiteral();
 		}
 		else if (token.type == Token::Type::Number) {
 			printf("Adding number to object.. k:{%s}, v:{%s}, t:{%d} -> %f\n", name.c_str(), token.symbol.c_str(), (int)token.type, std::stod(token.symbol));
-			m_index--;
 			object[name] = getNumber();
 		}
 		else if (token.type == Token::Type::String) {
 #ifdef JSON_DEBUG
 			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", name.c_str(), token.symbol.c_str(), (int)token.type);
 #endif
-			m_index--;
 			object[name] = getString();
 		}
 		else if (token.type == Token::Type::BracketOpen) {
-			m_index--;
 			object[name] = getArray();
 		}
 		else if (token.type == Token::Type::BraceOpen) {
-			m_index--;
 			object[name] = getObject();
 		}
 		else {
