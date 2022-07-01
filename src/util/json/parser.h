@@ -33,6 +33,7 @@ private:
 
 	Value getLiteral();
 	Value getNumber();
+	Value getString();
 	Value getArray();
 	Value getObject();
 

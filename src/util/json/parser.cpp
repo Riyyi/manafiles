@@ -51,8 +51,7 @@ Value Parser::parse()
 			m_index++;
 			break;
 		case Token::Type::String:
-			result = Value { token.symbol };
-			m_index++;
+			result = getString();
 			break;
 		case Token::Type::BracketOpen:
 			result = getArray();
@@ -228,6 +227,81 @@ Value Parser::getNumber()
 	return std::stod(token.symbol);
 }
 
+Value Parser::getString()
+{
+	Token token = consume();
+
+	auto reportError = [this](Token token, const std::string& message) -> void {
+		m_job->printErrorLine(token, message.c_str());
+	};
+
+	// FIXME: support \u Unicode character escape sequence
+	auto getPrintableString = [](char character) -> std::string {
+		if (character == '"' || character == '\\' || character == '/'
+		    || (character >= 0 && character <= 31)) {
+			switch (character) {
+			case '"':
+				return "\\\"";
+				break;
+			case '\\':
+				return "\\\\";
+				break;
+			case '/':
+				return "\\/";
+				break;
+			case '\b':
+				return "\\b";
+				break;
+			case '\f':
+				return "\\f";
+				break;
+			case '\n':
+				return "\\n";
+				break;
+			case '\r':
+				return "\\r";
+				break;
+			case '\t':
+				return "\\t";
+				break;
+			default:
+				char buffer[7];
+				sprintf(buffer, "\\u%0.4X", character);
+				return std::string(buffer);
+				break;
+			}
+		}
+
+		return std::string() + character;
+	};
+
+	std::string string;
+
+	bool escape = false;
+	for (char character : token.symbol) {
+		if (!escape) {
+			if (character == '\\') {
+				escape = true;
+				continue;
+			}
+
+			if (character == '"' || character == '\\' || character == '/'
+			    || (character >= 0 && character <= 31)) {
+				reportError(token, "invalid string, unescaped character found");
+				return nullptr;
+			}
+		}
+
+		string += getPrintableString(character);
+
+		if (escape) {
+			escape = false;
+		}
+	}
+
+	return string;
+}
+
 Value Parser::getArray()
 {
 	m_index++;
@@ -255,8 +329,7 @@ Value Parser::getArray()
 		}
 		else if (token.type == Token::Type::String) {
 			printf("Adding string to array.. v:{%s}, t:{%d}\n", token.symbol.c_str(), (int)token.type);
-			array.emplace_back(token.symbol);
-			m_index++;
+			array.emplace_back(getString());
 		}
 		else if (token.type == Token::Type::BracketOpen) {
 			array.emplace_back(getArray());
@@ -310,23 +383,30 @@ Value Parser::getObject()
 	std::string name;
 	std::map<std::string, uint8_t> unique;
 	for (;;) {
-		token = consume();
-		// Empty object
+		token = peek();
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
 			if (object.asObject().size() > 0) {
 				reportError((*m_tokens)[m_index - 2], "invalid comma, expecting '}'");
 			}
+			// Empty object
 			break;
 		}
-		// Find string name
 		if (token.type != Token::Type::String) {
 			reportError(token, "expecting string, or '}' not '" + token.symbol + "'");
 			break;
 		}
 
+		// Find member name
+		Value tmpName = getString();
+		if (tmpName.type() != Value::Type::String) {
+			seekForward(Token::Type::BraceClose);
+			consumeSpecific(Token::Type::BraceClose);
+			break;
+		}
+
 		// Check if name exists in hashmap
-		name = token.symbol;
+		name = tmpName.asString();
 		if (unique.find(name) != unique.end()) {
 			reportError(token, "duplicate name '" + token.symbol + "', names should be unique");
 			break;
@@ -357,7 +437,8 @@ Value Parser::getObject()
 #ifdef JSON_DEBUG
 			printf("Adding string to object.. k:{%s}, v:{%s}, t:{%d}\n", name.c_str(), token.symbol.c_str(), (int)token.type);
 #endif
-			object[name] = token.symbol;
+			m_index--;
+			object[name] = getString();
 		}
 		else if (token.type == Token::Type::BracketOpen) {
 			m_index--;
