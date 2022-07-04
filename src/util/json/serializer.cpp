@@ -12,31 +12,31 @@
 #include "util/json/array.h"
 #include "util/json/lexer.h"
 #include "util/json/object.h"
-#include "util/json/stringify.h"
+#include "util/json/serializer.h"
 
 namespace Json {
 
-Stringify::Stringify(const Value& value, const uint32_t indent, const char indentCharacter)
+Serializer::Serializer(const Value& value, const uint32_t indent, const char indentCharacter)
 	: m_value(value)
 	, m_indent(indent)
 	, m_indentCharacter(indentCharacter)
 {
 }
 
-Stringify::~Stringify()
+Serializer::~Serializer()
 {
 }
 
 // ------------------------------------------
 
-std::string Stringify::dump()
+std::string Serializer::dump()
 {
 	return dumpHelper(m_value);
 }
 
 // ------------------------------------------
 
-std::string Stringify::dumpHelper(const Value& value, const uint32_t indentLevel)
+std::string Serializer::dumpHelper(const Value& value, const uint32_t indentLevel)
 {
 	switch (value.type()) {
 	case Value::Type::Null:
@@ -67,7 +67,7 @@ std::string Stringify::dumpHelper(const Value& value, const uint32_t indentLevel
 	return "";
 }
 
-std::string Stringify::dumpArray(const Value& value, const uint32_t indentLevel)
+std::string Serializer::dumpArray(const Value& value, const uint32_t indentLevel)
 {
 	std::string result;
 
@@ -100,7 +100,7 @@ std::string Stringify::dumpArray(const Value& value, const uint32_t indentLevel)
 	return result;
 }
 
-std::string Stringify::dumpObject(const Value& value, const uint32_t indentLevel)
+std::string Serializer::dumpObject(const Value& value, const uint32_t indentLevel)
 {
 	std::string result;
 

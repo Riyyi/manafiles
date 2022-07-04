@@ -15,7 +15,7 @@
 #include "util/json/array.h"
 #include "util/json/job.h"
 #include "util/json/object.h"
-#include "util/json/stringify.h"
+#include "util/json/serializer.h"
 #include "util/json/value.h"
 
 namespace Json {
@@ -118,8 +118,8 @@ Value Value::parse(const std::string& input)
 
 std::string Value::dump(const uint32_t indent, const char indentCharacter) const
 {
-	Stringify stringify(*this, indent, indentCharacter);
-	return stringify.dump();
+	Serializer serializer(*this, indent, indentCharacter);
+	return serializer.dump();
 }
 
 void Value::emplace_back(Value value)

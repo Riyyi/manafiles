@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_STRINGIFY_H
-#define JSON_STRINGIFY_H
+#ifndef JSON_SERIALIZER_H
+#define JSON_SERIALIZER_H
 
 #include <cstdint> // uint32_t
 #include <string>
@@ -14,10 +14,10 @@
 
 namespace Json {
 
-class Stringify {
+class Serializer {
 public:
-	Stringify(const Value& value, const uint32_t indent = 0, const char indentCharacter = ' ');
-	virtual ~Stringify();
+	Serializer(const Value& value, const uint32_t indent = 0, const char indentCharacter = ' ');
+	virtual ~Serializer();
 
 	std::string dump();
 
@@ -34,4 +34,4 @@ private:
 
 } // namespace Json
 
-#endif // JSON_STRINGIFY_H
+#endif // JSON_SERIALIZER_H
