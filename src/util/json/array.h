@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "util/json/parser.h"
+#include "util/json/value.h"
 
 namespace Json {
 

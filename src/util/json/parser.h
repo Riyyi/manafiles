@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "util/json/lexer.h"
-#include "util/json/value.h"
 
 namespace Json {
 
 class Job;
+class Value;
 
 class Parser {
 public:

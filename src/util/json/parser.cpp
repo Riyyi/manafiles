@@ -16,6 +16,7 @@
 #include "util/json/lexer.h"
 #include "util/json/object.h"
 #include "util/json/parser.h"
+#include "util/json/value.h"
 
 namespace Json {
 
