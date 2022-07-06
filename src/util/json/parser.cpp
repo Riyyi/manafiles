@@ -246,7 +246,7 @@ Value Parser::getString()
 				return "\\\\";
 				break;
 			case '/':
-				return "\\/";
+				return "/";
 				break;
 			case '\b':
 				return "\\b";
@@ -284,8 +284,7 @@ Value Parser::getString()
 				continue;
 			}
 
-			if (character == '"' || character == '\\' || character == '/'
-			    || (character >= 0 && character <= 31)) {
+			if (character == '"' || (character >= 0 && character <= 31)) {
 				reportError(token, "invalid string, unescaped character found");
 				return nullptr;
 			}
