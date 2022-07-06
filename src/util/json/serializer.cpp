@@ -5,7 +5,6 @@
  */
 
 #include <cstdint>  // uint32_t
-#include <iterator> // prev
 #include <sstream>  // ostringstream
 #include <string>
 
@@ -120,7 +119,7 @@ std::string Serializer::dumpObject(const Value& value, const uint32_t indentLeve
 		result += dumpHelper(it->second, indentLevel + 1);
 
 		// Add comma, except after the last element
-		if (it != std::prev(members.end(), 1)) {
+		if (it != members.end()) {
 			result += ",";
 		}
 		if (m_indent > 0) {
