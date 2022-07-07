@@ -87,7 +87,7 @@ Value::Value(const std::initializer_list<Value>& values)
 {
 	bool isObject = std::all_of(values.begin(), values.end(), [](const Value& value) {
 		return value.type() == Type::Array
-		       && value.m_value.asArray->size() == 2
+		       && value.size() == 2
 		       && value[0].m_type == Type::String;
 	});
 
@@ -182,6 +182,26 @@ const Value& Value::operator[](const std::string& key) const
 {
 	assert(m_type == Type::Object);
 	return m_value.asObject->at(key);
+}
+
+// ------------------------------------------
+
+size_t Value::size() const
+{
+	switch (m_type) {
+	case Type::Null:
+		return 0;
+	case Type::Bool:
+	case Type::Number:
+	case Type::String:
+		return 1;
+	case Type::Array:
+		return m_value.asArray->size();
+	case Type::Object:
+		return m_value.asObject->size();
+	default:
+		return 1;
+	}
 }
 
 // ------------------------------------------

@@ -66,6 +66,7 @@ public:
 	// --------------------------------------
 
 	Type type() const { return m_type; }
+	size_t size() const;
 
 	bool asBool() const { return m_value.asBool; }
 	double asDouble() const { return m_value.asDouble; }
