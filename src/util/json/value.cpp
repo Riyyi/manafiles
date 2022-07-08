@@ -7,8 +7,7 @@
 #include <algorithm> // all_of
 #include <cassert>   // assert
 #include <cstdint>   // uint32_t
-#include <iostream>
-#include <memory> // make_shared, shared_ptr
+#include <iostream>  // istream, ostream
 #include <string>
 #include <utility> // move
 

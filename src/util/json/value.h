@@ -13,6 +13,8 @@
 #include <iostream> // istream, ostream
 #include <string>
 
+#include "util/json/fromjson.h"
+
 namespace Json {
 
 class Array;
@@ -70,6 +72,22 @@ public:
 	Value& at(const std::string& key);
 	const Value& at(size_t index) const;
 	const Value& at(const std::string& key) const;
+
+	// --------------------------------------
+
+	template<typename T>
+	T get() const
+	{
+		T type;
+		fromJson(*this, type);
+		return type;
+	}
+
+	template<typename T>
+	void getTo(T& type) const
+	{
+		fromJson(*this, type);
+	}
 
 	// --------------------------------------
 
