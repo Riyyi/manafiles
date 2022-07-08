@@ -63,6 +63,11 @@ public:
 	const Value& operator[](size_t index) const;
 	const Value& operator[](const std::string& key) const;
 
+	Value& at(size_t index);
+	Value& at(const std::string& key);
+	const Value& at(size_t index) const;
+	const Value& at(const std::string& key) const;
+
 	// --------------------------------------
 
 	Type type() const { return m_type; }

@@ -32,10 +32,10 @@ public:
 
 	void emplace_back(Value value);
 
-	Value& at(size_t index);
-	Value& operator[](size_t index) { return at(index); }
+	Value& operator[](size_t index);
+
+	Value& at(size_t index) { return m_values.at(index); }
 	const Value& at(size_t index) const { return m_values.at(index); }
-	const Value& operator[](size_t index) const { return m_values.at(index); }
 
 	size_t size() const { return m_values.size(); }
 	const std::vector<Value>& values() const { return m_values; }

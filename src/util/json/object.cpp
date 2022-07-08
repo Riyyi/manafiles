@@ -14,7 +14,7 @@ void Object::emplace(const std::string& name, Value value)
 	m_members.emplace(name, std::move(value));
 }
 
-Value& Object::at(const std::string& name)
+Value& Object::operator[](const std::string& name)
 {
 	if (m_members.find(name) == m_members.end()) {
 		emplace(name, {});

@@ -157,7 +157,7 @@ Value& Value::operator[](size_t index)
 	}
 
 	assert(m_type == Type::Array);
-	return m_value.asArray->at(index);
+	return (*m_value.asArray)[index];
 }
 
 Value& Value::operator[](const std::string& key)
@@ -169,16 +169,40 @@ Value& Value::operator[](const std::string& key)
 	}
 
 	assert(m_type == Type::Object);
-	return m_value.asObject->at(key);
+	return (*m_value.asObject)[key];
 }
 
 const Value& Value::operator[](size_t index) const
 {
 	assert(m_type == Type::Array);
-	return m_value.asArray->at(index);
+	return (*m_value.asArray)[index];
 }
 
 const Value& Value::operator[](const std::string& key) const
+{
+	assert(m_type == Type::Object);
+	return (*m_value.asObject)[key];
+}
+
+Value& Value::at(size_t index)
+{
+	assert(m_type == Type::Array);
+	return m_value.asArray->at(index);
+}
+
+Value& Value::at(const std::string& key)
+{
+	assert(m_type == Type::Object);
+	return m_value.asObject->at(key);
+}
+
+const Value& Value::at(size_t index) const
+{
+	assert(m_type == Type::Array);
+	return m_value.asArray->at(index);
+}
+
+const Value& Value::at(const std::string& key) const
 {
 	assert(m_type == Type::Object);
 	return m_value.asObject->at(key);

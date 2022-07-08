@@ -14,13 +14,13 @@ void Array::emplace_back(Value value)
 	m_values.emplace_back(std::move(value));
 }
 
-Value& Array::at(size_t index)
+Value& Array::operator[](size_t index)
 {
 	if (index + 1 > m_values.size()) {
 		m_values.resize(index + 1);
 	}
 
-	return m_values.at(index);
+	return m_values[index];
 }
 
 } // namespace Json

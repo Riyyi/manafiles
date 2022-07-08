@@ -29,10 +29,10 @@ public:
 
 	void emplace(const std::string& name, Value value);
 
-	Value& at(const std::string& name);
-	Value& operator[](const std::string& name) { return at(name); }
+	Value& operator[](const std::string& name);
+
+	Value& at(const std::string& name) { return m_members.at(name); }
 	const Value& at(const std::string& name) const { return m_members.at(name); }
-	const Value& operator[](const std::string& name) const { return m_members.at(name); }
 
 	size_t size() const { return m_members.size(); }
 	const std::map<std::string, Value>& members() const { return m_members; }
