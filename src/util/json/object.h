@@ -12,9 +12,10 @@
 #include <utility> // move
 
 #include "util/json/parser.h"
-#include "util/json/value.h"
 
 namespace Json {
+
+class Value;
 
 class Object {
 public:
@@ -26,19 +27,9 @@ public:
 	{
 	}
 
-	void emplace(const std::string& name, Value value)
-	{
-		m_members.emplace(name, std::move(value));
-	}
+	void emplace(const std::string& name, Value value);
 
-	Value& at(const std::string& name)
-	{
-		if (m_members.find(name) == m_members.end()) {
-			emplace(name, {});
-		}
-
-		return m_members.at(name);
-	}
+	Value& at(const std::string& name);
 	Value& operator[](const std::string& name) { return at(name); }
 	const Value& at(const std::string& name) const { return m_members.at(name); }
 	const Value& operator[](const std::string& name) const { return m_members.at(name); }

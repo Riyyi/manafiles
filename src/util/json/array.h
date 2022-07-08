@@ -12,9 +12,10 @@
 #include <vector>
 
 #include "util/json/parser.h"
-#include "util/json/value.h"
 
 namespace Json {
+
+class Value;
 
 class Array {
 public:
@@ -30,19 +31,9 @@ public:
 	{
 	}
 
-	void emplace_back(Value value)
-	{
-		m_values.emplace_back(std::move(value));
-	}
+	void emplace_back(Value value);
 
-	Value& at(size_t index)
-	{
-		if (index + 1 > m_values.size()) {
-			m_values.resize(index + 1);
-		}
-
-		return m_values.at(index);
-	}
+	Value& at(size_t index);
 	Value& operator[](size_t index) { return at(index); }
 	const Value& at(size_t index) const { return m_values.at(index); }
 	const Value& operator[](size_t index) const { return m_values.at(index); }
