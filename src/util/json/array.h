@@ -7,7 +7,6 @@
 #ifndef JSON_ARRAY_H
 #define JSON_ARRAY_H
 
-#include <initializer_list>
 #include <utility> // move
 #include <vector>
 
@@ -22,7 +21,7 @@ public:
 	Array() {}
 	virtual ~Array() {}
 
-	Array(const std::initializer_list<Value>& values)
+	Array(const std::vector<Value>& values)
 		: m_values(values)
 	{}
 
