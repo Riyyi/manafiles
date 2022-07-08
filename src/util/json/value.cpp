@@ -146,6 +146,17 @@ void Value::emplace(const std::string& key, Value value)
 	m_value.asObject->emplace(key, value);
 }
 
+bool Value::exists(size_t index) const
+{
+	return index < size();
+}
+
+bool Value::exists(const std::string& key) const
+{
+	assert(m_type == Type::Object);
+	return m_value.asObject->members().find(key) != m_value.asObject->members().end();
+}
+
 // ------------------------------------------
 
 Value& Value::operator[](size_t index)

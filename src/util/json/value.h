@@ -55,6 +55,9 @@ public:
 	void emplace_back(Value value);
 	void emplace(const std::string& key, Value value);
 
+	bool exists(size_t index) const;
+	bool exists(const std::string& key) const;
+
 	// --------------------------------------
 
 	// Array index operator
