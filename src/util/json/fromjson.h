@@ -13,9 +13,11 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <utility> // forward
 #include <vector>
 
 #include "util/json/array.h"
+#include "util/json/conversion.h"
 #include "util/json/object.h"
 
 namespace Json {
@@ -85,10 +87,6 @@ struct fromJsonFunction {
 		return fromJson(json, std::forward<T>(value));
 	}
 };
-
-// Avoid ODR (One Definition Rule) violations
-template<typename T>
-constexpr T staticConst {};
 
 } // namespace Detail
 
