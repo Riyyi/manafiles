@@ -106,7 +106,7 @@ void Value::emplace(const std::string& key, Value value)
 		m_value.asObject = new Object;
 	}
 
-	assert(m_type == Type::Array);
+	assert(m_type == Type::Object);
 	m_value.asObject->emplace(key, value);
 }
 
