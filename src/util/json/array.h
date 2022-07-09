@@ -31,6 +31,7 @@ public:
 	}
 
 	void emplace_back(Value value);
+	void reserve(size_t size) { m_values.reserve(size); }
 
 	Value& operator[](size_t index);
 

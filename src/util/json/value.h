@@ -12,8 +12,10 @@
 #include <initializer_list>
 #include <iostream> // istream, ostream
 #include <string>
+#include <utility> // forward
 
 #include "util/json/fromjson.h"
+#include "util/json/tojson.h"
 
 namespace Json {
 
@@ -21,6 +23,9 @@ class Array;
 class Object;
 
 class Value {
+private:
+	friend Detail::jsonConstructor;
+
 public:
 	enum class Type {
 		Null,   // null       (case sensitive!)
@@ -31,23 +36,24 @@ public:
 		Object, // {}
 	};
 
-	Value(std::nullptr_t = nullptr) {}
+	// Constructors
+	Value(std::nullptr_t = nullptr);
+	Value(Type type);
+	Value(const std::initializer_list<Value>& values);
+	template<typename T>
+	Value(T value)
+	{
+		toJson(*this, std::forward<T>(value));
+	}
+
+	// Destructor
 	virtual ~Value() { clear(); }
 
 	// Copy constructor
 	Value(const Value& other);
+
 	// Assignment operator
 	Value& operator=(const Value& other);
-
-	Value(Type type);
-	Value(bool value);
-	Value(int value);
-	Value(double value);
-	Value(const char* value);
-	Value(const std::string& value);
-	Value(const Array& value);
-	Value(const Object& value);
-	Value(const std::initializer_list<Value>& values);
 
 	// --------------------------------------
 

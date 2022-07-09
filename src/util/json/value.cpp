@@ -19,67 +19,15 @@
 
 namespace Json {
 
-Value::Value(const Value& other)
+Value::Value(std::nullptr_t)
+	: Value(Type::Null)
 {
-	copyFrom(other);
-}
-
-Value& Value::operator=(const Value& other)
-{
-	if (this != &other) {
-		clear();
-		copyFrom(other);
-	}
-
-	return *this;
 }
 
 Value::Value(Type type)
 	: m_type(type)
 {
 	create();
-}
-
-Value::Value(bool value)
-	: m_type(Type::Bool)
-{
-	m_value.asBool = value;
-}
-
-Value::Value(int value)
-	: m_type(Type::Number)
-{
-	m_value.asDouble = value;
-}
-
-Value::Value(double value)
-	: m_type(Type::Number)
-{
-	m_value.asDouble = value;
-}
-
-Value::Value(const char* value)
-	: m_type(Type::String)
-{
-	m_value.asString = new std::string(value);
-}
-
-Value::Value(const std::string& value)
-	: m_type(Type::String)
-{
-	m_value.asString = new std::string(value);
-}
-
-Value::Value(const Array& value)
-	: m_type(Type::Array)
-{
-	m_value.asArray = new Array(value);
-}
-
-Value::Value(const Object& value)
-	: m_type(Type::Object)
-{
-	m_value.asObject = new Object(value);
 }
 
 Value::Value(const std::initializer_list<Value>& values)
@@ -103,6 +51,23 @@ Value::Value(const std::initializer_list<Value>& values)
 			                          std::move(value[1]));
 		}
 	}
+}
+
+// Copy constructor
+Value::Value(const Value& other)
+{
+	copyFrom(other);
+}
+
+// Assignment operator
+Value& Value::operator=(const Value& other)
+{
+	if (this != &other) {
+		clear();
+		copyFrom(other);
+	}
+
+	return *this;
 }
 
 // ------------------------------------------
