@@ -80,6 +80,26 @@ void fromJson(const Json& json, std::vector<T>& array)
 		});
 }
 
+template<typename Json, typename T>
+void fromJson(const Json& json, std::map<std::string, T>& object)
+{
+	assert(json.type() == Json::Type::Object);
+	object.clear();
+	for (const auto& [name, value] : json.asObject().members()) {
+		object.emplace(name, value.template get<T>());
+	}
+}
+
+template<typename Json, typename T>
+void fromJson(const Json& json, std::unordered_map<std::string, T>& object)
+{
+	assert(json.type() == Json::Type::Object);
+	object.clear();
+	for (const auto& [name, value] : json.asObject().members()) {
+		object.emplace(name, value.template get<T>());
+	}
+}
+
 struct fromJsonFunction {
 	template<typename Json, typename T>
 	auto operator()(const Json& json, T&& value) const
