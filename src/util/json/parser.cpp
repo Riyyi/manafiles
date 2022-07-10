@@ -389,7 +389,7 @@ Value Parser::getObject()
 			break;
 		}
 		if (token.type != Token::Type::String) {
-			reportError(token, "expecting string, or '}' not '" + token.symbol + "'");
+			reportError(token, "expecting string or '}', not '" + token.symbol + "'");
 			break;
 		}
 
