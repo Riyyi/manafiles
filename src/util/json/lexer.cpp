@@ -160,7 +160,7 @@ bool Lexer::getString()
 	std::string symbol = "";
 
 	// Break on "\r\n
-	std::string breakOnGrammar = std::string("\"") + '\r' + '\n';
+	std::string breakOnGrammar = std::string("\"") + '\r' + '\n' + '\0';
 
 	bool escape = false;
 	char character = consume();
@@ -200,7 +200,7 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 {
 	size_t column = m_column;
 	std::string symbol = "";
-	std::string breakOnGrammar = std::string("{}[]:,\" ") + '\t' + '\r' + '\n';
+	std::string breakOnGrammar = std::string("{}[]:,\" ") + '\t' + '\r' + '\n' + '\0';
 
 	for (char character;;) {
 		character = peek();
