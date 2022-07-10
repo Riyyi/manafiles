@@ -17,9 +17,11 @@ namespace Json {
 
 Job::Job(const std::string& input)
 	: m_input(input)
-	// FIXME: handle case where the file doenst have a trailing newline
-	, m_lineNumbersWidth(std::to_string(std::count(m_input.begin(), m_input.end(), '\n') - 1).length())
 {
+	// FIXME: Make this work for all newline types: \n, \r, \r\n
+	m_lineNumbersWidth = std::count(m_input.begin(), m_input.end(), '\n');
+	m_lineNumbersWidth += m_input.back() == '\n' ? 0 : 1;
+	m_lineNumbersWidth = std::to_string(m_lineNumbersWidth).length();
 }
 
 Job::~Job()
