@@ -337,8 +337,8 @@ Value Parser::getArray()
 			// Trailing comma
 			if (array.asArray().size() > 0) {
 				reportError((*m_tokens)[m_index - 1], "invalid comma, expecting ']'");
+				break;
 			}
-			break;
 		}
 		else {
 			reportError(token, "expecting value or ']', not '" + token.symbol + "'");
