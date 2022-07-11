@@ -36,40 +36,44 @@ Value Parser::parse()
 {
 	Value result;
 
-	Token token;
-	while (m_index < m_tokens->size()) {
-		token = peek();
+	if (m_tokens->size() == 0) {
+		m_job->printErrorLine({}, "expecting token, not 'EOF'");
+		return result;
+	}
 
-		switch (token.type) {
-		case Token::Type::Literal:
-			result = getLiteral();
-			break;
-		case Token::Type::Number:
-			result = getNumber();
-			m_index++;
-			break;
-		case Token::Type::String:
-			result = getString();
-			break;
-		case Token::Type::BracketOpen:
-			result = getArray();
-			break;
-		case Token::Type::BraceOpen:
-			result = getObject();
-			break;
-		case Token::Type::BracketClose:
-			m_job->printErrorLine(token, "expecting value, not ']'");
-			m_index++;
-			break;
-		case Token::Type::BraceClose:
-			m_job->printErrorLine(token, "expecting string, not '}'");
-			m_index++;
-			break;
-		default:
-			m_job->printErrorLine(token, "multiple root elements");
-			m_index++;
-			break;
-		}
+	Token token = peek();
+	switch (token.type) {
+	case Token::Type::Literal:
+		result = getLiteral();
+		break;
+	case Token::Type::Number:
+		result = getNumber();
+		break;
+	case Token::Type::String:
+		result = getString();
+		break;
+	case Token::Type::BracketOpen:
+		result = getArray();
+		break;
+	case Token::Type::BraceOpen:
+		result = getObject();
+		break;
+	case Token::Type::BracketClose:
+		m_job->printErrorLine(token, "expecting value, not ']'");
+		m_index++;
+		break;
+	case Token::Type::BraceClose:
+		m_job->printErrorLine(token, "expecting string, not '}'");
+		m_index++;
+		break;
+	default:
+		m_job->printErrorLine(token, "multiple root elements");
+		m_index++;
+		break;
+	}
+
+	if (m_index < m_tokens->size()) {
+		m_job->printErrorLine(peek(), "multiple root elements");
 	}
 
 	return result;
