@@ -93,9 +93,9 @@ Token Parser::peek()
 
 bool Parser::seekForward(Token::Type type)
 {
-	for (size_t index = m_index; index < m_tokens->size(); ++index) {
-		if (m_tokens->at(index).type == type) {
-			m_index = index;
+	for (; !reachedEnd(); ++m_index) {
+		if (peek().type == type) {
+			m_index++;
 			return true;
 		}
 	}
@@ -108,20 +108,6 @@ Token Parser::consume()
 	Token token = peek();
 	m_index++;
 	return token;
-}
-
-bool Parser::consumeSpecific(Token::Type type)
-{
-	if (reachedEnd()) {
-		return false;
-	}
-
-	if (peek().type != type) {
-		return false;
-	}
-
-	m_index++;
-	return true;
 }
 
 Value Parser::getLiteral()
@@ -323,7 +309,6 @@ Value Parser::getArray()
 
 		// After an error, try to find the closing bracket
 		seekForward(Token::Type::BracketClose);
-		consumeSpecific(Token::Type::BracketClose);
 	};
 
 	Value array = Value::Type::Array;
@@ -393,9 +378,8 @@ Value Parser::getObject()
 	auto reportError = [this](Token token, const std::string& message) -> void {
 		m_job->printErrorLine(token, message.c_str());
 
-		// After an error, try to find the closing bracket
+		// After an error, try to find the closing brace
 		seekForward(Token::Type::BraceClose);
-		consumeSpecific(Token::Type::BraceClose);
 	};
 
 	Value object = Value::Type::Object;
@@ -427,7 +411,6 @@ Value Parser::getObject()
 		Value tmpName = getString();
 		if (tmpName.type() != Value::Type::String) {
 			seekForward(Token::Type::BraceClose);
-			consumeSpecific(Token::Type::BraceClose);
 			break;
 		}
 

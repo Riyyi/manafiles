@@ -31,7 +31,6 @@ private:
 	bool seekForward(Token::Type type);
 
 	Token consume();
-	bool consumeSpecific(Token::Type type);
 
 	Value getLiteral();
 	Value getNumber();
