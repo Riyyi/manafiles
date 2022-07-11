@@ -88,13 +88,13 @@ bool Parser::reachedEnd()
 
 Token Parser::peek()
 {
-	return (*m_tokens)[m_index];
+	return m_tokens->at(m_index);
 }
 
 bool Parser::seekForward(Token::Type type)
 {
 	for (size_t index = m_index; index < m_tokens->size(); ++index) {
-		if ((*m_tokens)[index].type == type) {
+		if (m_tokens->at(index).type == type) {
 			m_index = index;
 			return true;
 		}
@@ -354,7 +354,7 @@ Value Parser::getArray()
 		else if (token.type == Token::Type::BracketClose) {
 			// Trailing comma
 			if (array.asArray().size() > 0) {
-				reportError((*m_tokens)[m_index - 1], "invalid comma, expecting ']'");
+				reportError(m_tokens->at(m_index - 1), "invalid comma, expecting ']'");
 				break;
 			}
 		}
@@ -378,7 +378,7 @@ Value Parser::getArray()
 			break;
 		}
 		else {
-			reportError(token, "expecting comma or ']', not '" + token.symbol + "'");
+			reportError(m_tokens->at(m_index - 1), "expecting comma or ']', not '" + token.symbol + "'");
 			break;
 		}
 	}
@@ -413,7 +413,7 @@ Value Parser::getObject()
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
 			if (object.asObject().size() > 0) {
-				reportError((*m_tokens)[m_index - 1], "invalid comma, expecting '}'");
+				reportError(m_tokens->at(m_index - 1), "invalid comma, expecting '}'");
 			}
 			// Empty object
 			break;
