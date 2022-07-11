@@ -86,11 +86,6 @@ bool Parser::reachedEnd()
 	return m_index >= m_tokens->size();
 }
 
-Token Parser::peek()
-{
-	return m_tokens->at(m_index);
-}
-
 bool Parser::seekForward(Token::Type type)
 {
 	for (; !reachedEnd(); ++m_index) {
@@ -101,6 +96,11 @@ bool Parser::seekForward(Token::Type type)
 	}
 
 	return false;
+}
+
+Token Parser::peek()
+{
+	return m_tokens->at(m_index);
 }
 
 Token Parser::consume()

@@ -26,10 +26,9 @@ public:
 
 private:
 	bool reachedEnd();
-
-	Token peek();
 	bool seekForward(Token::Type type);
 
+	Token peek();
 	Token consume();
 
 	Value getLiteral();
