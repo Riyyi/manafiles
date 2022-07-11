@@ -387,7 +387,7 @@ Value Parser::getObject()
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
 			if (object.asObject().size() > 0) {
-				reportError((*m_tokens)[m_index - 2], "invalid comma, expecting '}'");
+				reportError((*m_tokens)[m_index - 1], "invalid comma, expecting '}'");
 			}
 			// Empty object
 			break;
