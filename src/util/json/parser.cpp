@@ -72,7 +72,7 @@ Value Parser::parse()
 		break;
 	}
 
-	if (m_index < m_tokens->size()) {
+	if (!reachedEnd()) {
 		m_job->printErrorLine(peek(), "multiple root elements");
 	}
 
@@ -80,6 +80,11 @@ Value Parser::parse()
 }
 
 // -----------------------------------------
+
+bool Parser::reachedEnd()
+{
+	return m_index >= m_tokens->size();
+}
 
 Token Parser::peek()
 {
@@ -107,6 +112,10 @@ Token Parser::consume()
 
 bool Parser::consumeSpecific(Token::Type type)
 {
+	if (reachedEnd()) {
+		return false;
+	}
+
 	if (peek().type != type) {
 		return false;
 	}
@@ -320,8 +329,13 @@ Value Parser::getArray()
 	Value array = Value::Type::Array;
 	Token token;
 	for (;;) {
-		token = peek();
+		// EOF
+		if (reachedEnd()) {
+			reportError(m_tokens->at(m_index - 1), "expecting closing ']' at end");
+			break;
+		}
 
+		token = peek();
 		if (token.type == Token::Type::Literal) {
 			array.emplace_back(getLiteral());
 		}
@@ -346,6 +360,12 @@ Value Parser::getArray()
 		}
 		else {
 			reportError(token, "expecting value or ']', not '" + token.symbol + "'");
+			break;
+		}
+
+		// EOF
+		if (reachedEnd()) {
+			reportError(token, "expecting closing ']' at end");
 			break;
 		}
 
@@ -383,6 +403,12 @@ Value Parser::getObject()
 	std::string name;
 	std::map<std::string, uint8_t> unique;
 	for (;;) {
+		// EOF
+		if (reachedEnd()) {
+			reportError(m_tokens->at(m_index - 1), "expecting closing '}' at end");
+			break;
+		}
+
 		token = peek();
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
@@ -414,10 +440,24 @@ Value Parser::getObject()
 		// Add name to hashmap
 		unique.insert({ name, 0 });
 
+		// EOF
+		if (reachedEnd()) {
+			reportError(token, "expecting colon, not 'EOF'");
+			reportError(token, "expecting closing '}' at end");
+			break;
+		}
+
 		// Find :
 		token = consume();
 		if (token.type != Token::Type::Colon) {
 			reportError(token, "expecting colon, not '" + token.symbol + "'");
+			break;
+		}
+
+		// EOF
+		if (reachedEnd()) {
+			reportError(token, "expecting value, not 'EOF'");
+			reportError(token, "expecting closing '}' at end");
 			break;
 		}
 
@@ -440,6 +480,12 @@ Value Parser::getObject()
 		}
 		else {
 			reportError(token, "expecting value, not '" + token.symbol + "'");
+			break;
+		}
+
+		// EOF
+		if (reachedEnd()) {
+			reportError(token, "expecting closing '}' at end");
 			break;
 		}
 

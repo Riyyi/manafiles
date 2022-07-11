@@ -25,6 +25,8 @@ public:
 	Value parse();
 
 private:
+	bool reachedEnd();
+
 	Token peek();
 	bool seekForward(Token::Type type);
 
