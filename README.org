@@ -105,7 +105,6 @@ manafiles will make sure that the contents of the block are commented.
 - (make) ~cmake~
 - (make) ~git~
 - (make) ~gzip~
-- (make) ~nlohmann-json~ [[https://archlinux.org/packages/community/any/nlohmann-json/][arch]], [[https://packages.debian.org/search?keywords=nlohmann-json][debian]], [[https://packages.ubuntu.com/search?keywords=nlohmann-json][ubuntu]]
 - (optional) ~grep~
 - (optional) ~pacman~ + ~pacman-contrib~
 - (optional) ~apt~ + ~dpkg~

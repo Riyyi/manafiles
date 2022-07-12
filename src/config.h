@@ -12,9 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "nlohmann/json.hpp"
-
 #include "util/singleton.h"
+#include "util/json/value.h"
 
 struct Settings {
 	std::vector<std::string> ignorePatterns {
@@ -64,9 +63,9 @@ private:
 
 // -----------------------------------------
 
-// nlohmann::json arbitrary type conversion functions
+// Json arbitrary type conversion functions
 
-void to_json(nlohmann::json& object, const Settings& settings);
-void from_json(const nlohmann::json& object, Settings& settings);
+void toJson(Json::Value& object, const Settings& settings);
+void fromJson(const Json::Value& object, Settings& settings);
 
 #endif // CONFIG_H

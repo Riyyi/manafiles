@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <cassert>    // assert
 #include <csignal>    // raise
 #include <cstdio>     // fprintf
 #include <filesystem> // current_path, recursive_directory
@@ -11,9 +12,8 @@
 #include <string>
 #include <vector>
 
-#include <nlohmann/json.hpp>
-
 #include "config.h"
+#include "util/json/value.h"
 
 Config::Config(s)
 	: m_workingDirectory(std::filesystem::current_path())
@@ -51,7 +51,7 @@ void Config::parseConfigFile()
 		return;
 	}
 
-	nlohmann::json json;
+	Json::Value json;
 
 	std::ifstream file(m_config);
 	if (!file.is_open()) {
@@ -72,21 +72,23 @@ void Config::parseConfigFile()
 
 // -----------------------------------------
 
-void to_json(nlohmann::json& object, const Settings& settings)
+void toJson(Json::Value& json, const Settings& settings)
 {
-	object = nlohmann::json {
+	json = Json::Value {
 		{ "ignorePatterns", settings.ignorePatterns },
 		{ "systemPatterns", settings.systemPatterns }
 	};
 }
 
-void from_json(const nlohmann::json& object, Settings& settings)
+void fromJson(const Json::Value& json, Settings& settings)
 {
-	if (object.find("ignorePatterns") != object.end()) {
-		object.at("ignorePatterns").get_to(settings.ignorePatterns);
+	assert(json.type() == Json::Value::Type::Object);
+
+	if (json.exists("ignorePatterns")) {
+		json.at("ignorePatterns").getTo(settings.ignorePatterns);
 	}
 
-	if (object.find("systemPatterns") != object.end()) {
-		object.at("systemPatterns").get_to(settings.systemPatterns);
+	if (json.exists("systemPatterns")) {
+		json.at("systemPatterns").getTo(settings.systemPatterns);
 	}
 }
