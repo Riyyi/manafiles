@@ -25,6 +25,8 @@ class Object;
 class Value {
 private:
 	friend Detail::jsonConstructor;
+	friend class Parser;
+	friend class Serializer;
 
 public:
 	enum class Type {
