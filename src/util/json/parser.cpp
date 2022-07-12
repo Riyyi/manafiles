@@ -338,7 +338,7 @@ Value Parser::getArray()
 		}
 		else if (token.type == Token::Type::BracketClose) {
 			// Trailing comma
-			if (array.m_value.asArray->size() > 0) {
+			if (array.m_value.array->size() > 0) {
 				reportError(m_tokens->at(m_index - 1), "invalid comma, expecting ']'");
 				break;
 			}
@@ -396,7 +396,7 @@ Value Parser::getObject()
 		token = consume();
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
-			if (object.m_value.asObject->size() > 0) {
+			if (object.m_value.object->size() > 0) {
 				reportError(m_tokens->at(m_index - 1), "invalid comma, expecting '}'");
 			}
 			// Empty object
@@ -416,7 +416,7 @@ Value Parser::getObject()
 		}
 
 		// Check if name exists in hashmap
-		name = *tmpName.m_value.asString;
+		name = *tmpName.m_value.string;
 		if (unique.find(name) != unique.end()) {
 			reportError(token, "duplicate name '" + token.symbol + "', names should be unique");
 			break;

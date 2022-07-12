@@ -43,16 +43,16 @@ std::string Serializer::dumpHelper(const Value& value, const uint32_t indentLeve
 		return "null";
 		break;
 	case Value::Type::Bool:
-		return value.m_value.asBool ? "true" : "false";
+		return value.m_value.boolean ? "true" : "false";
 		break;
 	case Value::Type::Number: {
 		std::ostringstream os;
-		os << value.m_value.asDouble;
+		os << value.m_value.number;
 		return os.str();
 		break;
 	}
 	case Value::Type::String:
-		return "\"" + *value.m_value.asString + "\"";
+		return "\"" + *value.m_value.string + "\"";
 		break;
 	case Value::Type::Array:
 		return dumpArray(value, indentLevel);
@@ -77,7 +77,7 @@ std::string Serializer::dumpArray(const Value& value, const uint32_t indentLevel
 		result += '\n';
 	}
 
-	auto values = value.m_value.asArray->elements();
+	auto values = value.m_value.array->elements();
 	for (auto it = values.begin(); it != values.end(); ++it) {
 		result += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 		result += dumpHelper(*it, indentLevel + 1);
@@ -110,7 +110,7 @@ std::string Serializer::dumpObject(const Value& value, const uint32_t indentLeve
 		result += '\n';
 	}
 
-	auto members = value.m_value.asObject->members();
+	auto members = value.m_value.object->members();
 	for (auto it = members.begin(); it != members.end(); ++it) {
 		result += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 		result += "\"" + it->first + "\":";

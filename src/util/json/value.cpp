@@ -40,14 +40,14 @@ Value::Value(const std::initializer_list<Value>& values)
 
 	if (!isObject) {
 		m_type = Type::Array;
-		m_value.asArray = new Array(values);
+		m_value.array = new Array(values);
 	}
 	else {
 		m_type = Type::Object;
-		m_value.asObject = new Object;
+		m_value.object = new Object;
 
 		for (auto& value : values) {
-			m_value.asObject->emplace(std::move(*value[0].m_value.asString),
+			m_value.object->emplace(std::move(*value[0].m_value.string),
 			                          std::move(value[1]));
 		}
 	}
@@ -91,11 +91,11 @@ void Value::emplace_back(Value value)
 	// Implicitly convert null to an array
 	if (m_type == Type::Null) {
 		m_type = Type::Array;
-		m_value.asArray = new Array;
+		m_value.array = new Array;
 	}
 
 	assert(m_type == Type::Array);
-	m_value.asArray->emplace_back(value);
+	m_value.array->emplace_back(value);
 }
 
 void Value::emplace(const std::string& key, Value value)
@@ -103,11 +103,11 @@ void Value::emplace(const std::string& key, Value value)
 	// Implicitly convert null to an object
 	if (m_type == Type::Null) {
 		m_type = Type::Object;
-		m_value.asObject = new Object;
+		m_value.object = new Object;
 	}
 
 	assert(m_type == Type::Object);
-	m_value.asObject->emplace(key, value);
+	m_value.object->emplace(key, value);
 }
 
 bool Value::exists(size_t index) const
@@ -118,7 +118,7 @@ bool Value::exists(size_t index) const
 bool Value::exists(const std::string& key) const
 {
 	assert(m_type == Type::Object);
-	return m_value.asObject->members().find(key) != m_value.asObject->members().end();
+	return m_value.object->members().find(key) != m_value.object->members().end();
 }
 
 // ------------------------------------------
@@ -128,11 +128,11 @@ Value& Value::operator[](size_t index)
 	// Implicitly convert null to an array
 	if (m_type == Type::Null) {
 		m_type = Type::Array;
-		m_value.asArray = new Array;
+		m_value.array = new Array;
 	}
 
 	assert(m_type == Type::Array);
-	return (*m_value.asArray)[index];
+	return (*m_value.array)[index];
 }
 
 Value& Value::operator[](const std::string& key)
@@ -140,47 +140,47 @@ Value& Value::operator[](const std::string& key)
 	// Implicitly convert null to an object
 	if (m_type == Type::Null) {
 		m_type = Type::Object;
-		m_value.asObject = new Object;
+		m_value.object = new Object;
 	}
 
 	assert(m_type == Type::Object);
-	return (*m_value.asObject)[key];
+	return (*m_value.object)[key];
 }
 
 const Value& Value::operator[](size_t index) const
 {
 	assert(m_type == Type::Array);
-	return (*m_value.asArray)[index];
+	return (*m_value.array)[index];
 }
 
 const Value& Value::operator[](const std::string& key) const
 {
 	assert(m_type == Type::Object);
-	return (*m_value.asObject)[key];
+	return (*m_value.object)[key];
 }
 
 Value& Value::at(size_t index)
 {
 	assert(m_type == Type::Array);
-	return m_value.asArray->at(index);
+	return m_value.array->at(index);
 }
 
 Value& Value::at(const std::string& key)
 {
 	assert(m_type == Type::Object);
-	return m_value.asObject->at(key);
+	return m_value.object->at(key);
 }
 
 const Value& Value::at(size_t index) const
 {
 	assert(m_type == Type::Array);
-	return m_value.asArray->at(index);
+	return m_value.array->at(index);
 }
 
 const Value& Value::at(const std::string& key) const
 {
 	assert(m_type == Type::Object);
-	return m_value.asObject->at(key);
+	return m_value.object->at(key);
 }
 
 // ------------------------------------------
@@ -195,9 +195,9 @@ size_t Value::size() const
 	case Type::String:
 		return 1;
 	case Type::Array:
-		return m_value.asArray->size();
+		return m_value.array->size();
 	case Type::Object:
-		return m_value.asObject->size();
+		return m_value.object->size();
 	default:
 		return 1;
 	}
@@ -209,19 +209,19 @@ void Value::create()
 {
 	switch (m_type) {
 	case Type::Bool:
-		m_value.asBool = false;
+		m_value.boolean = false;
 		break;
 	case Type::Number:
-		m_value.asDouble = 0.0;
+		m_value.number = 0.0;
 		break;
 	case Type::String:
-		m_value.asString = new std::string;
+		m_value.string = new std::string;
 		break;
 	case Type::Array:
-		m_value.asArray = new Array;
+		m_value.array = new Array;
 		break;
 	case Type::Object:
-		m_value.asObject = new Object;
+		m_value.object = new Object;
 		break;
 	default:
 		break;
@@ -232,13 +232,13 @@ void Value::clear()
 {
 	switch (m_type) {
 	case Type::String:
-		delete m_value.asString;
+		delete m_value.string;
 		break;
 	case Type::Array:
-		delete m_value.asArray;
+		delete m_value.array;
 		break;
 	case Type::Object:
-		delete m_value.asObject;
+		delete m_value.object;
 		break;
 	default:
 		break;
@@ -251,19 +251,19 @@ void Value::copyFrom(const Value& other)
 
 	switch (m_type) {
 	case Type::Bool:
-		m_value.asBool = other.m_value.asBool;
+		m_value.boolean = other.m_value.boolean;
 		break;
 	case Type::Number:
-		m_value.asDouble = other.m_value.asDouble;
+		m_value.number = other.m_value.number;
 		break;
 	case Type::String:
-		m_value.asString = new std::string(*other.m_value.asString);
+		m_value.string = new std::string(*other.m_value.string);
 		break;
 	case Type::Array:
-		m_value.asArray = new Array(*other.m_value.asArray);
+		m_value.array = new Array(*other.m_value.array);
 		break;
 	case Type::Object:
-		m_value.asObject = new Object(*other.m_value.asObject);
+		m_value.object = new Object(*other.m_value.object);
 		break;
 	default:
 		break;

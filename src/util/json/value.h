@@ -102,11 +102,11 @@ public:
 	Type type() const { return m_type; }
 	size_t size() const;
 
-	bool asBool() const { return m_value.asBool; }
-	double asDouble() const { return m_value.asDouble; }
-	const std::string& asString() const { return *m_value.asString; }
-	const Array& asArray() const { return *m_value.asArray; }
-	const Object& asObject() const { return *m_value.asObject; }
+	bool asBool() const { return m_value.boolean; }
+	double asDouble() const { return m_value.number; }
+	const std::string& asString() const { return *m_value.string; }
+	const Array& asArray() const { return *m_value.array; }
+	const Object& asObject() const { return *m_value.object; }
 
 private:
 	void create();
@@ -116,11 +116,11 @@ private:
 	Type m_type { Type::Null };
 
 	union {
-		bool asBool;
-		double asDouble;
-		std::string* asString;
-		Array* asArray;
-		Object* asObject;
+		bool boolean;
+		double number;
+		std::string* string;
+		Array* array;
+		Object* object;
 	} m_value {};
 };
 

@@ -28,7 +28,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Bool;
-		json.m_value.asBool = boolean;
+		json.m_value.boolean = boolean;
 	}
 
 	template<typename Json>
@@ -36,7 +36,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Number;
-		json.m_value.asDouble = (double)number;
+		json.m_value.number = (double)number;
 	}
 
 	template<typename Json>
@@ -44,7 +44,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Number;
-		json.m_value.asDouble = number;
+		json.m_value.number = number;
 	}
 
 	template<typename Json>
@@ -52,7 +52,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::String;
-		json.m_value.asString = new std::string(string);
+		json.m_value.string = new std::string(string);
 	}
 
 	template<typename Json>
@@ -60,7 +60,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::String;
-		json.m_value.asString = new std::string(string);
+		json.m_value.string = new std::string(string);
 	}
 
 	template<typename Json>
@@ -68,7 +68,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Array;
-		json.m_value.asArray = new Array(array);
+		json.m_value.array = new Array(array);
 	}
 
 	template<typename Json, typename T>
@@ -76,10 +76,10 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Array;
-		json.m_value.asArray = new Array;
-		json.m_value.asArray->reserve(array.size());
+		json.m_value.array = new Array;
+		json.m_value.array->reserve(array.size());
 		for (const T& value : array) {
-			json.m_value.asArray->emplace_back(value);
+			json.m_value.array->emplace_back(value);
 		}
 	}
 
@@ -88,7 +88,7 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Object;
-		json.m_value.asObject = new Object(object);
+		json.m_value.object = new Object(object);
 	}
 
 	template<typename Json, typename T>
@@ -96,9 +96,9 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Object;
-		json.m_value.asObject = new Object;
+		json.m_value.object = new Object;
 		for (const auto& [name, value] : object) {
-			json.m_value.asObject->emplace(name, value);
+			json.m_value.object->emplace(name, value);
 		}
 	}
 
@@ -107,9 +107,9 @@ struct jsonConstructor {
 	{
 		json.clear();
 		json.m_type = Json::Type::Object;
-		json.m_value.asObject = new Object;
+		json.m_value.object = new Object;
 		for (const auto& [name, value] : object) {
-			json.m_value.asObject->emplace(name, value);
+			json.m_value.object->emplace(name, value);
 		}
 	}
 };
