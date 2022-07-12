@@ -158,9 +158,7 @@ bool Lexer::getString()
 {
 	size_t column = m_column;
 	std::string symbol = "";
-
-	// Break on "\r\n
-	std::string breakOnGrammar = std::string("\"") + '\r' + '\n' + '\0';
+	std::string breakOnCharacter = std::string() + '"' + '\r' + '\n' + '\0';
 
 	bool escape = false;
 	char character = consume();
@@ -174,7 +172,7 @@ bool Lexer::getString()
 			continue;
 		}
 
-		if (!escape && breakOnGrammar.find(character) != std::string::npos) {
+		if (!escape && breakOnCharacter.find(character) != std::string::npos) {
 			break;
 		}
 
@@ -200,13 +198,12 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 {
 	size_t column = m_column;
 	std::string symbol = "";
-	std::string breakOnGrammar = std::string("{}[]:,\" ") + '\t' + '\r' + '\n' + '\0';
+	std::string breakOnCharacter = std::string("{}[]:,") + '"' + ' ' + '\t' + '\r' + '\n' + '\0';
 
 	for (char character;;) {
 		character = peek();
 
-		// Break on all valid JSON grammar thats not a number or literal
-		if (breakOnGrammar.find(character) != std::string::npos) {
+		if (breakOnCharacter.find(character) != std::string::npos) {
 			break;
 		}
 
