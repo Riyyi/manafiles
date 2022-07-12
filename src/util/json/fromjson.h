@@ -72,8 +72,8 @@ void fromJson(const Json& json, std::vector<T>& array)
 	assert(json.type() == Json::Type::Array);
 	array.resize(json.size());
 	std::transform(
-		json.asArray().values().begin(),
-		json.asArray().values().end(),
+		json.asArray().elements().begin(),
+		json.asArray().elements().end(),
 		array.begin(),
 		[](const Json& json) {
 			return json.template get<T>(); // (missing-dependent-template-keyword)

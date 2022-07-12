@@ -77,7 +77,7 @@ std::string Serializer::dumpArray(const Value& value, const uint32_t indentLevel
 		result += '\n';
 	}
 
-	auto values = value.asArray().values();
+	auto values = value.asArray().elements();
 	for (auto it = values.begin(); it != values.end(); ++it) {
 		result += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 		result += dumpHelper(*it, indentLevel + 1);

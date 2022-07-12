@@ -9,18 +9,18 @@
 
 namespace Json {
 
-void Array::emplace_back(Value value)
+void Array::emplace_back(Value element)
 {
-	m_values.emplace_back(std::move(value));
+	m_elements.emplace_back(std::move(element));
 }
 
 Value& Array::operator[](size_t index)
 {
-	if (index + 1 > m_values.size()) {
-		m_values.resize(index + 1);
+	if (index + 1 > m_elements.size()) {
+		m_elements.resize(index + 1);
 	}
 
-	return m_values[index];
+	return m_elements[index];
 }
 
 } // namespace Json
