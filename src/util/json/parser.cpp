@@ -393,7 +393,7 @@ Value Parser::getObject()
 			break;
 		}
 
-		token = peek();
+		token = consume();
 		if (token.type == Token::Type::BraceClose) {
 			// Trailing comma
 			if (object.asObject().size() > 0) {
@@ -408,6 +408,7 @@ Value Parser::getObject()
 		}
 
 		// Find member name
+		m_index--;
 		Value tmpName = getString();
 		if (tmpName.type() != Value::Type::String) {
 			seekForward(Token::Type::BraceClose);
