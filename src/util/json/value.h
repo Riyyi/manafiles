@@ -7,7 +7,7 @@
 #ifndef JSON_VALUE_H
 #define JSON_VALUE_H
 
-#include <cstddef> // nullptr_t
+#include <cstddef> // nullptr_t, size_t
 #include <cstdint> // uint32_t
 #include <initializer_list>
 #include <iostream> // istream, ostream
@@ -128,5 +128,15 @@ std::istream& operator>>(std::istream& input, Value& value);
 std::ostream& operator<<(std::ostream& output, const Value& value);
 
 } // namespace Json
+
+/**
+ * User-defined string literal
+ *
+ * Example usage: auto json = "[ 3.14, true, null ]"_json;
+ */
+inline Json::Value operator"" _json(const char* input, size_t length)
+{
+	return Json::Value::parse(std::string(input, length));
+}
 
 #endif // JSON_VALUE_H
