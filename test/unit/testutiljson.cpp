@@ -28,9 +28,9 @@
 #define EXEC(x) x
 #else
 #define EXEC(x)                                   \
-	stdout = Test::TestSuite::the().outputNull(); \
+	stderr = Test::TestSuite::the().outputNull(); \
 	x;                                            \
-	stdout = Test::TestSuite::the().outputStd();
+	stderr = Test::TestSuite::the().outputErr();
 #endif
 
 std::vector<Json::Token> lex(const std::string& input)
