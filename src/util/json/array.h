@@ -30,6 +30,7 @@ public:
 	{
 	}
 
+	void clear() { m_elements.clear(); }
 	void emplace_back(Value element);
 	void reserve(size_t size) { m_elements.reserve(size); }
 

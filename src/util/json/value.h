@@ -38,6 +38,8 @@ public:
 		Object, // {}
 	};
 
+	// --------------------------------------
+
 	// Constructors
 	Value(std::nullptr_t = nullptr);
 	Value(Type type);
@@ -48,19 +50,25 @@ public:
 		toJson(*this, std::forward<T>(value));
 	}
 
-	// Destructor
-	virtual ~Value() { clear(); }
-
+	// Rule of Five:
 	// Copy constructor
 	Value(const Value& other);
+	// Move constructor
+	Value(Value&& other) noexcept;
+	// Copy assignment
+	// Move assignment
+	Value& operator=(Value other);
+	// Destructor
+	virtual ~Value() { destroy(); }
 
-	// Assignment operator
-	Value& operator=(const Value& other);
+	friend void swap(Value& left, Value& right) noexcept;
 
 	// --------------------------------------
 
 	static Value parse(const std::string& input);
 	std::string dump(const uint32_t indent = 0, const char indentCharacter = ' ') const;
+
+	void clear();
 
 	void emplace_back(Value value);
 	void emplace(const std::string& key, Value value);
@@ -109,9 +117,7 @@ public:
 	const Object& asObject() const { return *m_value.object; }
 
 private:
-	void create();
-	void clear();
-	void copyFrom(const Value& other);
+	void destroy();
 
 	Type m_type { Type::Null };
 

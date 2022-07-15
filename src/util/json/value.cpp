@@ -9,7 +9,7 @@
 #include <cstdint>   // uint32_t
 #include <iostream>  // istream, ostream
 #include <string>
-#include <utility> // move
+#include <utility> // move, swap
 
 #include "util/json/array.h"
 #include "util/json/job.h"
@@ -27,7 +27,26 @@ Value::Value(std::nullptr_t)
 Value::Value(Type type)
 	: m_type(type)
 {
-	create();
+	switch (m_type) {
+	case Type::Bool:
+		m_value.boolean = false;
+		break;
+	case Type::Number:
+		m_value.number = 0.0;
+		break;
+	case Type::String:
+		m_value.string = new std::string;
+		break;
+	case Type::Array:
+		m_value.array = new Array;
+		break;
+	case Type::Object:
+		m_value.object = new Object;
+		break;
+	case Type::Null:
+	default:
+		break;
+	}
 }
 
 Value::Value(const std::initializer_list<Value>& values)
@@ -48,36 +67,94 @@ Value::Value(const std::initializer_list<Value>& values)
 
 		for (auto& value : values) {
 			m_value.object->emplace(std::move(*value[0].m_value.string),
-			                          std::move(value[1]));
+			                        std::move(value[1]));
 		}
 	}
 }
 
 // Copy constructor
 Value::Value(const Value& other)
+	: m_type(other.m_type)
 {
-	copyFrom(other);
+	switch (m_type) {
+	case Type::Bool:
+		m_value.boolean = other.m_value.boolean;
+		break;
+	case Type::Number:
+		m_value.number = other.m_value.number;
+		break;
+	case Type::String:
+		m_value.string = new std::string(*other.m_value.string);
+		break;
+	case Type::Array:
+		m_value.array = new Array(*other.m_value.array);
+		break;
+	case Type::Object:
+		m_value.object = new Object(*other.m_value.object);
+		break;
+	case Type::Null:
+	default:
+		break;
+	}
 }
 
-// Assignment operator
-Value& Value::operator=(const Value& other)
+// Move constructor
+Value::Value(Value&& other) noexcept
+	: Value(Type::Null) // Initialize via default construction
 {
-	if (this != &other) {
-		clear();
-		copyFrom(other);
-	}
+	// Allow std::swap as a fallback on ADL failure
+	using std::swap;
+	// Unqualified call to swap, allow ADL to operate and find best match
+	swap(*this, other);
+}
+
+// Copy assignment
+// Move assignment
+Value& Value::operator=(Value other)
+{
+	// Allow std::swap as a fallback on ADL failure
+	using std::swap;
+	// Unqualified call to swap, allow ADL to operate and find best match
+	swap(*this, other);
 
 	return *this;
 }
 
+void swap(Value& left, Value& right) noexcept
+{
+	std::swap(left.m_type, right.m_type);
+	std::swap(left.m_value, right.m_value);
+}
+
 // ------------------------------------------
+
+void Value::clear()
+{
+	switch (m_type) {
+	case Type::Bool:
+		m_value.boolean = false;
+		break;
+	case Type::Number:
+		m_value.number = 0.0;
+		break;
+	case Type::String:
+		m_value.string->clear();
+		break;
+	case Type::Array:
+		m_value.array->clear();
+		break;
+	case Type::Object:
+		m_value.object->clear();
+		break;
+	case Type::Null:
+	default:
+		break;
+	}
+}
 
 Value Value::parse(const std::string& input)
 {
-	Job job(input);
-	Value value = job.fire();
-
-	return value;
+	return Job(input).fire();
 }
 
 std::string Value::dump(const uint32_t indent, const char indentCharacter) const
@@ -190,14 +267,13 @@ size_t Value::size() const
 	switch (m_type) {
 	case Type::Null:
 		return 0;
-	case Type::Bool:
-	case Type::Number:
-	case Type::String:
-		return 1;
 	case Type::Array:
 		return m_value.array->size();
 	case Type::Object:
 		return m_value.object->size();
+	case Type::Bool:
+	case Type::Number:
+	case Type::String:
 	default:
 		return 1;
 	}
@@ -205,30 +281,7 @@ size_t Value::size() const
 
 // ------------------------------------------
 
-void Value::create()
-{
-	switch (m_type) {
-	case Type::Bool:
-		m_value.boolean = false;
-		break;
-	case Type::Number:
-		m_value.number = 0.0;
-		break;
-	case Type::String:
-		m_value.string = new std::string;
-		break;
-	case Type::Array:
-		m_value.array = new Array;
-		break;
-	case Type::Object:
-		m_value.object = new Object;
-		break;
-	default:
-		break;
-	}
-}
-
-void Value::clear()
+void Value::destroy()
 {
 	switch (m_type) {
 	case Type::String:
@@ -240,31 +293,9 @@ void Value::clear()
 	case Type::Object:
 		delete m_value.object;
 		break;
-	default:
-		break;
-	}
-}
-
-void Value::copyFrom(const Value& other)
-{
-	m_type = other.m_type;
-
-	switch (m_type) {
+	case Type::Null:
 	case Type::Bool:
-		m_value.boolean = other.m_value.boolean;
-		break;
 	case Type::Number:
-		m_value.number = other.m_value.number;
-		break;
-	case Type::String:
-		m_value.string = new std::string(*other.m_value.string);
-		break;
-	case Type::Array:
-		m_value.array = new Array(*other.m_value.array);
-		break;
-	case Type::Object:
-		m_value.object = new Object(*other.m_value.object);
-		break;
 	default:
 		break;
 	}

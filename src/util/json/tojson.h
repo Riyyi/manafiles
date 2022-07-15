@@ -26,7 +26,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, bool boolean)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Bool;
 		json.m_value.boolean = boolean;
 	}
@@ -34,7 +34,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, int number)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Number;
 		json.m_value.number = (double)number;
 	}
@@ -42,7 +42,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, double number)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Number;
 		json.m_value.number = number;
 	}
@@ -50,7 +50,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, const char* string)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::String;
 		json.m_value.string = new std::string(string);
 	}
@@ -58,7 +58,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, const std::string& string)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::String;
 		json.m_value.string = new std::string(string);
 	}
@@ -66,7 +66,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, const Array& array)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Array;
 		json.m_value.array = new Array(array);
 	}
@@ -74,7 +74,7 @@ struct jsonConstructor {
 	template<typename Json, typename T>
 	static void construct(Json& json, const std::vector<T>& array)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Array;
 		json.m_value.array = new Array;
 		json.m_value.array->reserve(array.size());
@@ -86,7 +86,7 @@ struct jsonConstructor {
 	template<typename Json>
 	static void construct(Json& json, const Object& object)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Object;
 		json.m_value.object = new Object(object);
 	}
@@ -94,7 +94,7 @@ struct jsonConstructor {
 	template<typename Json, typename T>
 	static void construct(Json& json, const std::map<std::string, T>& object)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Object;
 		json.m_value.object = new Object;
 		for (const auto& [name, value] : object) {
@@ -105,7 +105,7 @@ struct jsonConstructor {
 	template<typename Json, typename T>
 	static void construct(Json& json, const std::unordered_map<std::string, T>& object)
 	{
-		json.clear();
+		json.destroy();
 		json.m_type = Json::Type::Object;
 		json.m_value.object = new Object;
 		for (const auto& [name, value] : object) {
@@ -143,14 +143,14 @@ constexpr const auto& toJson = Detail::staticConst<Detail::toJsonFunction>; // N
 // Customization Points
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4381.html
 
-// Json::fromJson is a function object, the type of which is
-// Json::Detail::fromJsonFunction. In the Json::Detail namespace are the
-// fromJson free functions. The function call operator of fromJsonFunction makes
-// an unqualified call to fromJson which, since it shares the Detail namespace
-// with the fromJson free functions, will consider those in addition to any
-// overloads that are found by argument-dependent lookup.
+// Json::toJson is a function object, the type of which is
+// Json::Detail::toJsonFunction. In the Json::Detail namespace are the toJson
+// free functions. The function call operator of toJsonFunction makes an
+// unqualified call to toJson which, since it shares the Detail namespace with
+// the toJson free functions, will consider those in addition to any overloads
+// that are found by argument-dependent lookup.
 
 // Variable templates are linked externally, therefor every translation unit
-// will see the same address for Detail::staticConst<Detail::fromJsonFunction>.
-// Since Json::fromJson is a reference to the variable template, it too will
-// have the same address in all translation units.
+// will see the same address for Detail::staticConst<Detail::toJsonFunction>.
+// Since Json::toJson is a reference to the variable template, it too will have
+// the same address in all translation units.

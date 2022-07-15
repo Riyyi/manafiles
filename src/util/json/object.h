@@ -27,6 +27,7 @@ public:
 	{
 	}
 
+	void clear() { m_members.clear(); }
 	void emplace(const std::string& name, Value value);
 
 	Value& operator[](const std::string& name);
