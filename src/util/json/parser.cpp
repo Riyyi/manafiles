@@ -448,19 +448,19 @@ Value Parser::getObject()
 		// Add member (name:value pair) to object
 		token = peek();
 		if (token.type == Token::Type::Literal) {
-			object[name] = getLiteral();
+			object.emplace(name, getLiteral());
 		}
 		else if (token.type == Token::Type::Number) {
-			object[name] = getNumber();
+			object.emplace(name, getNumber());
 		}
 		else if (token.type == Token::Type::String) {
-			object[name] = getString();
+			object.emplace(name, getString());
 		}
 		else if (token.type == Token::Type::BracketOpen) {
-			object[name] = getArray();
+			object.emplace(name, getArray());
 		}
 		else if (token.type == Token::Type::BraceOpen) {
-			object[name] = getObject();
+			object.emplace(name, getObject());
 		}
 		else {
 			reportError(token, "expecting value, not '" + token.symbol + "'");
