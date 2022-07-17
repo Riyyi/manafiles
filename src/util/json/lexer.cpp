@@ -158,7 +158,6 @@ bool Lexer::getString()
 {
 	size_t column = m_column;
 	std::string symbol = "";
-	std::string breakOnCharacter = std::string() + '"' + '\r' + '\n' + '\0';
 
 	bool escape = false;
 	char character = consume();
@@ -172,7 +171,11 @@ bool Lexer::getString()
 			continue;
 		}
 
-		if (!escape && breakOnCharacter.find(character) != std::string::npos) {
+		if (!escape &&
+		    (character == '"'
+		     || character == '\r'
+		     || character == '\n'
+		     || character == '\0')) {
 			break;
 		}
 
@@ -198,12 +201,23 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 {
 	size_t index = m_index;
 	size_t column = m_column;
-	std::string breakOnCharacter = std::string("{}[]:,") + '"' + ' ' + '\t' + '\r' + '\n' + '\0';
 
 	for (char character;;) {
 		character = peek();
 
-		if (breakOnCharacter.find(character) != std::string::npos) {
+		if (character == '{'
+		    || character == '}'
+		    || character == '['
+		    || character == ']'
+		    || character == ':'
+		    || character == ','
+		    || character == '"'
+		    || character == ' '
+		    || character == '\t'
+		    || character == '\r'
+		    || character == '\n'
+		    || character == '\0'
+		) {
 			break;
 		}
 
