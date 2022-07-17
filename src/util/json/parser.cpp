@@ -155,7 +155,12 @@ Value Parser::getNumber()
 	};
 
 	State state = State::Int;
-	std::string validCharacters = "0123456789-";
+
+#define CHECK_IF_VALID_NUMBER                                                                  \
+	if (character < 48 || character > 57) {                                                    \
+		reportError(token, std::string() + "invalid number, unexpected '" + character + '\''); \
+		return nullptr;                                                                        \
+	}
 
 	size_t fractionPosition = 0;
 	size_t exponentPosition = 0;
@@ -166,14 +171,12 @@ Value Parser::getNumber()
 		// Int -> Fraction
 		if (character == '.' && state == State::Int) {
 			state = State::Fraction;
-			validCharacters = "0123456789";
 			fractionPosition = i;
 			continue;
 		}
 		// Int/Fraction -> Exponent
 		else if ((character == 'e' || character == 'E') && state != State::Exponent) {
 			state = State::Exponent;
-			validCharacters = "0123456789+-";
 			exponentPosition = i;
 			continue;
 		}
@@ -189,8 +192,12 @@ Value Parser::getNumber()
 					return nullptr;
 				}
 			}
+			else {
+				CHECK_IF_VALID_NUMBER;
+			}
 		}
 		else if (state == State::Fraction) {
+			CHECK_IF_VALID_NUMBER;
 		}
 		else if (state == State::Exponent) {
 			if (character == '-' || character == '+') {
@@ -203,11 +210,9 @@ Value Parser::getNumber()
 					return nullptr;
 				}
 			}
-		}
-
-		if (validCharacters.find(character) == std::string::npos) {
-			reportError(token, std::string() + "invalid number, unexpected '" + character + '\'');
-			return nullptr;
+			else {
+				CHECK_IF_VALID_NUMBER;
+			}
 		}
 	}
 
