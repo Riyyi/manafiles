@@ -196,8 +196,8 @@ bool Lexer::getString()
 
 bool Lexer::getNumberOrLiteral(Token::Type type)
 {
+	size_t index = m_index;
 	size_t column = m_column;
-	std::string symbol = "";
 	std::string breakOnCharacter = std::string("{}[]:,") + '"' + ' ' + '\t' + '\r' + '\n' + '\0';
 
 	for (char character;;) {
@@ -207,12 +207,13 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 			break;
 		}
 
-		symbol += character;
 		increment();
 	}
-	decrement();
 
-	m_tokens->push_back({ type, m_line, column, symbol });
+	m_tokens->push_back({ type, m_line, column,
+	                      m_job->input().substr(index, m_index - index) });
+
+	decrement();
 
 	return true;
 }
