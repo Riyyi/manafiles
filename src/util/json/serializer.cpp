@@ -67,66 +67,88 @@ void Serializer::dumpHelper(const Value& value, const uint32_t indentLevel)
 
 void Serializer::dumpArray(const Value& value, const uint32_t indentLevel)
 {
-	// Append [
-	m_output += "[";
 	if (m_indent > 0) {
+	m_output += '[';
 		m_output += '\n';
 	}
 
-	auto values = value.m_value.array->elements();
-	auto last = values.end();
-	for (auto it = values.begin(); it != last; ++it) {
-		m_output += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
-		dumpHelper(*it, indentLevel + 1);
-
-		// Add comma, except after the last element
-		if (std::next(it) != last) {
-			m_output += ",";
-		}
-		if (m_indent > 0) {
-			m_output += '\n';
-		}
+	// Empty Array early return
+	if (value.m_value.array->empty()) {
+		m_output += ']';
+		return;
 	}
 
-	// Append indentation
-	m_output += std::string(m_indent * indentLevel, m_indentCharacter);
+	size_t i = 0;
+	auto it = value.m_value.array->elements().cbegin();
+	if (!m_indent) {
+		for (; i < value.m_value.array->size() - 1; ++i, ++it) {
+			dumpHelper(*it, indentLevel + 1);
+			m_output += ',';
+		}
+		dumpHelper(*it, indentLevel + 1);
+	}
+	else {
+		std::string indentation = std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 
-	// Append ]
+		for (; i < value.m_value.array->size() - 1; ++i, ++it) {
+			m_output += indentation;
+			dumpHelper(*it, indentLevel + 1);
+			m_output += ",\n";
+		}
+		m_output += indentation;
+		dumpHelper(*it, indentLevel + 1);
+		m_output += '\n';
+
+		// Append indentation
+		m_output += std::string(m_indent * indentLevel, m_indentCharacter);
+	}
+
 	m_output += "]";
 }
 
 void Serializer::dumpObject(const Value& value, const uint32_t indentLevel)
 {
-	// Append {
-	m_output += "{";
 	if (m_indent > 0) {
+	m_output += '{';
 		m_output += '\n';
 	}
 
-	auto members = value.m_value.object->members();
-	auto last = members.end();
-	for (auto it = members.begin(); it != last; ++it) {
-		m_output += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
-		m_output += "\"" + it->first + "\":";
-		if (m_indent > 0) {
-			m_output += ' ';
-		}
-		dumpHelper(it->second, indentLevel + 1);
-
-		// Add comma, except after the last element
-		if (std::next(it) != last) {
-			m_output += ",";
-		}
-		if (m_indent > 0) {
-			m_output += '\n';
-		}
+	// Empty Object early return
+	if (value.m_value.object->empty()) {
+		m_output += '}';
+		return;
 	}
 
-	// Append indentation
-	m_output += std::string(m_indent * indentLevel, m_indentCharacter);
+	size_t i = 0;
+	auto it = value.m_value.object->members().cbegin();
+	if (!m_indent) {
+		for (; i < value.m_value.object->size() - 1; ++i, ++it) {
+			m_output += '"' + it->first + "\":";
+			dumpHelper(it->second, indentLevel + 1);
+			m_output += ',';
+		}
+		m_output += '"' + it->first + "\":";
+		dumpHelper(it->second, indentLevel + 1);
+	}
+	else {
+		std::string indentation = std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 
-	// Append }
-	m_output += "}";
+		for (; i < value.m_value.object->size() - 1; ++i, ++it) {
+			m_output += indentation;
+			m_output += '"' + it->first + "\": ";
+			dumpHelper(it->second, indentLevel + 1);
+			m_output += ",\n";
+		}
+		m_output += indentation;
+		m_output += '"' + it->first + "\": ";
+		dumpHelper(it->second, indentLevel + 1);
+		m_output += '\n';
+
+		// Append indentation
+		m_output += std::string(m_indent * indentLevel, m_indentCharacter);
+	}
+
+	m_output += '}';
 }
 
 } // namespace Json
