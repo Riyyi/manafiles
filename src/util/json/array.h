@@ -30,17 +30,25 @@ public:
 	{
 	}
 
-	void clear() { m_elements.clear(); }
-	void emplace_back(Value element);
+	// Capacity
+
+	bool empty() const { return m_elements.empty(); }
+	size_t size() const { return m_elements.size(); }
 	void reserve(size_t size) { m_elements.reserve(size); }
+
+	// Element access
 
 	Value& operator[](size_t index);
 
 	Value& at(size_t index) { return m_elements.at(index); }
 	const Value& at(size_t index) const { return m_elements.at(index); }
 
-	size_t size() const { return m_elements.size(); }
 	const std::vector<Value>& elements() const { return m_elements; }
+
+	// Modifiers
+
+	void clear() { m_elements.clear(); }
+	void emplace_back(Value element);
 
 private:
 	std::vector<Value> m_elements;

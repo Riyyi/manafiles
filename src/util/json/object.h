@@ -27,16 +27,24 @@ public:
 	{
 	}
 
-	void clear() { m_members.clear(); }
-	void emplace(const std::string& name, Value value);
+	// Capacity
+
+	bool empty() const { return m_members.empty(); }
+	size_t size() const { return m_members.size(); }
+
+	// Member access
 
 	Value& operator[](const std::string& name);
 
 	Value& at(const std::string& name) { return m_members.at(name); }
 	const Value& at(const std::string& name) const { return m_members.at(name); }
 
-	size_t size() const { return m_members.size(); }
 	const std::map<std::string, Value>& members() const { return m_members; }
+
+	// Modifiers
+
+	void clear() { m_members.clear(); }
+	void emplace(const std::string& name, Value value);
 
 private:
 	std::map<std::string, Value> m_members;
