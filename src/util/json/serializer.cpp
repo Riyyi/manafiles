@@ -5,7 +5,7 @@
  */
 
 #include <cstdint>  // uint32_t
-#include <iterator> // prev
+#include <iterator> // next
 #include <sstream>  // ostringstream
 #include <string>
 
@@ -74,12 +74,13 @@ void Serializer::dumpArray(const Value& value, const uint32_t indentLevel)
 	}
 
 	auto values = value.m_value.array->elements();
-	for (auto it = values.begin(); it != values.end(); ++it) {
+	auto last = values.end();
+	for (auto it = values.begin(); it != last; ++it) {
 		m_output += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 		dumpHelper(*it, indentLevel + 1);
 
 		// Add comma, except after the last element
-		if (it != std::prev(values.end(), 1)) {
+		if (std::next(it) != last) {
 			m_output += ",";
 		}
 		if (m_indent > 0) {
@@ -103,7 +104,8 @@ void Serializer::dumpObject(const Value& value, const uint32_t indentLevel)
 	}
 
 	auto members = value.m_value.object->members();
-	for (auto it = members.begin(); it != members.end(); ++it) {
+	auto last = members.end();
+	for (auto it = members.begin(); it != last; ++it) {
 		m_output += std::string(m_indent * (indentLevel + 1), m_indentCharacter);
 		m_output += "\"" + it->first + "\":";
 		if (m_indent > 0) {
@@ -112,7 +114,7 @@ void Serializer::dumpObject(const Value& value, const uint32_t indentLevel)
 		dumpHelper(it->second, indentLevel + 1);
 
 		// Add comma, except after the last element
-		if (it != std::prev(members.end(), 1)) {
+		if (std::next(it) != last) {
 			m_output += ",";
 		}
 		if (m_indent > 0) {
