@@ -16,9 +16,8 @@
 
 namespace Json {
 
-Serializer::Serializer(const Value& value, const uint32_t indent, const char indentCharacter)
-	: m_value(value)
-	, m_indent(indent)
+Serializer::Serializer(const uint32_t indent, const char indentCharacter)
+	: m_indent(indent)
 	, m_indentCharacter(indentCharacter)
 {
 }
@@ -29,9 +28,9 @@ Serializer::~Serializer()
 
 // ------------------------------------------
 
-std::string Serializer::dump()
+std::string Serializer::dump(const Value& value)
 {
-	return dumpHelper(m_value);
+	return dumpHelper(value);
 }
 
 // ------------------------------------------

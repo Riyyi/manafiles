@@ -16,17 +16,15 @@ namespace Json {
 
 class Serializer {
 public:
-	Serializer(const Value& value, const uint32_t indent = 0, const char indentCharacter = ' ');
+	Serializer(const uint32_t indent = 0, const char indentCharacter = ' ');
 	virtual ~Serializer();
 
-	std::string dump();
+	std::string dump(const Value& value);
 
 private:
 	std::string dumpHelper(const Value& value, const uint32_t indentLevel = 0);
 	std::string dumpArray(const Value& value, const uint32_t indentLevel = 0);
 	std::string dumpObject(const Value& value, const uint32_t indentLevel = 0);
-
-	Value m_value;
 
 	uint32_t m_indent { 0 };
 	char m_indentCharacter { ' ' };

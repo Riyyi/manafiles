@@ -159,8 +159,8 @@ Value Value::parse(const std::string& input)
 
 std::string Value::dump(const uint32_t indent, const char indentCharacter) const
 {
-	Serializer serializer(*this, indent, indentCharacter);
-	return serializer.dump();
+	Serializer serializer(indent, indentCharacter);
+	return serializer.dump(*this);
 }
 
 void Value::emplace_back(Value value)
