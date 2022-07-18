@@ -1,19 +1,55 @@
 #include <chrono>  // high_resolution_clock, seconds, milliseconds, microseconds, nanoseconds
 #include <cstdint> // uint64_t
-#include <cstdio> // printf
+#include <cstdio>  // printf
 
 #include "util/timer.h"
 
 namespace Util {
 
 Timer::Timer()
-	: m_start(std::chrono::high_resolution_clock::now())
+	: m_running(true)
+	, m_accumulated(TimePoint::min())
+	, m_start(now())
 {
 }
+
+Timer::Timer(const TimePoint& timePoint)
+	: m_running(true)
+	, m_accumulated(TimePoint::min())
+	, m_start(timePoint)
+{
+}
+
+// -----------------------------------------
 
 Timer Timer::operator-(const Timer& timer)
 {
 	return Timer(TimePoint { m_start - timer.start() });
+}
+
+TimePoint Timer::now()
+{
+	return std::chrono::high_resolution_clock::now();
+}
+
+void Timer::pause()
+{
+	if (!m_running) {
+		return;
+	}
+
+	m_accumulated += now() - m_start;
+	m_running = false;
+}
+
+void Timer::resume()
+{
+	if (m_running) {
+		return;
+	}
+
+	m_running = true;
+	m_start = now();
 }
 
 template<typename To, typename From>
@@ -45,8 +81,15 @@ uint64_t Timer::toNanoseconds()
 template<typename T>
 uint64_t Timer::elapsed()
 {
-	auto now = std::chrono::high_resolution_clock::now();
-	return std::chrono::duration_cast<T>(now - m_start).count();
+	uint64_t elapsed = 0;
+
+	if (m_running) {
+		elapsed += std::chrono::duration_cast<T>(now() - m_start).count();
+	}
+
+	elapsed += std::chrono::duration_cast<T>(m_accumulated - TimePoint::min()).count();
+
+	return elapsed;
 }
 
 uint64_t Timer::elapsedSeconds()

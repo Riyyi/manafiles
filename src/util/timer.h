@@ -11,12 +11,13 @@ using TimePoint = std::chrono::high_resolution_clock::time_point;
 class Timer {
 public:
 	Timer();
-	Timer(const TimePoint& timePoint)
-		: m_start(timePoint)
-	{
-	}
+	Timer(const TimePoint& timePoint);
 
 	Timer operator-(const Timer& timer);
+
+	static TimePoint now();
+	void pause();
+	void resume();
 
 	template<typename To, typename From>
 	To to(From from);
@@ -37,6 +38,8 @@ public:
 	const TimePoint& start() const { return m_start; }
 
 private:
+	bool m_running { true };
+	TimePoint m_accumulated;
 	TimePoint m_start;
 };
 
