@@ -22,9 +22,11 @@ public:
 	std::string dump(const Value& value);
 
 private:
-	std::string dumpHelper(const Value& value, const uint32_t indentLevel = 0);
-	std::string dumpArray(const Value& value, const uint32_t indentLevel = 0);
-	std::string dumpObject(const Value& value, const uint32_t indentLevel = 0);
+	void dumpHelper(const Value& value, const uint32_t indentLevel = 0);
+	void dumpArray(const Value& value, const uint32_t indentLevel = 0);
+	void dumpObject(const Value& value, const uint32_t indentLevel = 0);
+
+	std::string m_output;
 
 	uint32_t m_indent { 0 };
 	char m_indentCharacter { ' ' };
