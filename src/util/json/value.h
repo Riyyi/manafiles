@@ -66,6 +66,7 @@ public:
 	// --------------------------------------
 
 	static Value parse(const std::string& input);
+	static Value parse(std::ifstream& file);
 	std::string dump(const uint32_t indent = 0, const char indentCharacter = ' ') const;
 
 	void clear();

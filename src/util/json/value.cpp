@@ -157,6 +157,13 @@ Value Value::parse(const std::string& input)
 	return Job(input).fire();
 }
 
+Value Value::parse(std::ifstream& file)
+{
+	Value value;
+	file >> value;
+	return value;
+}
+
 std::string Value::dump(const uint32_t indent, const char indentCharacter) const
 {
 	Serializer serializer(indent, indentCharacter);
@@ -313,8 +320,7 @@ std::istream& operator>>(std::istream& input, Value& value)
 	}
 	inputString.append(buffer, input.gcount());
 
-	Job job(inputString);
-	value = job.fire();
+	value = Job(inputString).fire();
 
 	return input;
 }
