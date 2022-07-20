@@ -25,11 +25,10 @@ public:
 	Value parse();
 
 private:
-	bool reachedEnd();
-	bool seekForward(Token::Type type);
-
+	bool isEOF();
 	Token peek();
 	Token consume();
+	void ignoreUntil(Token::Type type);
 
 	Value consumeLiteral();
 	Value consumeNumber();

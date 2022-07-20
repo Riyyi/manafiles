@@ -72,7 +72,7 @@ Value Parser::parse()
 		break;
 	}
 
-	if (!reachedEnd()) {
+	if (!isEOF()) {
 		m_job->printErrorLine(peek(), "multiple root elements");
 	}
 
@@ -81,33 +81,28 @@ Value Parser::parse()
 
 // -----------------------------------------
 
-bool Parser::reachedEnd()
+bool Parser::isEOF()
 {
 	return m_index >= m_tokens->size();
 }
 
-bool Parser::seekForward(Token::Type type)
-{
-	for (; !reachedEnd(); ++m_index) {
-		if (peek().type == type) {
-			m_index++;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 Token Parser::peek()
 {
-	return m_tokens->at(m_index);
+	assert(!isEOF());
+	return (*m_tokens)[m_index];
 }
 
 Token Parser::consume()
 {
-	Token token = peek();
-	m_index++;
-	return token;
+	assert(!isEOF());
+	return (*m_tokens)[m_index++];
+}
+
+void Parser::ignoreUntil(Token::Type type)
+{
+	while (!isEOF() && peek().type != type) {
+		++m_index;
+	}
 }
 
 Value Parser::consumeLiteral()
@@ -313,14 +308,15 @@ Value Parser::consumeArray()
 		m_job->printErrorLine(token, message.c_str());
 
 		// After an error, try to find the closing bracket
-		seekForward(Token::Type::BracketClose);
+		ignoreUntil(Token::Type::BracketClose);
+		m_index++;
 	};
 
 	Value array = Value::Type::Array;
 	Token token;
 	for (;;) {
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(m_tokens->at(m_index - 1), "expecting closing ']' at end");
 			break;
 		}
@@ -354,7 +350,7 @@ Value Parser::consumeArray()
 		}
 
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(token, "expecting closing ']' at end");
 			break;
 		}
@@ -384,7 +380,8 @@ Value Parser::consumeObject()
 		m_job->printErrorLine(token, message.c_str());
 
 		// After an error, try to find the closing brace
-		seekForward(Token::Type::BraceClose);
+		ignoreUntil(Token::Type::BraceClose);
+		m_index++;
 	};
 
 	Value object = Value::Type::Object;
@@ -393,7 +390,7 @@ Value Parser::consumeObject()
 	std::map<std::string, uint8_t> unique;
 	for (;;) {
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(m_tokens->at(m_index - 1), "expecting closing '}' at end");
 			break;
 		}
@@ -416,7 +413,8 @@ Value Parser::consumeObject()
 		m_index--;
 		Value tmpName = consumeString();
 		if (tmpName.m_type != Value::Type::String) {
-			seekForward(Token::Type::BraceClose);
+			ignoreUntil(Token::Type::BraceClose);
+			m_index++;
 			break;
 		}
 
@@ -430,7 +428,7 @@ Value Parser::consumeObject()
 		unique.insert({ name, 0 });
 
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(token, "expecting colon, not 'EOF'");
 			reportError(token, "expecting closing '}' at end");
 			break;
@@ -444,7 +442,7 @@ Value Parser::consumeObject()
 		}
 
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(token, "expecting value, not 'EOF'");
 			reportError(token, "expecting closing '}' at end");
 			break;
@@ -473,7 +471,7 @@ Value Parser::consumeObject()
 		}
 
 		// EOF
-		if (reachedEnd()) {
+		if (isEOF()) {
 			reportError(token, "expecting closing '}' at end");
 			break;
 		}
