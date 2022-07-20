@@ -17,8 +17,8 @@
 #include <vector>
 
 #include "util/json/array.h"
-#include "util/json/conversion.h"
 #include "util/json/object.h"
+#include "util/meta/odr.h"
 
 namespace Json {
 
@@ -113,7 +113,7 @@ struct fromJsonFunction {
 // Anonymous namespace prevents multiple definition of the reference
 namespace {
 // Function object
-constexpr const auto& fromJson = Detail::staticConst<Detail::fromJsonFunction>; // NOLINT (misc-definitions-in-headers)
+constexpr const auto& fromJson = Util::Detail::staticConst<Detail::fromJsonFunction>; // NOLINT(misc-definitions-in-headers,clang-diagnostic-unused-variable)
 } // namespace
 
 } // namespace Json

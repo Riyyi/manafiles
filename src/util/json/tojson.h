@@ -15,8 +15,8 @@
 #include <utility> // forward
 
 #include "util/json/array.h"
-#include "util/json/conversion.h"
 #include "util/json/object.h"
+#include "util/meta/odr.h"
 
 namespace Json {
 
@@ -133,7 +133,7 @@ struct toJsonFunction {
 // Anonymous namespace prevents multiple definition of the reference
 namespace {
 // Function object
-constexpr const auto& toJson = Detail::staticConst<Detail::toJsonFunction>; // NOLINT (misc-definitions-in-headers)
+constexpr const auto& toJson = Util::Detail::staticConst<Detail::toJsonFunction>; // NOLINT(misc-definitions-in-headers,clang-diagnostic-unused-variable)
 } // namespace
 
 } // namespace Json
