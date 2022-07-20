@@ -48,7 +48,7 @@ void Lexer::analyze()
 			m_tokens->push_back({ Token::Type::Comma, m_line, m_column, "," });
 			break;
 		case '"':
-			if (!getString()) {
+			if (!consumeString()) {
 				return;
 			}
 			break;
@@ -63,7 +63,7 @@ void Lexer::analyze()
 		case '7':
 		case '8':
 		case '9':
-			if (!getNumber()) {
+			if (!consumeNumber()) {
 				return;
 			}
 			break;
@@ -93,7 +93,7 @@ void Lexer::analyze()
 		case 'x':
 		case 'y':
 		case 'z':
-			if (!getLiteral()) {
+			if (!consumeLiteral()) {
 				return;
 			}
 			break;
@@ -127,7 +127,7 @@ void Lexer::analyze()
 
 // -----------------------------------------
 
-bool Lexer::getString()
+bool Lexer::consumeString()
 {
 	size_t column = m_column;
 	std::string symbol = "";
@@ -170,7 +170,7 @@ bool Lexer::getString()
 	return true;
 }
 
-bool Lexer::getNumberOrLiteral(Token::Type type)
+bool Lexer::consumeNumberOrLiteral(Token::Type type)
 {
 	size_t index = m_index;
 	size_t column = m_column;
@@ -204,14 +204,14 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 	return true;
 }
 
-bool Lexer::getNumber()
+bool Lexer::consumeNumber()
 {
-	return getNumberOrLiteral(Token::Type::Number);
+	return consumeNumberOrLiteral(Token::Type::Number);
 }
 
-bool Lexer::getLiteral()
+bool Lexer::consumeLiteral()
 {
-	return getNumberOrLiteral(Token::Type::Literal);
+	return consumeNumberOrLiteral(Token::Type::Literal);
 }
 
 } // namespace Json

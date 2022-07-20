@@ -49,10 +49,10 @@ public:
 	void analyze();
 
 private:
-	bool getString();
-	bool getNumberOrLiteral(Token::Type type);
-	bool getNumber();
-	bool getLiteral();
+	bool consumeString();
+	bool consumeNumberOrLiteral(Token::Type type);
+	bool consumeNumber();
+	bool consumeLiteral();
 
 	Job* m_job { nullptr };
 

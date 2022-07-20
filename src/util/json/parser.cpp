@@ -44,19 +44,19 @@ Value Parser::parse()
 	Token token = peek();
 	switch (token.type) {
 	case Token::Type::Literal:
-		result = getLiteral();
+		result = consumeLiteral();
 		break;
 	case Token::Type::Number:
-		result = getNumber();
+		result = consumeNumber();
 		break;
 	case Token::Type::String:
-		result = getString();
+		result = consumeString();
 		break;
 	case Token::Type::BracketOpen:
-		result = getArray();
+		result = consumeArray();
 		break;
 	case Token::Type::BraceOpen:
-		result = getObject();
+		result = consumeObject();
 		break;
 	case Token::Type::BracketClose:
 		m_job->printErrorLine(token, "expecting value, not ']'");
@@ -110,7 +110,7 @@ Token Parser::consume()
 	return token;
 }
 
-Value Parser::getLiteral()
+Value Parser::consumeLiteral()
 {
 	Token token = consume();
 
@@ -128,7 +128,7 @@ Value Parser::getLiteral()
 	return nullptr;
 }
 
-Value Parser::getNumber()
+Value Parser::consumeNumber()
 {
 	Token token = consume();
 
@@ -231,7 +231,7 @@ Value Parser::getNumber()
 	return std::stod(token.symbol);
 }
 
-Value Parser::getString()
+Value Parser::consumeString()
 {
 	Token token = consume();
 
@@ -305,7 +305,7 @@ Value Parser::getString()
 	return string;
 }
 
-Value Parser::getArray()
+Value Parser::consumeArray()
 {
 	m_index++;
 
@@ -327,19 +327,19 @@ Value Parser::getArray()
 
 		token = peek();
 		if (token.type == Token::Type::Literal) {
-			array.emplace_back(getLiteral());
+			array.emplace_back(consumeLiteral());
 		}
 		else if (token.type == Token::Type::Number) {
-			array.emplace_back(getNumber());
+			array.emplace_back(consumeNumber());
 		}
 		else if (token.type == Token::Type::String) {
-			array.emplace_back(getString());
+			array.emplace_back(consumeString());
 		}
 		else if (token.type == Token::Type::BracketOpen) {
-			array.emplace_back(getArray());
+			array.emplace_back(consumeArray());
 		}
 		else if (token.type == Token::Type::BraceOpen) {
-			array.emplace_back(getObject());
+			array.emplace_back(consumeObject());
 		}
 		else if (token.type == Token::Type::BracketClose) {
 			// Trailing comma
@@ -376,7 +376,7 @@ Value Parser::getArray()
 	return array;
 }
 
-Value Parser::getObject()
+Value Parser::consumeObject()
 {
 	m_index++;
 
@@ -414,7 +414,7 @@ Value Parser::getObject()
 
 		// Find member name
 		m_index--;
-		Value tmpName = getString();
+		Value tmpName = consumeString();
 		if (tmpName.m_type != Value::Type::String) {
 			seekForward(Token::Type::BraceClose);
 			break;
@@ -453,19 +453,19 @@ Value Parser::getObject()
 		// Add member (name:value pair) to object
 		token = peek();
 		if (token.type == Token::Type::Literal) {
-			object.emplace(name, getLiteral());
+			object.emplace(name, consumeLiteral());
 		}
 		else if (token.type == Token::Type::Number) {
-			object.emplace(name, getNumber());
+			object.emplace(name, consumeNumber());
 		}
 		else if (token.type == Token::Type::String) {
-			object.emplace(name, getString());
+			object.emplace(name, consumeString());
 		}
 		else if (token.type == Token::Type::BracketOpen) {
-			object.emplace(name, getArray());
+			object.emplace(name, consumeArray());
 		}
 		else if (token.type == Token::Type::BraceOpen) {
-			object.emplace(name, getObject());
+			object.emplace(name, consumeObject());
 		}
 		else {
 			reportError(token, "expecting value, not '" + token.symbol + "'");

@@ -31,11 +31,11 @@ private:
 	Token peek();
 	Token consume();
 
-	Value getLiteral();
-	Value getNumber();
-	Value getString();
-	Value getArray();
-	Value getObject();
+	Value consumeLiteral();
+	Value consumeNumber();
+	Value consumeString();
+	Value consumeArray();
+	Value consumeObject();
 
 	Job* m_job { nullptr };
 
