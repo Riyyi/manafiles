@@ -15,7 +15,7 @@
 
 namespace Json {
 
-Job::Job(const std::string& input)
+Job::Job(std::string_view input)
 	: m_input(input)
 {
 	// FIXME: Make this work for all newline types: \n, \r, \r\n
@@ -68,7 +68,7 @@ void Job::printErrorLine(Token token, const char* message)
 	        message);
 
 	// Get the JSON line that caused the error
-	std::istringstream input(m_input);
+	std::istringstream input(m_input.data());
 	std::string line;
 	for (size_t i = 0; std::getline(input, line); ++i) {
 		if (i == token.line) {

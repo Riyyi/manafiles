@@ -153,7 +153,7 @@ void Value::clear()
 	}
 }
 
-Value Value::parse(const std::string& input)
+Value Value::parse(std::string_view input)
 {
 	return Job(input).fire();
 }
