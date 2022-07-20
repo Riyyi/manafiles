@@ -1,0 +1,55 @@
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <algorithm> // max, min
+
+#include "util/genericlexer.h"
+
+namespace Util {
+
+GenericLexer::GenericLexer(std::string_view input)
+	: m_input(input)
+{
+}
+
+GenericLexer::~GenericLexer()
+{
+}
+
+// -----------------------------------------
+
+size_t GenericLexer::tell() const
+{
+	return m_index;
+}
+
+bool GenericLexer::isEOF() const
+{
+	return m_index >= m_input.length();
+}
+
+char GenericLexer::peek(size_t offset) const
+{
+	return m_input[std::max(std::min(m_index + offset, m_input.length()), (size_t)0)];
+}
+
+void GenericLexer::ignore(size_t count)
+{
+	m_index += std::min(count, m_input.length() - m_index);
+}
+
+void GenericLexer::retreat(size_t count)
+{
+	m_index -= std::min(count, m_index);
+}
+
+char GenericLexer::consume()
+{
+	assert(!isEOF());
+	return m_input[m_index++];
+}
+
+} // namespace Util
