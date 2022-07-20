@@ -7,6 +7,7 @@
 #include <algorithm> // all_of
 #include <cassert>   // assert
 #include <cstdint>   // uint32_t
+#include <fstream>   // >>
 #include <iostream>  // istream, ostream
 #include <string>
 #include <utility> // move, swap
