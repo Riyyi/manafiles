@@ -11,9 +11,10 @@
 // https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
 
 #include <cstddef> // size_t
-#include <memory>  // shared_ptr
 #include <string>
 #include <vector>
+
+#include "util/genericlexer.h"
 
 namespace Json {
 
@@ -40,7 +41,7 @@ struct Token {
 };
 
 // Lexical analyzer
-class Lexer {
+class Lexer final : public Util::GenericLexer {
 public:
 	Lexer(Job* job);
 	virtual ~Lexer();
@@ -48,13 +49,6 @@ public:
 	void analyze();
 
 private:
-	char peek();
-	char peekNext();
-
-	void increment();
-	void decrement();
-	char consume();
-
 	bool getString();
 	bool getNumberOrLiteral(Token::Type type);
 	bool getNumber();
@@ -62,7 +56,6 @@ private:
 
 	Job* m_job { nullptr };
 
-	size_t m_index { 0 };
 	size_t m_column { 0 };
 	size_t m_line { 0 };
 

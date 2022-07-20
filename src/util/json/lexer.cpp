@@ -13,7 +13,8 @@
 namespace Json {
 
 Lexer::Lexer(Job* job)
-	: m_job(job)
+	: GenericLexer(job->input())
+	, m_job(job)
 	, m_tokens(job->tokens())
 {
 }
@@ -26,7 +27,7 @@ Lexer::~Lexer()
 
 void Lexer::analyze()
 {
-	while (m_index < m_job->input().length()) {
+	while (m_index < m_input.length()) {
 		switch (peek()) {
 		case '{':
 			m_tokens->push_back({ Token::Type::BraceOpen, m_line, m_column, "{" });
@@ -100,7 +101,7 @@ void Lexer::analyze()
 		case '\t':
 			break;
 		case '\r':
-			if (peekNext() == '\n') { // CRLF \r\n
+			if (peek(1) == '\n') { // CRLF \r\n
 				break;
 			}
 			m_column = -1;
@@ -119,40 +120,12 @@ void Lexer::analyze()
 			break;
 		}
 
-		increment();
+		ignore();
+		m_column++;
 	}
 }
 
 // -----------------------------------------
-
-char Lexer::peek()
-{
-	return m_job->input()[m_index];
-}
-
-char Lexer::peekNext()
-{
-	return m_job->input()[m_index + 1];
-}
-
-void Lexer::increment()
-{
-	m_index++;
-	m_column++;
-}
-
-void Lexer::decrement()
-{
-	m_index--;
-	m_column--;
-}
-
-char Lexer::consume()
-{
-	char character = peek();
-	increment();
-	return character;
-}
 
 bool Lexer::getString()
 {
@@ -166,7 +139,7 @@ bool Lexer::getString()
 
 		if (!escape && character == '\\') {
 			symbol += '\\';
-			increment();
+			ignore();
 			escape = true;
 			continue;
 		}
@@ -180,7 +153,7 @@ bool Lexer::getString()
 		}
 
 		symbol += character;
-		increment();
+		ignore();
 
 		if (escape) {
 			escape = false;
@@ -221,13 +194,13 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 			break;
 		}
 
-		increment();
+		ignore();
 	}
 
 	m_tokens->push_back({ type, m_line, column,
-	                      m_job->input().substr(index, m_index - index) });
+	                      std::string(m_input.substr(index, m_index - index)) });
 
-	decrement();
+	retreat();
 
 	return true;
 }
