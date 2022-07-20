@@ -144,11 +144,11 @@ bool Lexer::getString()
 			continue;
 		}
 
-		if (!escape &&
-		    (character == '"'
-		     || character == '\r'
-		     || character == '\n'
-		     || character == '\0')) {
+		if (!escape
+		    && (character == '"'
+		        || character == '\r'
+		        || character == '\n'
+		        || character == '\0')) {
 			break;
 		}
 
@@ -189,8 +189,7 @@ bool Lexer::getNumberOrLiteral(Token::Type type)
 		    || character == '\t'
 		    || character == '\r'
 		    || character == '\n'
-		    || character == '\0'
-		) {
+		    || character == '\0') {
 			break;
 		}
 
