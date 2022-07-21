@@ -26,6 +26,11 @@ size_t GenericLexer::tell() const
 	return m_index;
 }
 
+size_t GenericLexer::tellRemaining() const
+{
+	return m_input.length() - m_index;
+}
+
 bool GenericLexer::isEOF() const
 {
 	return m_index >= m_input.length();
@@ -33,7 +38,9 @@ bool GenericLexer::isEOF() const
 
 char GenericLexer::peek(size_t offset) const
 {
-	return m_input[std::max(std::min(m_index + offset, m_input.length()), (size_t)0)];
+	return (m_index + offset >= 0 && m_index + offset < m_input.length())
+	           ? m_input[m_index + offset]
+	           : '\0';
 }
 
 void GenericLexer::ignore(size_t count)
@@ -50,6 +57,16 @@ char GenericLexer::consume()
 {
 	assert(!isEOF());
 	return m_input[m_index++];
+}
+
+bool GenericLexer::consumeSpecific(const char& character)
+{
+	if (peek() != character) {
+		return false;
+	}
+
+	ignore();
+	return true;
 }
 
 } // namespace Util

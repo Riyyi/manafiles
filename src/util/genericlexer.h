@@ -21,6 +21,7 @@ public:
 	// Position
 
 	size_t tell() const;
+	size_t tellRemaining() const;
 	bool isEOF() const;
 
 	// Access
@@ -32,6 +33,7 @@ public:
 	void ignore(size_t count = 1);
 	void retreat(size_t count = 1);
 	char consume();
+	bool consumeSpecific(const char& character);
 
 protected:
 	size_t m_index { 0 };
