@@ -1,0 +1,6 @@
+# -*- yaml -*-
+
+---
+# FIXME: Figure out why NOLINTBEGIN/NOLINTEND doesnt work
+Checks: -misc-unused-using-decls
+...
