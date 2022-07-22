@@ -136,6 +136,7 @@ void strln(std::string& fill, std::string_view format, const Parameters&... para
 	std::stringstream stream;
 	VariadicParameters variadicParameters { parameters... };
 	variadicFormat(stream, format, variadicParameters);
+	stream << '\n';
 	fill = stream.str();
 }
 
