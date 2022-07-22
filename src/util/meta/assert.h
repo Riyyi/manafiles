@@ -11,6 +11,7 @@
 #include <cstring> // strlen
 #include <fstream> // ifstream
 #include <string>
+#include <string_view>
 
 #include "util/format/format.h"
 #include "util/meta/compiler.h"
