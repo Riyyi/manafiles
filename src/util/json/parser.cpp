@@ -18,7 +18,7 @@
 #include "util/json/parser.h"
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 Parser::Parser(Job* job)
 	: m_job(job)
@@ -493,4 +493,4 @@ Value Parser::consumeObject()
 	return object;
 }
 
-} // namespace Json
+} // namespace Util::JSON

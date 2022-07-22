@@ -17,10 +17,10 @@
 #include "testsuite.h"
 #include "util/json/array.h"
 #include "util/json/job.h"
+#include "util/json/json.h"
 #include "util/json/lexer.h"
 #include "util/json/parser.h"
 #include "util/json/serializer.h"
-#include "util/json/value.h"
 
 #define DONT_PRINT_PARSER_ERRORS
 
@@ -33,20 +33,20 @@
 	stderr = Test::TestSuite::the().outputErr();
 #endif
 
-std::vector<Json::Token> lex(const std::string& input)
+std::vector<Util::JSON::Token> lex(const std::string& input)
 {
 	EXEC(
-		Json::Job job(input);
-		Json::Lexer lexer(&job);
+		Util::JSON::Job job(input);
+		Util::JSON::Lexer lexer(&job);
 		lexer.analyze(););
 	return *job.tokens();
 }
 
-Json::Value parse(const std::string& input)
+Util::Json parse(const std::string& input)
 {
 	EXEC(
-		Json::Job job(input);
-		Json::Lexer lexer(&job);
+		Util::JSON::Job job(input);
+		Util::JSON::Lexer lexer(&job);
 		lexer.analyze(););
 
 	if (!job.success()) {
@@ -54,8 +54,8 @@ Json::Value parse(const std::string& input)
 	}
 
 	EXEC(
-		Json::Parser parser(&job);
-		Json::Value json = parser.parse(););
+		Util::JSON::Parser parser(&job);
+		Util::Json json = parser.parse(););
 
 	if (!job.success()) {
 		return nullptr;
@@ -67,7 +67,7 @@ Json::Value parse(const std::string& input)
 std::string serialize(const std::string& input, uint32_t indent = 0)
 {
 	EXEC(
-		auto json = Json::Value::parse(input););
+		auto json = Util::Json::parse(input););
 	return json.dump(indent);
 }
 
@@ -75,59 +75,59 @@ std::string serialize(const std::string& input, uint32_t indent = 0)
 
 TEST_CASE(JsonLexer)
 {
-	std::vector<Json::Token> tokens;
+	std::vector<Util::JSON::Token> tokens;
 
 	// Literal
 
 	tokens = lex("true");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "true");
-	EXPECT(tokens[0].type == Json::Token::Type::Literal);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::Literal);
 
 	tokens = lex("false");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "false");
-	EXPECT(tokens[0].type == Json::Token::Type::Literal);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::Literal);
 
 	tokens = lex("null");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "null");
-	EXPECT(tokens[0].type == Json::Token::Type::Literal);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::Literal);
 
 	// Number
 
 	tokens = lex("3.14");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "3.14");
-	EXPECT(tokens[0].type == Json::Token::Type::Number);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::Number);
 
 	tokens = lex("-3.14e+2");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "-3.14e+2");
-	EXPECT(tokens[0].type == Json::Token::Type::Number);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::Number);
 
 	tokens = lex("+3.14");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "+");
-	EXPECT(tokens[0].type == Json::Token::Type::None);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::None);
 
 	// String
 
 	tokens = lex(R"("a string")");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "a string");
-	EXPECT(tokens[0].type == Json::Token::Type::String);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::String);
 
 	tokens = lex(R"("a string""another string")");
 	EXPECT_EQ(tokens.size(), 2);
 	EXPECT_EQ(tokens[0].symbol, "a string");
 	EXPECT_EQ(tokens[1].symbol, "another string");
-	EXPECT(tokens[0].type == Json::Token::Type::String);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::String);
 
 	tokens = lex("\"a string\nwill break on the newline symbol\"");
 	EXPECT_EQ(tokens.size(), 1);
 	EXPECT_EQ(tokens[0].symbol, "a string");
-	EXPECT(tokens[0].type == Json::Token::Type::String);
+	EXPECT(tokens[0].type == Util::JSON::Token::Type::String);
 
 	// Array
 
@@ -156,186 +156,186 @@ TEST_CASE(JsonLexer)
 
 TEST_CASE(JsonParser)
 {
-	Json::Value json;
+	Util::Json json;
 
 	json = parse("null");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("true");
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Bool);
+	EXPECT_EQ(json.type(), Util::Json::Type::Bool);
 
 	json = parse("false");
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Bool);
+	EXPECT_EQ(json.type(), Util::Json::Type::Bool);
 
 	json = parse("3.14");
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Number);
+	EXPECT_EQ(json.type(), Util::Json::Type::Number);
 
 	json = parse(R"("a string")");
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::String);
+	EXPECT_EQ(json.type(), Util::Json::Type::String);
 
 	// Array
 
 	json = parse("[");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("[ 123");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("[ 123,");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("[ 123, ]");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("[ 123 456 ]");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("[]");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Array);
+	EXPECT_EQ(json.type(), Util::Json::Type::Array);
 
 	json = parse(R"([ "element", 3.14 ])");
 	EXPECT_EQ(json.size(), 2);
-	EXPECT_EQ(json.type(), Json::Value::Type::Array);
+	EXPECT_EQ(json.type(), Util::Json::Type::Array);
 
 	// Object
 
 	json = parse("{");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name")");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name":)");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name":,)");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name":"value")");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name":"value",)");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name":"value", })");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ "name" "value" })");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse(R"({ 123 })");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("{}");
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Object);
+	EXPECT_EQ(json.type(), Util::Json::Type::Object);
 
 	json = parse(R"({ "name": "value", "name2": 3.14 })");
 	EXPECT_EQ(json.size(), 2);
-	EXPECT_EQ(json.type(), Json::Value::Type::Object);
+	EXPECT_EQ(json.type(), Util::Json::Type::Object);
 
 	// Multiple root elements
 
 	json = parse("54 false");
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("3.14, 666");
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = parse("true\nfalse");
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 }
 
 TEST_CASE(JsonToJsonValue)
 {
-	Json::Value json;
+	Util::Json json;
 
 	json = {};
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = nullptr;
 	EXPECT_EQ(json.size(), 0);
-	EXPECT_EQ(json.type(), Json::Value::Type::Null);
+	EXPECT_EQ(json.type(), Util::Json::Type::Null);
 
 	json = true;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Bool);
+	EXPECT_EQ(json.type(), Util::Json::Type::Bool);
 
 	json = false;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Bool);
+	EXPECT_EQ(json.type(), Util::Json::Type::Bool);
 
 	json = 666;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Number);
+	EXPECT_EQ(json.type(), Util::Json::Type::Number);
 
 	json = 3.14;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::Number);
+	EXPECT_EQ(json.type(), Util::Json::Type::Number);
 
 	const char* characters = "my string";
 	json = characters;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::String);
+	EXPECT_EQ(json.type(), Util::Json::Type::String);
 
 	std::string string = "my string";
 	json = string;
 	EXPECT_EQ(json.size(), 1);
-	EXPECT_EQ(json.type(), Json::Value::Type::String);
+	EXPECT_EQ(json.type(), Util::Json::Type::String);
 
 	// Nested Array with multiple types
 	json = { "element", 3.14, true, nullptr, { "nested element", { "more nesting", { 1, 2, 3, "yes" } } } };
 	EXPECT_EQ(json.size(), 5);
-	EXPECT_EQ(json.type(), Json::Value::Type::Array);
+	EXPECT_EQ(json.type(), Util::Json::Type::Array);
 
 	// Nested Object with multiple types
 	json = { { "name", "value" }, { "name2", 3.14 }, { "name3", true }, { "name4", nullptr }, { "name5", { { "nested name", "value" } } } };
 	EXPECT_EQ(json.size(), 5);
-	EXPECT_EQ(json.type(), Json::Value::Type::Object);
+	EXPECT_EQ(json.type(), Util::Json::Type::Object);
 
 	// Array with singular type
 	std::vector<std::string> vector = { "element", "element2", "element3" };
 	json = vector;
 	EXPECT_EQ(json.size(), 3);
-	EXPECT_EQ(json.type(), Json::Value::Type::Array);
+	EXPECT_EQ(json.type(), Util::Json::Type::Array);
 
 	// Object with singular type
 	std::map<std::string, std::string> map = { { "name", "value" }, { "name2", "value2" } };
 	json = map;
 	EXPECT_EQ(json.size(), 2);
-	EXPECT_EQ(json.type(), Json::Value::Type::Object);
+	EXPECT_EQ(json.type(), Util::Json::Type::Object);
 
 	// Object with singular type
 	std::unordered_map<std::string, std::string> unorderedMap = { { "name", "value" }, { "name2", "value2" } };
 	json = unorderedMap;
 	EXPECT_EQ(json.size(), 2);
-	EXPECT_EQ(json.type(), Json::Value::Type::Object);
+	EXPECT_EQ(json.type(), Util::Json::Type::Object);
 }
 
 TEST_CASE(JsonFromJsonValue)
 {
-	Json::Value json;
+	Util::Json json;
 
 	json = nullptr;
 	EXPECT_EQ(json.get<std::nullptr_t>(), nullptr);
@@ -373,7 +373,7 @@ TEST_CASE(JsonFromJsonValue)
 	EXPECT_EQ(json.at(1).get<double>(), 3.14);
 	EXPECT_EQ(json[2].get<bool>(), true);
 	EXPECT_EQ(json[3].get<std::nullptr_t>(), nullptr);
-	auto valueArray = json.get<std::vector<Json::Value>>();
+	auto valueArray = json.get<std::vector<Util::Json>>();
 	EXPECT_EQ(valueArray.size(), 4);
 	EXPECT_EQ(valueArray[0].get<std::string>(), "string");
 	EXPECT_EQ(valueArray[1].get<double>(), 3.14);
@@ -417,7 +417,7 @@ TEST_CASE(JsonFromJsonValue)
 	EXPECT_EQ(json.at("name2").get<double>(), 3.14);
 	EXPECT_EQ(json["name3"].get<bool>(), true);
 	EXPECT_EQ(json["name4"].get<std::nullptr_t>(), nullptr);
-	auto valueObject = json.get<std::map<std::string, Json::Value>>();
+	auto valueObject = json.get<std::map<std::string, Util::Json>>();
 	EXPECT_EQ(valueObject.size(), 4);
 	EXPECT_EQ(valueObject["name"].get<std::string>(), "value");
 	EXPECT_EQ(valueObject["name2"].get<double>(), 3.14);
@@ -455,25 +455,25 @@ TEST_CASE(JsonFromJsonValue)
 
 TEST_CASE(JsonImplicitConversion)
 {
-	Json::Value array;
+	Util::Json array;
 	array[0];
-	EXPECT_EQ(array.type(), Json::Value::Type::Array);
+	EXPECT_EQ(array.type(), Util::Json::Type::Array);
 
-	Json::Value arrayEmplace;
+	Util::Json arrayEmplace;
 	arrayEmplace.emplace_back("element");
 	arrayEmplace.emplace_back({ "nested element" });
-	EXPECT_EQ(arrayEmplace.type(), Json::Value::Type::Array);
-	EXPECT_EQ(arrayEmplace[1].type(), Json::Value::Type::Array);
+	EXPECT_EQ(arrayEmplace.type(), Util::Json::Type::Array);
+	EXPECT_EQ(arrayEmplace[1].type(), Util::Json::Type::Array);
 
-	Json::Value object;
+	Util::Json object;
 	object[""];
-	EXPECT_EQ(object.type(), Json::Value::Type::Object);
+	EXPECT_EQ(object.type(), Util::Json::Type::Object);
 
-	Json::Value objectEmplace;
+	Util::Json objectEmplace;
 	objectEmplace.emplace("name", "value");
 	objectEmplace.emplace("name2", { { "nested name", "value" } });
-	EXPECT_EQ(objectEmplace.type(), Json::Value::Type::Object);
-	EXPECT_EQ(objectEmplace["name2"].type(), Json::Value::Type::Object);
+	EXPECT_EQ(objectEmplace.type(), Util::Json::Type::Object);
+	EXPECT_EQ(objectEmplace["name2"].type(), Util::Json::Type::Object);
 }
 
 TEST_CASE(JsonSerializer)

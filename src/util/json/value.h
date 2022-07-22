@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_VALUE_H
-#define JSON_VALUE_H
+#ifndef UTIL_JSON_VALUE_H
+#define UTIL_JSON_VALUE_H
 
 #include <cstddef> // nullptr_t, size_t
 #include <cstdint> // uint32_t
@@ -18,7 +18,7 @@
 #include "util/json/fromjson.h"
 #include "util/json/tojson.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Array;
 class Object;
@@ -137,7 +137,7 @@ std::ostream& operator<<(std::ostream& output, const Value& value);
 
 void format(FormatBuilder& builder, const Value& value);
 
-} // namespace Json
+} // namespace Util::JSON
 
 /**
  * User-defined string literal
@@ -149,4 +149,4 @@ inline Json::Value operator"" _json(const char* input, size_t length)
 	return Json::Value::parse(std::string(input, length));
 }
 
-#endif // JSON_VALUE_H
+#endif // UTIL_JSON_VALUE_H

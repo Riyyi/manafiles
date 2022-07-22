@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "config.h"
-#include "util/json/value.h"
+#include "util/json/json.h"
 
 Config::Config(s)
 	: m_workingDirectory(std::filesystem::current_path())
@@ -51,7 +51,7 @@ void Config::parseConfigFile()
 		return;
 	}
 
-	Json::Value json;
+	Util::Json json;
 
 	std::ifstream file(m_config);
 	if (!file.is_open()) {
@@ -72,17 +72,17 @@ void Config::parseConfigFile()
 
 // -----------------------------------------
 
-void toJson(Json::Value& json, const Settings& settings)
+void toJson(Util::Json& json, const Settings& settings)
 {
-	json = Json::Value {
+	json = Util::Json {
 		{ "ignorePatterns", settings.ignorePatterns },
 		{ "systemPatterns", settings.systemPatterns }
 	};
 }
 
-void fromJson(const Json::Value& json, Settings& settings)
+void fromJson(const Util::Json& json, Settings& settings)
 {
-	assert(json.type() == Json::Value::Type::Object);
+	assert(json.type() == Util::Json::Type::Object);
 
 	if (json.exists("ignorePatterns")) {
 		json.at("ignorePatterns").getTo(settings.ignorePatterns);

@@ -7,7 +7,7 @@
 #include "util/json/object.h"
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 void Object::emplace(const std::string& name, Value value)
 {
@@ -23,4 +23,4 @@ Value& Object::operator[](const std::string& name)
 	return m_members.at(name);
 }
 
-} // namespace Json
+} // namespace Util::JSON

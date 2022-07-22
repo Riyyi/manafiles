@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_LEXER_H
-#define JSON_LEXER_H
+#ifndef UTIL_JSON_LEXER_H
+#define UTIL_JSON_LEXER_H
 
 // The JavaScript Object Notation (JSON) Data Interchange Format
 // https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
@@ -16,7 +16,7 @@
 
 #include "util/genericlexer.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Job;
 
@@ -62,6 +62,6 @@ private:
 	std::vector<Token>* m_tokens { nullptr };
 };
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_LEXER_H
+#endif // UTIL_JSON_LEXER_H

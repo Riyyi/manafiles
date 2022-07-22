@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_ARRAY_H
-#define JSON_ARRAY_H
+#ifndef UTIL_JSON_ARRAY_H
+#define UTIL_JSON_ARRAY_H
 
 #include <utility> // move
 #include <vector>
 
 #include "util/json/parser.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Value;
 
@@ -54,6 +54,6 @@ private:
 	std::vector<Value> m_elements;
 };
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_ARRAY_H
+#endif // UTIL_JSON_ARRAY_H

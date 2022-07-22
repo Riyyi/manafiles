@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_OBJECT_H
-#define JSON_OBJECT_H
+#ifndef UTIL_JSON_OBJECT_H
+#define UTIL_JSON_OBJECT_H
 
 #include <map>
 #include <string>
@@ -13,7 +13,7 @@
 
 #include "util/json/parser.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Value;
 
@@ -50,6 +50,6 @@ private:
 	std::map<std::string, Value> m_members;
 };
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_OBJECT_H
+#endif // UTIL_JSON_OBJECT_H

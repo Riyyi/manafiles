@@ -14,7 +14,7 @@
 #include "util/json/object.h"
 #include "util/json/serializer.h"
 
-namespace Json {
+namespace Util::JSON {
 
 Serializer::Serializer(const uint32_t indent, const char indentCharacter)
 	: m_indent(indent)
@@ -151,4 +151,4 @@ void Serializer::dumpObject(const Value& value, const uint32_t indentLevel)
 	m_output += '}';
 }
 
-} // namespace Json
+} // namespace Util::JSON

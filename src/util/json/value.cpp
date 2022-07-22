@@ -19,7 +19,7 @@
 #include "util/json/serializer.h"
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 Value::Value(std::nullptr_t)
 	: Value(Type::Null)
@@ -337,4 +337,4 @@ void format(FormatBuilder& builder, const Value& value)
 	builder.putString(value.dump(4));
 }
 
-} // namespace Json
+} // namespace Util::JSON

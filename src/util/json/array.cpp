@@ -7,7 +7,7 @@
 #include "util/json/array.h"
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 void Array::emplace_back(Value element)
 {
@@ -23,4 +23,4 @@ Value& Array::operator[](size_t index)
 	return m_elements[index];
 }
 
-} // namespace Json
+} // namespace Util::JSON

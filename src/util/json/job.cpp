@@ -13,7 +13,7 @@
 #include "util/json/parser.h"
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 Job::Job(std::string_view input)
 	: m_input(input)
@@ -111,4 +111,4 @@ void Job::printErrorLine(Token token, const char* message)
 	        std::string(line.length() - token.column, '~').c_str());
 }
 
-} // namespace Json
+} // namespace Util::JSON

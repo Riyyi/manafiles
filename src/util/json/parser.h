@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_PARSER_H
-#define JSON_PARSER_H
+#ifndef UTIL_JSON_PARSER_H
+#define UTIL_JSON_PARSER_H
 
 #include <cstddef> // size_t
 #include <vector>
 
 #include "util/json/lexer.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Job;
 class Value;
@@ -43,6 +43,6 @@ private:
 	std::vector<Token>* m_tokens { nullptr };
 };
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_PARSER_H
+#endif // UTIL_JSON_PARSER_H

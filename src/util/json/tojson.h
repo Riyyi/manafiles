@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_TO_JSON_H
-#define JSON_TO_JSON_H
+#ifndef UTIL_JSON_TO_JSON_H
+#define UTIL_JSON_TO_JSON_H
 
 #include <cassert> // assert
 #include <cstddef> // nullptr_t
@@ -18,7 +18,7 @@
 #include "util/json/object.h"
 #include "util/meta/odr.h"
 
-namespace Json {
+namespace Util::JSON {
 
 namespace Detail {
 
@@ -136,9 +136,9 @@ namespace {
 constexpr const auto& toJson = Util::Detail::staticConst<Detail::toJsonFunction>; // NOLINT(misc-definitions-in-headers,clang-diagnostic-unused-variable)
 } // namespace
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_TO_JSON_H
+#endif // UTIL_JSON_TO_JSON_H
 
 // Customization Points
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4381.html

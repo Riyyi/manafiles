@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef JSON_SERIALIZER_H
-#define JSON_SERIALIZER_H
+#ifndef UTIL_JSON_SERIALIZER_H
+#define UTIL_JSON_SERIALIZER_H
 
 #include <cstdint> // uint32_t
 #include <string>
 
 #include "util/json/value.h"
 
-namespace Json {
+namespace Util::JSON {
 
 class Serializer {
 public:
@@ -32,6 +32,6 @@ private:
 	char m_indentCharacter { ' ' };
 };
 
-} // namespace Json
+} // namespace Util::JSON
 
-#endif // JSON_SERIALIZER_H
+#endif // UTIL_JSON_SERIALIZER_H

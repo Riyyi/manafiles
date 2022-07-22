@@ -10,7 +10,7 @@
 #include "util/json/job.h"
 #include "util/json/lexer.h"
 
-namespace Json {
+namespace Util::JSON {
 
 Lexer::Lexer(Job* job)
 	: GenericLexer(job->input())
@@ -214,4 +214,4 @@ bool Lexer::consumeLiteral()
 	return consumeNumberOrLiteral(Token::Type::Literal);
 }
 
-} // namespace Json
+} // namespace Util::JSON

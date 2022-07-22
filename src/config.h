@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "util/singleton.h"
-#include "util/json/value.h"
+#include "util/json/json.h"
 
 struct Settings {
 	std::vector<std::string> ignorePatterns {
@@ -65,7 +65,7 @@ private:
 
 // Json arbitrary type conversion functions
 
-void toJson(Json::Value& object, const Settings& settings);
-void fromJson(const Json::Value& object, Settings& settings);
+void toJson(Util::Json& object, const Settings& settings);
+void fromJson(const Util::Json& object, Settings& settings);
 
 #endif // CONFIG_H
