@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_FORMAT_PARSER_H
-#define UTIL_FORMAT_PARSER_H
+#pragma once
 
 #include <cstddef>   // size_t
 #include <string_view>
@@ -33,5 +32,3 @@ private:
 };
 
 } // namespace Util::Format
-
-#endif // UTIL_FORMAT_PARSER_H

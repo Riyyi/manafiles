@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef META_ODR_H
-#define META_ODR_H
+#pragma once
 
 namespace Util {
 
@@ -19,5 +18,3 @@ constexpr T staticConst {};
 } // namespace Detail
 
 } // namespace Util
-
-#endif // META_ODR_H

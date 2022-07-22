@@ -1,5 +1,10 @@
-#ifndef TIMER_H
-#define TIMER_H
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include <chrono>  // high_resolution_clock
 #include <cstdint> // uint64_t
@@ -44,5 +49,3 @@ private:
 };
 
 } // namespace Util
-
-#endif // TIMER_H

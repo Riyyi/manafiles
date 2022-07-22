@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_FORMAT_BUILDER_H
-#define UTIL_FORMAT_BUILDER_H
+#pragma once
 
 #include <cstddef> // size_t
 #include <cstdint> // int32_t, uint32_t, int64_t
@@ -46,5 +45,3 @@ private:
 };
 
 } // namespace Util::Format
-
-#endif // UTIL_FORMAT_BUILDER_H

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_JOB_H
-#define UTIL_JSON_JOB_H
+#pragma once
 
 #include <cstddef> // size_t
 #include <string_view>
@@ -49,5 +48,3 @@ private:
 };
 
 } // namespace Util::JSON
-
-#endif // UTIL_JSON_JOB_H

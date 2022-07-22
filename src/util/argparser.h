@@ -1,5 +1,10 @@
-#ifndef ARG_PARSER_H
-#define ARG_PARSER_H
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include <cstddef>    // size_t
 #include <functional> // function
@@ -112,5 +117,3 @@ private:
 };
 
 } // namespace Util
-
-#endif // ARG_PARSER_H

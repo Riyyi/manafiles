@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_GENERIC_LEXER_H
-#define UTIL_GENERIC_LEXER_H
+#pragma once
 
 #include <cassert> // assert
 #include <cstddef> // size_t
@@ -41,5 +40,3 @@ protected:
 };
 
 } // namespace Util
-
-#endif // UTIL_GENERIC_LEXER_H

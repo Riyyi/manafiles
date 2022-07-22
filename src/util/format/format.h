@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_FORMAT_FORMAT_H
-#define UTIL_FORMAT_FORMAT_H
+#pragma once
 
 #include <cstddef> // size_t
 #include <sstream> // stringstream
@@ -194,5 +193,3 @@ using Util::Format::str;
 using Util::Format::strln;
 
 using FormatBuilder = Util::Format::Builder;
-
-#endif // UTIL_FORMAT_FORMAT_H

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_FROM_JSON_H
-#define UTIL_JSON_FROM_JSON_H
+#pragma once
 
 #include <algorithm> // transform
 #include <cassert>   // assert
@@ -117,8 +116,6 @@ constexpr const auto& fromJson = Util::Detail::staticConst<Detail::fromJsonFunct
 } // namespace
 
 } // namespace Util::JSON
-
-#endif // UTIL_JSON_FROM_JSON_H
 
 // Customization Points
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4381.html

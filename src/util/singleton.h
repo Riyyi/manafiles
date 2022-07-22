@@ -1,5 +1,10 @@
-#ifndef SINGLETON_H
-#define SINGLETON_H
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include <cassert>
 
@@ -46,5 +51,3 @@ template<typename T>
 T* Singleton<T>::s_instance = nullptr;
 
 } // namespace Util
-
-#endif // SINGLETON_H

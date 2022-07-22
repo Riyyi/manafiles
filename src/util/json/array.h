@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_ARRAY_H
-#define UTIL_JSON_ARRAY_H
+#pragma once
 
 #include <utility> // move
 #include <vector>
@@ -55,5 +54,3 @@ private:
 };
 
 } // namespace Util::JSON
-
-#endif // UTIL_JSON_ARRAY_H

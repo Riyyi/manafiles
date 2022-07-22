@@ -1,5 +1,10 @@
-#ifndef SYSTEM_H
-#define SYSTEM_H
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include <cstdint>    // int32_t, uint32_t
 #include <functional> // function
@@ -61,5 +66,3 @@ private:
 };
 
 } // namespace Util
-
-#endif // SYSTEM_H

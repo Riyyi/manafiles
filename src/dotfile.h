@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef DOTFILE_H
-#define DOTFILE_H
+#pragma once
 
 #include <cstddef> // size_t
 #include <filesystem>
@@ -43,5 +42,3 @@ private:
 
 	void forEachDotfile(const std::vector<std::string>& targets, const std::function<void(const std::filesystem::directory_entry&, size_t)>& callback);
 };
-
-#endif // DOTFILE_H

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_LEXER_H
-#define UTIL_JSON_LEXER_H
+#pragma once
 
 // The JavaScript Object Notation (JSON) Data Interchange Format
 // https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
@@ -63,5 +62,3 @@ private:
 };
 
 } // namespace Util::JSON
-
-#endif // UTIL_JSON_LEXER_H

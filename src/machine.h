@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef MACHINE_H
-#define MACHINE_H
+#pragma once
 
 #include <cstdint> // uint32_t
 #include <pwd.h>   // passwd
@@ -36,5 +35,3 @@ private:
 	std::string m_hostname;
 	passwd* m_passwd { nullptr };
 };
-
-#endif // MACHINE_H

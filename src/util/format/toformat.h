@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_TO_FORMAT_H
-#define UTIL_TO_FORMAT_H
+#pragma once
 
-#include <cstddef>  // nullptr_t
-#include <cstdint>  // int64_t
+#include <cstddef>  // nullptr_t, size_t
+#include <cstdint>  // int32_t, uint32_t, int64_t
 #include <cstring>  // strlen
 #include <iterator> // next
 #include <map>
@@ -164,5 +163,3 @@ constexpr const auto& format = Util::Detail::staticConst<Detail::formatFunction>
 } // namespace
 
 } // namespace Util::Format
-
-#endif // UTIL_TO_FORMAT_H

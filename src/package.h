@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef PACKAGE_H
-#define PACKAGE_H
+#pragma once
 
 #include <optional>
 #include <string>
@@ -45,5 +44,3 @@ private:
 
 	Distro m_distro { Distro::Unsupported };
 };
-
-#endif // PACKAGE_H

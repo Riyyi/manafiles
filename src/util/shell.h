@@ -1,5 +1,10 @@
-#ifndef SHELL_H
-#define SHELL_H
+/*
+ * Copyright (C) 2022 Riyyi
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include <string>
 #include <string_view>
@@ -26,5 +31,3 @@ private:
 };
 
 } // namespace Util
-
-#endif // SHELL_H

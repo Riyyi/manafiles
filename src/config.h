@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #include <cstddef>    // size_t
 #include <filesystem> // path
@@ -67,5 +66,3 @@ private:
 
 void toJson(Util::Json& object, const Settings& settings);
 void fromJson(const Util::Json& object, Settings& settings);
-
-#endif // CONFIG_H

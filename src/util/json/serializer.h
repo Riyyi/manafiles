@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_SERIALIZER_H
-#define UTIL_JSON_SERIALIZER_H
+#pragma once
 
 #include <cstdint> // uint32_t
 #include <string>
@@ -33,5 +32,3 @@ private:
 };
 
 } // namespace Util::JSON
-
-#endif // UTIL_JSON_SERIALIZER_H

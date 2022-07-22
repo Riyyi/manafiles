@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef FILE_H
-#define FILE_H
+#pragma once
 
 #include <string>
 
@@ -33,6 +32,3 @@ private:
 };
 
 } // namespace Util
-
-
-#endif // FILE_H

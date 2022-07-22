@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef UTIL_JSON_VALUE_H
-#define UTIL_JSON_VALUE_H
+#pragma once
 
 #include <cstddef> // nullptr_t, size_t
 #include <cstdint> // uint32_t
@@ -148,5 +147,3 @@ inline Json::Value operator"" _json(const char* input, size_t length)
 {
 	return Json::Value::parse(std::string(input, length));
 }
-
-#endif // UTIL_JSON_VALUE_H
