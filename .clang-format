@@ -17,6 +17,7 @@ AllowAllParametersOfDeclarationOnNextLine:       false
 AllowShortLambdasOnASingleLine:                  All
 
 AlwaysBreakTemplateDeclarations:                 Yes
+IndentPPDirectives:                              BeforeHash
 
 BraceWrapping:
   AfterEnum:                                     false
