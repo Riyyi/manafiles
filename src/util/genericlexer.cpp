@@ -38,9 +38,7 @@ bool GenericLexer::isEOF() const
 
 char GenericLexer::peek(size_t offset) const
 {
-	return (m_index + offset >= 0 && m_index + offset < m_input.length())
-	           ? m_input[m_index + offset]
-	           : '\0';
+	return (m_index + offset < m_input.length()) ? m_input[m_index + offset] : '\0';
 }
 
 void GenericLexer::ignore(size_t count)
