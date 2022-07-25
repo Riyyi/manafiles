@@ -143,7 +143,7 @@ void format(FormatBuilder& builder, const Value& value);
  *
  * Example usage: auto json = "[ 3.14, true, null ]"_json;
  */
-inline Json::Value operator"" _json(const char* input, size_t length)
+inline Util::JSON::Value operator"" _json(const char* input, size_t length)
 {
-	return Json::Value::parse(std::string(input, length));
+	return Util::JSON::Value::parse(std::string(input, length));
 }
