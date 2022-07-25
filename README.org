@@ -66,6 +66,7 @@ The system patterns from the example config:
 "systemPatterns": [
 	"/boot/",
 	"/etc/",
+	"/usr/lib/",
 	"/usr/share/"
 ]
 #+END_SRC

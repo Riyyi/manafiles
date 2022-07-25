@@ -10,6 +10,7 @@
 	"systemPatterns": [
 		"/boot/",
 		"/etc/",
+		"/usr/lib/",
 		"/usr/share/"
 	]
 }

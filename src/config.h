@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "util/singleton.h"
 #include "util/json/json.h"
+#include "util/singleton.h"
 
 struct Settings {
 	std::vector<std::string> ignorePatterns {
@@ -26,6 +26,7 @@ struct Settings {
 	std::vector<std::string> systemPatterns {
 		"/boot/",
 		"/etc/",
+		"/usr/lib/",
 		"/usr/share/"
 	};
 };
