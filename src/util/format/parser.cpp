@@ -5,13 +5,13 @@
  */
 
 #include <algorithm> // replace
-#include <cassert>   // assert
 #include <cstddef>   // size_t
 #include <string>
 #include <string_view>
 
 #include "util/format/builder.h"
 #include "util/format/parser.h"
+#include "util/meta/assert.h"
 
 namespace Util::Format {
 
@@ -32,8 +32,7 @@ void Parser::checkFormatParameterConsistency()
 {
 	size_t length = m_input.length();
 
-	// Format string does not reference all passed parameters
-	assert(length >= m_parameterCount * 2);
+	VERIFY(length >= m_parameterCount * 2, "format string does not reference all parameters");
 
 	size_t braceOpen = 0;
 	size_t braceClose = 0;
@@ -54,8 +53,7 @@ void Parser::checkFormatParameterConsistency()
 		if (peek0 == '{') {
 			braceOpen++;
 
-			// Only empty references {} or specified references {:} are valid
-			assert(peek1 == '}' || peek1 == ':');
+			VERIFY(peek1 == '}' || peek1 == ':', "invalid parameter reference");
 		}
 		if (peek0 == '}') {
 			braceClose++;
@@ -65,17 +63,13 @@ void Parser::checkFormatParameterConsistency()
 	}
 	m_index = 0;
 
-	// Extra open braces in format string
-	assert(!(braceOpen < braceClose));
+	VERIFY(!(braceOpen < braceClose), "extra open braces in format string");
 
-	// Extra closing braces in format string
-	assert(!(braceOpen > braceClose));
+	VERIFY(!(braceOpen > braceClose), "extra closing braces in format string");
 
-	// Format string does not reference all passed parameters
-	assert(!(braceOpen < m_parameterCount));
+	VERIFY(!(braceOpen < m_parameterCount), "format string does not reference all passed parameters");
 
-	// Format string references nonexistent parameter
-	assert(!(braceOpen > m_parameterCount));
+	VERIFY(!(braceOpen > m_parameterCount), "format string references nonexistent parameter");
 }
 
 std::string_view Parser::consumeLiteral()
@@ -114,7 +108,7 @@ bool Parser::consumeSpecifier(std::string_view& specifier)
 	}
 
 	if (!consumeSpecific(':')) {
-		assert(consumeSpecific('}'));
+		VERIFY(consumeSpecific('}'), "invalid parameter reference");
 		specifier = "";
 	}
 	else {

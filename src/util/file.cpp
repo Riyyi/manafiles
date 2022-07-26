@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cassert> // assert
 #include <cstdint> // int32_t
 #include <filesystem>
 #include <fstream> // ifstream, ios, ofstream
@@ -12,6 +11,7 @@
 #include <string>
 
 #include "util/file.h"
+#include "util/meta/assert.h"
 
 namespace Util {
 
@@ -20,13 +20,13 @@ File::File(const std::string& path)
 {
 	// Create input stream object and open file
 	std::ifstream file(path, std::ios::in);
-	assert(file.is_open());
+	VERIFY(file.is_open(), "failed to open file: '{}'", path);
 
 	// Get length of the file
 	file.seekg(0, std::ios::end);
 	int32_t size = file.tellg();
 	file.seekg(0, std::ios::beg);
-	assert(size != -1);
+	VERIFY(size != -1, "failed to read file length: '{}', path");
 
 	// Allocate memory filled with zeros
 	auto buffer = std::make_unique<char[]>(size);
@@ -78,7 +78,7 @@ File& File::flush()
 {
 	// Create output stream object and open file
 	std::ofstream file(m_path, std::ios::out | std::ios::trunc);
-	assert(file.is_open());
+	VERIFY(file.is_open(), "failed to open file: '{}'", m_path);
 
 	// Write data to disk
 	file.write(m_data.c_str(), m_data.size());

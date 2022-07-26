@@ -5,7 +5,6 @@
  */
 
 #include <algorithm> // all_of
-#include <cassert>   // assert
 #include <cstdint>   // uint32_t
 #include <fstream>   // >>
 #include <iostream>  // istream, ostream
@@ -18,6 +17,7 @@
 #include "util/json/object.h"
 #include "util/json/serializer.h"
 #include "util/json/value.h"
+#include "util/meta/assert.h"
 
 namespace Util::JSON {
 
@@ -180,7 +180,7 @@ void Value::emplace_back(Value value)
 		m_value.array = new Array;
 	}
 
-	assert(m_type == Type::Array);
+	VERIFY(m_type == Type::Array);
 	m_value.array->emplace_back(value);
 }
 
@@ -192,7 +192,7 @@ void Value::emplace(const std::string& key, Value value)
 		m_value.object = new Object;
 	}
 
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	m_value.object->emplace(key, value);
 }
 
@@ -203,7 +203,7 @@ bool Value::exists(size_t index) const
 
 bool Value::exists(const std::string& key) const
 {
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	return m_value.object->members().find(key) != m_value.object->members().end();
 }
 
@@ -217,7 +217,7 @@ Value& Value::operator[](size_t index)
 		m_value.array = new Array;
 	}
 
-	assert(m_type == Type::Array);
+	VERIFY(m_type == Type::Array);
 	return (*m_value.array)[index];
 }
 
@@ -229,43 +229,43 @@ Value& Value::operator[](const std::string& key)
 		m_value.object = new Object;
 	}
 
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	return (*m_value.object)[key];
 }
 
 const Value& Value::operator[](size_t index) const
 {
-	assert(m_type == Type::Array);
+	VERIFY(m_type == Type::Array);
 	return (*m_value.array)[index];
 }
 
 const Value& Value::operator[](const std::string& key) const
 {
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	return (*m_value.object)[key];
 }
 
 Value& Value::at(size_t index)
 {
-	assert(m_type == Type::Array);
+	VERIFY(m_type == Type::Array);
 	return m_value.array->at(index);
 }
 
 Value& Value::at(const std::string& key)
 {
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	return m_value.object->at(key);
 }
 
 const Value& Value::at(size_t index) const
 {
-	assert(m_type == Type::Array);
+	VERIFY(m_type == Type::Array);
 	return m_value.array->at(index);
 }
 
 const Value& Value::at(const std::string& key) const
 {
-	assert(m_type == Type::Object);
+	VERIFY(m_type == Type::Object);
 	return m_value.object->at(key);
 }
 

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cassert>    // assert
 #include <csignal>    // raise
 #include <cstdio>     // fprintf
 #include <filesystem> // current_path, recursive_directory
@@ -14,6 +13,7 @@
 
 #include "config.h"
 #include "util/json/json.h"
+#include "util/meta/assert.h"
 
 Config::Config(s)
 	: m_workingDirectory(std::filesystem::current_path())
@@ -82,7 +82,7 @@ void toJson(Util::Json& json, const Settings& settings)
 
 void fromJson(const Util::Json& json, Settings& settings)
 {
-	assert(json.type() == Util::Json::Type::Object);
+	VERIFY(json.type() == Util::Json::Type::Object);
 
 	if (json.exists("ignorePatterns")) {
 		json.at("ignorePatterns").getTo(settings.ignorePatterns);

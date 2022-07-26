@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <cassert> // assert
 #include <cstddef> // size_t
 #include <string_view>
 

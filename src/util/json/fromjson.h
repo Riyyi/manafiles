@@ -7,7 +7,6 @@
 #pragma once
 
 #include <algorithm> // transform
-#include <cassert>   // assert
 #include <cstddef>   // nullptr_t
 #include <map>
 #include <string>
@@ -17,6 +16,7 @@
 
 #include "util/json/array.h"
 #include "util/json/object.h"
+#include "util/meta/assert.h"
 #include "util/meta/odr.h"
 
 namespace Util::JSON {
@@ -33,42 +33,42 @@ void fromJson(const Json& json, Json& value)
 template<typename Json>
 void fromJson(const Json& json, std::nullptr_t& null)
 {
-	assert(json.type() == Json::Type::Null);
+	VERIFY(json.type() == Json::Type::Null);
 	null = nullptr;
 }
 
 template<typename Json>
 void fromJson(const Json& json, bool& boolean)
 {
-	assert(json.type() == Json::Type::Bool);
+	VERIFY(json.type() == Json::Type::Bool);
 	boolean = json.asBool();
 }
 
 template<typename Json>
 void fromJson(const Json& json, int& number)
 {
-	assert(json.type() == Json::Type::Number);
+	VERIFY(json.type() == Json::Type::Number);
 	number = (int)json.asDouble();
 }
 
 template<typename Json>
 void fromJson(const Json& json, double& number)
 {
-	assert(json.type() == Json::Type::Number);
+	VERIFY(json.type() == Json::Type::Number);
 	number = json.asDouble();
 }
 
 template<typename Json>
 void fromJson(const Json& json, std::string& string)
 {
-	assert(json.type() == Json::Type::String);
+	VERIFY(json.type() == Json::Type::String);
 	string = json.asString();
 }
 
 template<typename Json, typename T>
 void fromJson(const Json& json, std::vector<T>& array)
 {
-	assert(json.type() == Json::Type::Array);
+	VERIFY(json.type() == Json::Type::Array);
 	array.resize(json.size());
 	std::transform(
 		json.asArray().elements().begin(),
@@ -82,7 +82,7 @@ void fromJson(const Json& json, std::vector<T>& array)
 template<typename Json, typename T>
 void fromJson(const Json& json, std::map<std::string, T>& object)
 {
-	assert(json.type() == Json::Type::Object);
+	VERIFY(json.type() == Json::Type::Object);
 	object.clear();
 	for (const auto& [name, value] : json.asObject().members()) {
 		object.emplace(name, value.template get<T>());
@@ -92,7 +92,7 @@ void fromJson(const Json& json, std::map<std::string, T>& object)
 template<typename Json, typename T>
 void fromJson(const Json& json, std::unordered_map<std::string, T>& object)
 {
-	assert(json.type() == Json::Type::Object);
+	VERIFY(json.type() == Json::Type::Object);
 	object.clear();
 	for (const auto& [name, value] : json.asObject().members()) {
 		object.emplace(name, value.template get<T>());

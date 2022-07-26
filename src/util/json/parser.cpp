@@ -17,6 +17,7 @@
 #include "util/json/object.h"
 #include "util/json/parser.h"
 #include "util/json/value.h"
+#include "util/meta/assert.h"
 
 namespace Util::JSON {
 
@@ -88,13 +89,13 @@ bool Parser::isEOF()
 
 Token Parser::peek()
 {
-	assert(!isEOF());
+	VERIFY(!isEOF());
 	return (*m_tokens)[m_index];
 }
 
 Token Parser::consume()
 {
-	assert(!isEOF());
+	VERIFY(!isEOF());
 	return (*m_tokens)[m_index++];
 }
 

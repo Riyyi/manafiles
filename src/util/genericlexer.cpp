@@ -7,6 +7,7 @@
 #include <algorithm> // max, min
 
 #include "util/genericlexer.h"
+#include "util/meta/assert.h"
 
 namespace Util {
 
@@ -53,7 +54,7 @@ void GenericLexer::retreat(size_t count)
 
 char GenericLexer::consume()
 {
-	assert(!isEOF());
+	VERIFY(!isEOF());
 	return m_input[m_index++];
 }
 

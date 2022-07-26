@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cassert> // assert
 #include <cctype>  // tolower
 #include <cstddef> // size_t
 #include <cstdio>  // fprintf, printf, stderr
@@ -20,6 +19,7 @@
 #include "dotfile.h"
 #include "machine.h"
 #include "util/file.h"
+#include "util/meta/assert.h"
 
 Dotfile::Dotfile(s)
 {
@@ -107,7 +107,7 @@ void Dotfile::push(const std::vector<std::string>& targets)
 
 bool Dotfile::match(const std::string& path, const std::vector<std::string>& patterns)
 {
-	assert(path.front() == '/');
+	VERIFY(path.front() == '/', "path is not absolute: '{}'", path);
 
 	// Cut off working directory
 	size_t cutFrom = path.find(Config::the().workingDirectory()) == 0 ? Config::the().workingDirectorySize() : 0;
