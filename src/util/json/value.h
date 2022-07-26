@@ -13,7 +13,7 @@
 #include <string>
 #include <utility> // forward
 
-#include "util/format/format.h"
+#include "util/format/builder.h"
 #include "util/json/fromjson.h"
 #include "util/json/tojson.h"
 
@@ -134,7 +134,7 @@ private:
 std::istream& operator>>(std::istream& input, Value& value);
 std::ostream& operator<<(std::ostream& output, const Value& value);
 
-void format(FormatBuilder& builder, const Value& value);
+void format(Util::Format::Builder& builder, const Value& value);
 
 } // namespace Util::JSON
 

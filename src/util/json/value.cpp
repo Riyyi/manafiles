@@ -12,7 +12,7 @@
 #include <string>
 #include <utility> // move, swap
 
-#include "util/format/format.h"
+#include "util/format/builder.h"
 #include "util/json/array.h"
 #include "util/json/job.h"
 #include "util/json/object.h"
@@ -332,7 +332,7 @@ std::ostream& operator<<(std::ostream& output, const Value& value)
 	return output << value.dump(4);
 }
 
-void format(FormatBuilder& builder, const Value& value)
+void format(Util::Format::Builder& builder, const Value& value)
 {
 	builder.putString(value.dump(4));
 }

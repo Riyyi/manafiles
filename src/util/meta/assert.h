@@ -67,20 +67,16 @@ inline void __assertion_failed(const char* assertion, const char* file, uint32_t
 		// Cant use the formatting library to print asserts caused by the formatting library
 		if (!std::string_view(function).starts_with("Util::Format::")) {
 			std::string message;
-			strln(message, parameters...);
+			formatTo(message, parameters...);
 			fprintf(stderr, "%s", message.c_str());
 		}
 		else {
 			fprintf(stderr, parameters...);
-			fprintf(stderr, "\n");
 		}
-	}
-	else {
-		fprintf(stderr, "\n");
 	}
 
 	// Code line
-	fprintf(stderr, " %u | %s\033[31;1m%s\033[0m%s\n", line,
+	fprintf(stderr, "\n %u | %s\033[31;1m%s\033[0m%s\n", line,
 	        content.substr(0, column).c_str(),                 // Whitespace at front
 	        content.substr(column, assertionLength).c_str(),   // Error portion
 	        content.substr(column + assertionLength).c_str()); // Rest of the line

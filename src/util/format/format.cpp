@@ -47,170 +47,21 @@ void variadicFormat(std::stringstream& stream, std::string_view format, TypeEras
 
 // -----------------------------------------
 
-void prettyVariadicFormat(Type type, bool bold, std::string_view format, TypeErasedParameters& parameters)
-{
-	std::stringstream stream;
-
-	if (type != Type::None || bold) {
-		stream << "\033[";
-		switch (type) {
-		case Type::Info:
-			stream << "34";
-			break;
-		case Type::Warn:
-			stream << "33";
-			break;
-		case Type::Critital:
-			stream << "31";
-			break;
-		case Type::Success:
-			stream << "32";
-			break;
-		case Type::Comment:
-			stream << "37";
-			break;
-		default:
-			break;
-		};
-
-		if (bold) {
-			stream << ";1";
-		}
-		stream << "m";
-	}
-
-	variadicFormat(stream, format, parameters);
-
-	if (type != Type::None || bold) {
-		stream << "\033[0m";
-	}
-
-	printf("%s\n", stream.str().c_str());
-}
-
-// -----------------------------------------
-
-Dbg::Dbg(Type type, bool bold)
-	: m_type(type)
-	, m_bold(bold)
-	, m_stream()
-	, m_builder(m_stream)
-{
-	if (type != Type::None || m_bold) {
-		m_stream << "\033[";
-		switch (type) {
-		case Type::Info:
-			m_stream << "34";
-			break;
-		case Type::Warn:
-			m_stream << "33";
-			break;
-		case Type::Critical:
-			m_stream << "31";
-			break;
-		case Type::Success:
-			m_stream << "32";
-			break;
-		case Type::Comment:
-			m_stream << "37";
-			break;
-		default:
-			break;
-		};
-
-		if (m_bold) {
-			m_stream << ";1";
-		}
-		m_stream << "m";
-	}
-}
-
-Dbg::~Dbg()
-{
-	if (m_type != Type::None || m_bold) {
-		m_stream << "\033[0m";
-	}
-
-	printf("%s", m_stream.str().c_str());
-}
-
-Dbg dbg()
-{
-	return Dbg(Type::None, false);
-}
-
-Dbg dbgb()
-{
-	return Dbg(Type::None, true);
-}
-
-Dbg info()
-{
-	return Dbg(Type::Info, false);
-}
-
-Dbg infob()
-{
-	return Dbg(Type::Info, true);
-}
-
-Dbg warn()
-{
-	return Dbg(Type::Warn, false);
-}
-
-Dbg warnb()
-{
-	return Dbg(Type::Warn, true);
-}
-
-Dbg critical()
-{
-	return Dbg(Type::Critical, false);
-}
-
-Dbg criticalb()
-{
-	return Dbg(Type::Critical, true);
-}
-
-Dbg success()
-{
-	return Dbg(Type::Success, false);
-}
-
-Dbg successb()
-{
-	return Dbg(Type::Success, true);
-}
-
-Dbg comment()
-{
-	return Dbg(Type::Comment, false);
-}
-
-Dbg commentb()
-{
-	return Dbg(Type::Comment, true);
-}
-
-// -----------------------------------------
-
-Str::Str(std::string& fill)
-	: m_fill(fill)
+FormatAngleBracket::FormatAngleBracket(std::string& output)
+	: m_output(output)
 	, m_stream()
 	, m_builder(m_stream)
 {
 }
 
-Str::~Str()
+FormatAngleBracket::~FormatAngleBracket()
 {
-	m_fill = m_stream.str();
+	m_output = m_stream.str();
 }
 
-Str str(std::string& fill)
+FormatAngleBracket formatTo(std::string& output)
 {
-	return Str(fill);
+	return FormatAngleBracket(output);
 }
 
 } // namespace Util::Format

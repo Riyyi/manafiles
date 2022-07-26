@@ -26,7 +26,7 @@ struct Parameter {
 template<typename T>
 void formatParameterValue(Builder& builder, const void* value)
 {
-	format(builder, *static_cast<const T*>(value));
+	_format(builder, *static_cast<const T*>(value));
 }
 
 // Type erasure improves both compile time and binary size significantly
@@ -64,138 +64,53 @@ void variadicFormat(std::stringstream& stream, std::string_view format, TypeEras
 
 // -----------------------------------------
 
-enum class Type {
-	None,     // Foreground
-	Info,     // Blue
-	Warn,     // Yellow
-	Critical, // Red
-	Success,  // Green
-	Comment,  // White
-};
-
-void prettyVariadicFormat(Type type, bool bold, std::string_view format, TypeErasedParameters& parameters);
-
-#define FORMAT_FUNCTION(name, type, bold)                                              \
-	template<size_t N, typename... Parameters>                                         \
-	void name(const char(&format)[N] = "", const Parameters&... parameters)            \
-	{                                                                                  \
-		VariadicParameters variadicParameters { parameters... };                       \
-		prettyVariadicFormat(Type::type, bold, { format, N - 1 }, variadicParameters); \
-	}
-
-FORMAT_FUNCTION(dbgln, None, false);
-FORMAT_FUNCTION(dbgbln, None, true);
-FORMAT_FUNCTION(infoln, Info, false);
-FORMAT_FUNCTION(infobln, Info, true);
-FORMAT_FUNCTION(warnln, Warn, false);
-FORMAT_FUNCTION(warnbln, Warn, true);
-FORMAT_FUNCTION(criticalln, Critical, false);
-FORMAT_FUNCTION(criticalbln, Critical, true);
-FORMAT_FUNCTION(successln, Success, false);
-FORMAT_FUNCTION(successbln, Success, true);
-FORMAT_FUNCTION(commentln, Comment, false);
-FORMAT_FUNCTION(commentbln, Comment, true);
-
-// -----------------------------------------
-
-class Dbg {
-public:
-	Dbg(Type type, bool bold);
-	virtual ~Dbg();
-
-	Builder& builder() { return m_builder; }
-
-private:
-	Type m_type;
-	bool m_bold;
-
-	std::stringstream m_stream;
-	Builder m_builder;
-};
-
-template<typename T>
-const Dbg& operator<<(const Dbg& debug, const T& value)
-{
-	format(const_cast<Dbg&>(debug).builder(), value);
-	return debug;
-}
-
-Dbg dbg();
-Dbg dbgb();
-Dbg info();
-Dbg infob();
-Dbg warn();
-Dbg warnb();
-Dbg critical();
-Dbg criticalb();
-Dbg success();
-Dbg successb();
-Dbg comment();
-Dbg commentb();
-
-// -----------------------------------------
-
 template<typename... Parameters>
-void strln(std::string& fill, std::string_view format, const Parameters&... parameters)
+std::string format(std::string_view format, const Parameters&... parameters)
 {
 	std::stringstream stream;
 	VariadicParameters variadicParameters { parameters... };
 	variadicFormat(stream, format, variadicParameters);
-	stream << '\n';
-	fill = stream.str();
+	return stream.str();
 }
 
-class Str {
+template<typename... Parameters>
+void formatTo(std::string& output, std::string_view format, const Parameters&... parameters)
+{
+	std::stringstream stream;
+	VariadicParameters variadicParameters { parameters... };
+	variadicFormat(stream, format, variadicParameters);
+	output += stream.str();
+}
+
+// -----------------------------------------
+
+class FormatAngleBracket {
 public:
-	Str(std::string& fill);
-	virtual ~Str();
+	FormatAngleBracket(std::string& output);
+	virtual ~FormatAngleBracket();
 
 	Builder& builder() { return m_builder; }
 
 private:
-	std::string& m_fill;
+	std::string& m_output;
 	std::stringstream m_stream;
 	Builder m_builder;
 };
 
 template<typename T>
-const Str& operator<<(const Str& string, const T& value)
+const FormatAngleBracket& operator<<(const FormatAngleBracket& formatAngleBracket, const T& value)
 {
-	format(const_cast<Str&>(string).builder(), value);
-	return string;
+	_format(const_cast<FormatAngleBracket&>(formatAngleBracket).builder(), value);
+	return formatAngleBracket;
 }
 
-Str str(std::string& fill);
+FormatAngleBracket formatTo(std::string& output);
 
 } // namespace Util::Format
 
-using Util::Format::commentbln;
-using Util::Format::commentln;
-using Util::Format::criticalbln;
-using Util::Format::criticalln;
-using Util::Format::dbgbln;
-using Util::Format::dbgln;
-using Util::Format::infobln;
-using Util::Format::infoln;
-using Util::Format::successbln;
-using Util::Format::successln;
-using Util::Format::warnbln;
-using Util::Format::warnln;
+namespace Util {
 
-using Util::Format::comment;
-using Util::Format::commentb;
-using Util::Format::critical;
-using Util::Format::criticalb;
-using Util::Format::dbg;
-using Util::Format::dbgb;
-using Util::Format::info;
-using Util::Format::infob;
-using Util::Format::success;
-using Util::Format::successb;
-using Util::Format::warn;
-using Util::Format::warnb;
+using Util::Format::format;
+using Util::Format::formatTo;
 
-using Util::Format::str;
-using Util::Format::strln;
-
-using FormatBuilder = Util::Format::Builder;
+} // namespace Util

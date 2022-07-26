@@ -159,7 +159,7 @@ struct formatFunction {
 } // namespace Detail
 
 namespace {
-constexpr const auto& format = Util::Detail::staticConst<Detail::formatFunction>; // NOLINT(misc-definitions-in-headers,clang-diagnostic-unused-variable)
+constexpr const auto& _format = Util::Detail::staticConst<Detail::formatFunction>; // NOLINT(misc-definitions-in-headers,clang-diagnostic-unused-variable)
 } // namespace
 
 } // namespace Util::Format
