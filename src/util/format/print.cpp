@@ -77,7 +77,7 @@ FormatPrint::FormatPrint(FILE* file, Type type, bool bold)
 FormatPrint::~FormatPrint()
 {
 	std::string string = m_stream.str();
-	fputs(string.c_str(), stdout);
+	fputs(string.c_str(), m_file);
 }
 
 FormatPrint dbg()
