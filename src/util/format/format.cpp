@@ -60,7 +60,7 @@ void prettyVariadicFormat(Type type, bool bold, std::string_view format, TypeEra
 		case Type::Warn:
 			stream << "33";
 			break;
-		case Type::Danger:
+		case Type::Critital:
 			stream << "31";
 			break;
 		case Type::Success:
@@ -105,7 +105,7 @@ Dbg::Dbg(Type type, bool bold)
 		case Type::Warn:
 			m_stream << "33";
 			break;
-		case Type::Danger:
+		case Type::Critical:
 			m_stream << "31";
 			break;
 		case Type::Success:
@@ -164,14 +164,14 @@ Dbg warnb()
 	return Dbg(Type::Warn, true);
 }
 
-Dbg danger()
+Dbg critical()
 {
-	return Dbg(Type::Danger, false);
+	return Dbg(Type::Critical, false);
 }
 
-Dbg dangerb()
+Dbg criticalb()
 {
-	return Dbg(Type::Danger, true);
+	return Dbg(Type::Critical, true);
 }
 
 Dbg success()

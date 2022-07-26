@@ -65,12 +65,12 @@ void variadicFormat(std::stringstream& stream, std::string_view format, TypeEras
 // -----------------------------------------
 
 enum class Type {
-	None,    // Foreground
-	Info,    // Blue
-	Warn,    // Yellow
-	Danger,  // Red
-	Success, // Green
-	Comment, // White
+	None,     // Foreground
+	Info,     // Blue
+	Warn,     // Yellow
+	Critical, // Red
+	Success,  // Green
+	Comment,  // White
 };
 
 void prettyVariadicFormat(Type type, bool bold, std::string_view format, TypeErasedParameters& parameters);
@@ -89,8 +89,8 @@ FORMAT_FUNCTION(infoln, Info, false);
 FORMAT_FUNCTION(infobln, Info, true);
 FORMAT_FUNCTION(warnln, Warn, false);
 FORMAT_FUNCTION(warnbln, Warn, true);
-FORMAT_FUNCTION(dangerln, Danger, false);
-FORMAT_FUNCTION(dangerbln, Danger, true);
+FORMAT_FUNCTION(criticalln, Critical, false);
+FORMAT_FUNCTION(criticalbln, Critical, true);
 FORMAT_FUNCTION(successln, Success, false);
 FORMAT_FUNCTION(successbln, Success, true);
 FORMAT_FUNCTION(commentln, Comment, false);
@@ -126,8 +126,8 @@ Dbg info();
 Dbg infob();
 Dbg warn();
 Dbg warnb();
-Dbg danger();
-Dbg dangerb();
+Dbg critical();
+Dbg criticalb();
 Dbg success();
 Dbg successb();
 Dbg comment();
@@ -171,8 +171,8 @@ Str str(std::string& fill);
 
 using Util::Format::commentbln;
 using Util::Format::commentln;
-using Util::Format::dangerbln;
-using Util::Format::dangerln;
+using Util::Format::criticalbln;
+using Util::Format::criticalln;
 using Util::Format::dbgbln;
 using Util::Format::dbgln;
 using Util::Format::infobln;
@@ -184,8 +184,8 @@ using Util::Format::warnln;
 
 using Util::Format::comment;
 using Util::Format::commentb;
-using Util::Format::danger;
-using Util::Format::dangerb;
+using Util::Format::critical;
+using Util::Format::criticalb;
 using Util::Format::dbg;
 using Util::Format::dbgb;
 using Util::Format::info;
