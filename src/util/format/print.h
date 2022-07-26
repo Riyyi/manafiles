@@ -26,13 +26,13 @@ void prettyVariadicFormat(FILE* file, Type type, bool bold, std::string_view for
 
 #define FORMAT_FUNCTION(name, type, bold)                                                      \
 	template<size_t N, typename... Parameters>                                                 \
-	void name(const char(&format)[N] = "", const Parameters&... parameters)                    \
+	void name(const char(&format)[N], const Parameters&... parameters)                    \
 	{                                                                                          \
 		VariadicParameters variadicParameters { parameters... };                               \
 		prettyVariadicFormat(stdout, Type::type, bold, { format, N - 1 }, variadicParameters); \
 	}                                                                                          \
 	template<size_t N, typename... Parameters>                                                 \
-	void name(FILE* file, const char(&format)[N] = "", const Parameters&... parameters)        \
+	void name(FILE* file, const char(&format)[N], const Parameters&... parameters)        \
 	{                                                                                          \
 		VariadicParameters variadicParameters { parameters... };                               \
 		prettyVariadicFormat(file, Type::type, bold, { format, N - 1 }, variadicParameters);   \
