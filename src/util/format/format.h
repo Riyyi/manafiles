@@ -7,10 +7,10 @@
 #pragma once
 
 #include <cstddef> // size_t
+#include <span>
 #include <sstream> // stringstream
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "util/format/builder.h"
 #include "util/format/parser.h"
@@ -29,6 +29,7 @@ void formatParameterValue(Builder& builder, const void* value)
 	format(builder, *static_cast<const T*>(value));
 }
 
+// Type erasure improves both compile time and binary size significantly
 class TypeErasedParameters {
 public:
 	const Parameter parameter(size_t index) { return m_parameters[index]; }
@@ -40,16 +41,20 @@ public:
 
 protected:
 	size_t m_index { 0 };
-	std::vector<Parameter> m_parameters;
+	std::span<const Parameter> m_parameters;
 };
 
 template<typename... Parameters>
 class VariadicParameters final : public TypeErasedParameters {
 public:
 	VariadicParameters(const Parameters&... parameters)
+		: m_templatedParameters({ { &parameters, formatParameterValue<Parameters> }... })
 	{
-		m_parameters = { { &parameters, formatParameterValue<Parameters> }... };
+		m_parameters = m_templatedParameters;
 	}
+
+private:
+	std::array<Parameter, sizeof...(Parameters)> m_templatedParameters;
 };
 
 // -----------------------------------------
