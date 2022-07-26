@@ -6,7 +6,7 @@
 
 #include <cstddef> // size_t
 #include <iomanip> // setprecision
-#include <ios>     // fixed
+#include <ios>     // defaultfloat, fixed
 #include <limits>  // numeric_limits
 #include <sstream> // stringstream
 #include <string>
@@ -32,9 +32,9 @@ void Builder::putF32(float number, size_t precision) const
 
 	std::stringstream stream;
 	stream
-		<< std::fixed
-		<< std::setprecision(precision)
-		<< number;
+		<< std::fixed << std::setprecision(precision)
+		<< number
+		<< std::defaultfloat << std::setprecision(6);
 	std::string string = stream.str();
 	string = string.substr(0, string.find_first_of('0', string.find('.')));
 	m_builder << string;
@@ -46,9 +46,9 @@ void Builder::putF64(double number, size_t precision) const
 
 	std::stringstream stream;
 	stream
-		<< std::fixed
-		<< std::setprecision(precision)
-		<< number;
+		<< std::fixed << std::setprecision(precision)
+		<< number
+		<< std::defaultfloat << std::setprecision(6);
 	std::string string = stream.str();
 	string = string.substr(0, string.find_first_of('0', string.find('.')));
 	m_builder << string;
