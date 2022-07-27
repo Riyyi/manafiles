@@ -85,7 +85,7 @@ TEST_CASE(FormatNumbers)
 
 	float f32R = 245789.70000;
 	result = Util::format("{}", f32R);
-	EXPECT_EQ(result, "245789.7");
+	EXPECT_EQ(result, "245789.703125");
 
 	float f32 = 45645.3233;
 	result = Util::format("{}", f32);
@@ -93,11 +93,11 @@ TEST_CASE(FormatNumbers)
 
 	double f64 = 87522.300000000;
 	result = Util::format("{}", f64);
-	EXPECT_EQ(result, "87522.3");
+	EXPECT_EQ(result, "87522.300000");
 
 	double pi = 3.14159265359;
 	result = Util::format("{:.15}", pi);
-	EXPECT_EQ(result, "3.14159265359");
+	EXPECT_EQ(result, "3.141592653590000");
 }
 
 TEST_CASE(FormatContainers)

@@ -36,7 +36,6 @@ void Builder::putF32(float number, size_t precision) const
 		<< number
 		<< std::defaultfloat << std::setprecision(6);
 	std::string string = stream.str();
-	string = string.substr(0, string.find_first_of('0', string.find('.')));
 	m_builder << string;
 }
 
@@ -50,7 +49,6 @@ void Builder::putF64(double number, size_t precision) const
 		<< number
 		<< std::defaultfloat << std::setprecision(6);
 	std::string string = stream.str();
-	string = string.substr(0, string.find_first_of('0', string.find('.')));
 	m_builder << string;
 }
 
