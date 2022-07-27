@@ -84,10 +84,10 @@ void formatTo(std::string& output, std::string_view format, const Parameters&...
 
 // -----------------------------------------
 
-class FormatAngleBracket {
+class FormatOperatorStyle {
 public:
-	FormatAngleBracket(std::string& output);
-	virtual ~FormatAngleBracket();
+	FormatOperatorStyle(std::string& output);
+	virtual ~FormatOperatorStyle();
 
 	Builder& builder() { return m_builder; }
 
@@ -98,13 +98,13 @@ private:
 };
 
 template<typename T>
-const FormatAngleBracket& operator<<(const FormatAngleBracket& formatAngleBracket, const T& value)
+const FormatOperatorStyle& operator<<(const FormatOperatorStyle& formatOperatorStyle, const T& value)
 {
-	_format(const_cast<FormatAngleBracket&>(formatAngleBracket).builder(), value);
-	return formatAngleBracket;
+	_format(const_cast<FormatOperatorStyle&>(formatOperatorStyle).builder(), value);
+	return formatOperatorStyle;
 }
 
-FormatAngleBracket formatTo(std::string& output);
+FormatOperatorStyle formatTo(std::string& output);
 
 } // namespace Util::Format
 

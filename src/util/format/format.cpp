@@ -47,21 +47,21 @@ void variadicFormat(std::stringstream& stream, std::string_view format, TypeEras
 
 // -----------------------------------------
 
-FormatAngleBracket::FormatAngleBracket(std::string& output)
+FormatOperatorStyle::FormatOperatorStyle(std::string& output)
 	: m_output(output)
 	, m_stream()
 	, m_builder(m_stream)
 {
 }
 
-FormatAngleBracket::~FormatAngleBracket()
+FormatOperatorStyle::~FormatOperatorStyle()
 {
 	m_output = m_stream.str();
 }
 
-FormatAngleBracket formatTo(std::string& output)
+FormatOperatorStyle formatTo(std::string& output)
 {
-	return FormatAngleBracket(output);
+	return FormatOperatorStyle(output);
 }
 
 } // namespace Util::Format
