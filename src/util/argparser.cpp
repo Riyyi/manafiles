@@ -6,6 +6,7 @@
 
 #include <algorithm> // find_if
 #include <cstddef>   // size_t
+#include <cstdint>   // uint8_t
 #include <cstdio>    // printf
 #include <cstring>   // strcmp
 #include <limits>    // numeric_limits
@@ -169,7 +170,7 @@ bool ArgParser::parseLongOption(std::string_view option, std::string_view next)
 		return false;
 	}
 
-	enum class ArgumentProvided {
+	enum class ArgumentProvided : uint8_t {
 		No,
 		DirectlyAfter,
 		Seperated,

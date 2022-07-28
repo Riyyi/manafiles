@@ -7,7 +7,7 @@
 #pragma once
 
 #include <cstddef> // nullptr_t, size_t
-#include <cstdint> // uint32_t
+#include <cstdint> // uint8_t, uint32_t
 #include <initializer_list>
 #include <iostream> // istream, ostream
 #include <string>
@@ -29,7 +29,7 @@ private:
 	friend class Serializer;
 
 public:
-	enum class Type {
+	enum class Type : uint8_t {
 		Null,   // null       (case sensitive!)
 		Bool,   // true/false (case sensitive!)
 		Number, // 123

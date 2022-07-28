@@ -21,15 +21,6 @@ public:
 	Job(std::string_view input);
 	virtual ~Job();
 
-	enum class Color {
-		None,
-		Info,
-		Warn,
-		Danger,
-		Success,
-		Comment,
-	};
-
 	Value fire();
 
 	void printErrorLine(Token token, const char* message);

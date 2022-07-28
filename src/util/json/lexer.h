@@ -10,6 +10,7 @@
 // https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf
 
 #include <cstddef> // size_t
+#include <cstdint> // uint8_t
 #include <string>
 #include <vector>
 
@@ -20,7 +21,7 @@ namespace Util::JSON {
 class Job;
 
 struct Token {
-	enum class Type {
+	enum class Type : uint8_t {
 		None,
 		BraceOpen,    // {
 		BraceClose,   // }

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstdint> // uint8_t
 #include <optional>
 #include <string>
 #include <vector>
@@ -17,13 +18,13 @@ public:
 	Package(s);
 	virtual ~Package();
 
-	enum class Distro {
+	enum class Distro : uint8_t {
 		Unsupported,
 		Arch,
 		Debian,
 	};
 
-	enum class InstallType {
+	enum class InstallType : uint8_t {
 		Install,
 		AurInstall,
 	};

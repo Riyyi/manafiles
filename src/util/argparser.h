@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstddef>    // size_t
+#include <cstdint>    // uint8_t
 #include <functional> // function
 #include <string>
 #include <string_view>
@@ -21,13 +22,13 @@ public:
 	ArgParser();
 	virtual ~ArgParser();
 
-	enum class Required {
+	enum class Required : uint8_t {
 		No,
 		Yes,
 		Optional,
 	};
 
-	enum class Error {
+	enum class Error : uint8_t {
 		None,
 		OptionInvalid,      // For short options
 		OptionUnrecognized, // For long options

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstddef> // size_t
+#include <cstdint> // uint8_t
 #include <filesystem>
 #include <functional> // function
 #include <string>
@@ -19,7 +20,7 @@ public:
 	Dotfile(s);
 	virtual ~Dotfile();
 
-	enum class SyncType {
+	enum class SyncType : uint8_t {
 		Add,
 		Pull,
 		Push,

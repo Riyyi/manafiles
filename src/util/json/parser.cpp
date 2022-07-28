@@ -144,7 +144,7 @@ Value Parser::consumeNumber()
 		return nullptr;
 	}
 
-	enum class State {
+	enum class State : uint8_t {
 		Int,
 		Fraction,
 		Exponent
