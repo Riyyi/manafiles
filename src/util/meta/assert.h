@@ -66,8 +66,8 @@ inline void __assertion_failed(const char* assertion, const char* file, uint32_t
 		fprintf(stderr, ": ");
 		// Cant use the formatting library to print asserts caused by the formatting library
 		std::string_view functionString = function;
-		if (!functionString.starts_with("Util::Format::")
-		    && !functionString.starts_with("Util::GenericLexer::")) {
+		if (functionString.find("Util::Format::") != std::string_view::npos
+		    && functionString.find("Util::GenericLexer::") != std::string_view::npos) {
 			std::string message;
 			formatTo(message, parameters...);
 			fprintf(stderr, "%s", message.c_str());
