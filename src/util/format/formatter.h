@@ -114,4 +114,32 @@ struct Formatter<std::vector<T>> : Formatter<T> {
 	}
 };
 
+#define UTIL_FORMAT_FORMAT_AS_MAP(type)                              \
+	template<typename K, typename V>                                 \
+	struct Formatter<type<K, V>>                                     \
+		: Formatter<K>                                               \
+		, Formatter<V> {                                             \
+		void format(Builder& builder, const type<K, V>& value) const \
+		{                                                            \
+			builder.putString("{\n");                                \
+			auto last = value.end();                                 \
+			for (auto it = value.begin(); it != last; ++it) {        \
+				builder.putString(R"(    ")");                       \
+				Formatter<K>::format(builder, it->first);            \
+				builder.putString(R"(": )");                         \
+				Formatter<V>::format(builder, it->second);           \
+                                                                     \
+				/* Add comma, except after the last element */       \
+				if (std::next(it) != last) {                         \
+					builder.putCharacter(',');                       \
+				}                                                    \
+                                                                     \
+				builder.putCharacter('\n');                          \
+			}                                                        \
+			builder.putCharacter('}');                               \
+		}                                                            \
+	}
+
+UTIL_FORMAT_FORMAT_AS_MAP(std::map);
+UTIL_FORMAT_FORMAT_AS_MAP(std::unordered_map);
 } // namespace Util::Format

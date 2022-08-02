@@ -13,7 +13,6 @@
 #include <string_view>
 
 #include "util/format/formatter.h"
-#include "util/format/toformat.h"
 
 namespace Util::Format {
 

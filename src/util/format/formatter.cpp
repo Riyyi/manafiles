@@ -90,6 +90,4 @@ void Formatter<std::nullptr_t>::format(Builder& builder, std::nullptr_t) const
 	Formatter<const void*>::format(builder, 0);
 }
 
-// Containers
-
 } // namespace Util::Format
