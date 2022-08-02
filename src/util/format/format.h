@@ -12,11 +12,13 @@
 #include <string>
 #include <string_view>
 
-#include "util/format/builder.h"
-#include "util/format/parser.h"
+#include "util/format/formatter.h"
 #include "util/format/toformat.h"
 
 namespace Util::Format {
+
+class Builder;
+class Parser;
 
 struct Parameter {
 	const void* value;
