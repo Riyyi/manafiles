@@ -18,7 +18,7 @@ namespace Util::Format {
 
 static Util::Timer s_timer;
 
-enum class Type : uint8_t {
+enum class LogType : uint8_t {
 	Trace,    // White
 	Debug,    // Purple
 	Success,  // Green
@@ -29,7 +29,7 @@ enum class Type : uint8_t {
 };
 
 std::string formatTimeElapsed();
-std::string formatType(Type type);
+std::string formatType(LogType type);
 
 #define LOG_FUNCTION(name, file, type)                                 \
 	template<size_t N, typename... Parameters>                         \
@@ -42,26 +42,26 @@ std::string formatType(Type type);
 		print(file, "\n");                                             \
 	}
 
-LOG_FUNCTION(trace, stdout, Type::Trace);
-LOG_FUNCTION(debug, stdout, Type::Debug);
-LOG_FUNCTION(success, stdout, Type::Success);
-LOG_FUNCTION(info, stdout, Type::Info);
-LOG_FUNCTION(warn, stderr, Type::Warn);
-LOG_FUNCTION(error, stderr, Type::Error);
-LOG_FUNCTION(critical, stderr, Type::Critical);
+LOG_FUNCTION(trace, stdout, LogType::Trace);
+LOG_FUNCTION(debug, stdout, LogType::Debug);
+LOG_FUNCTION(success, stdout, LogType::Success);
+LOG_FUNCTION(info, stdout, LogType::Info);
+LOG_FUNCTION(warn, stderr, LogType::Warn);
+LOG_FUNCTION(error, stderr, LogType::Error);
+LOG_FUNCTION(critical, stderr, LogType::Critical);
 
 // -----------------------------------------
 
 class LogOperatorStyle {
 public:
-	LogOperatorStyle(FILE* file, Type type);
+	LogOperatorStyle(FILE* file, LogType type);
 	virtual ~LogOperatorStyle();
 
 	Builder& builder() { return m_builder; }
 
 private:
 	FILE* m_file;
-	Type m_type;
+	LogType m_type;
 
 	std::stringstream m_stream;
 	Builder m_builder;

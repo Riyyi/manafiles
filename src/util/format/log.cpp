@@ -17,31 +17,31 @@ std::string formatTimeElapsed()
 	return format("{:.3}s ", s_timer.elapsedNanoseconds() / 1000000000.0);
 }
 
-std::string formatType(Type type)
+std::string formatType(LogType type)
 {
 	std::string output;
 
 	formatTo(output, "[");
 	switch (type) {
-	case Type::Trace:
+	case LogType::Trace:
 		formatTo(output, "trace");
 		break;
-	case Type::Debug:
+	case LogType::Debug:
 		formatTo(output, fg(TerminalColor::Magenta), "debug");
 		break;
-	case Type::Success:
+	case LogType::Success:
 		formatTo(output, fg(TerminalColor::Green), "success");
 		break;
-	case Type::Info:
+	case LogType::Info:
 		formatTo(output, fg(TerminalColor::Blue), "info");
 		break;
-	case Type::Warn:
+	case LogType::Warn:
 		formatTo(output, Emphasis::Bold | fg(TerminalColor::Yellow), "warn");
 		break;
-	case Type::Error:
+	case LogType::Error:
 		formatTo(output, Emphasis::Bold | fg(TerminalColor::Red), "error");
 		break;
-	case Type::Critical:
+	case LogType::Critical:
 		formatTo(output, Emphasis::Bold | fg(TerminalColor::White) | bg(TerminalColor::Red), "critical");
 		break;
 	default:
@@ -54,7 +54,7 @@ std::string formatType(Type type)
 
 // -----------------------------------------
 
-LogOperatorStyle::LogOperatorStyle(FILE* file, Type type)
+LogOperatorStyle::LogOperatorStyle(FILE* file, LogType type)
 	: m_file(file)
 	, m_type(type)
 	, m_stream()
@@ -73,37 +73,37 @@ LogOperatorStyle::~LogOperatorStyle()
 
 LogOperatorStyle trace()
 {
-	return LogOperatorStyle(stdout, Type::Trace);
+	return LogOperatorStyle(stdout, LogType::Trace);
 }
 
 LogOperatorStyle debug()
 {
-	return LogOperatorStyle(stdout, Type::Debug);
+	return LogOperatorStyle(stdout, LogType::Debug);
 }
 
 LogOperatorStyle success()
 {
-	return LogOperatorStyle(stdout, Type::Success);
+	return LogOperatorStyle(stdout, LogType::Success);
 }
 
 LogOperatorStyle info()
 {
-	return LogOperatorStyle(stdout, Type::Info);
+	return LogOperatorStyle(stdout, LogType::Info);
 }
 
 LogOperatorStyle warn()
 {
-	return LogOperatorStyle(stderr, Type::Warn);
+	return LogOperatorStyle(stderr, LogType::Warn);
 }
 
 LogOperatorStyle error()
 {
-	return LogOperatorStyle(stderr, Type::Error);
+	return LogOperatorStyle(stderr, LogType::Error);
 }
 
 LogOperatorStyle critical()
 {
-	return LogOperatorStyle(stderr, Type::Critical);
+	return LogOperatorStyle(stderr, LogType::Critical);
 }
 
 } // namespace Util::Format
