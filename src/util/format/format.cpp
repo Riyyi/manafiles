@@ -11,27 +11,36 @@
 #include "util/format/builder.h"
 #include "util/format/format.h"
 #include "util/format/parser.h"
+#include "util/meta/assert.h"
 
 namespace Util::Format {
 
 void variadicFormatImpl(Builder& builder, Parser& parser, TypeErasedParameters& parameters)
 {
+	// Consume everything until '{' or EOF
 	const auto literal = parser.consumeLiteral();
 	builder.putLiteral(literal);
 
-	if (!parameters.isEOF()) {
-		std::string_view specifier;
-		if (parser.consumeSpecifier(specifier)) {
-			parser.applySpecifier(builder, specifier);
-		}
-
-		auto& parameter = parameters.parameter(parameters.tell());
-		parameter.format(builder, parameter.value);
-		parameters.ignore();
-
-		builder.resetSpecifiers();
+	// Reached end of format string
+	if (parser.isEOF()) {
+		return;
 	}
 
+	// Consume index + ':'
+	auto indexMaybe = parser.consumeIndex();
+
+	// Get parameter at index, or next
+	size_t index = indexMaybe.has_value() ? indexMaybe.value() : parameters.tell();
+	VERIFY(index < parameters.size(), "argument not found at index '%zu':'%zu'", index, parameters.size());
+	auto& parameter = parameters.parameter(index);
+
+	// Format the parameter
+	parameter.format(builder, parser, parameter.value);
+
+	// Go to next parameter
+	parameters.ignore();
+
+	// Recurse
 	if (!parser.isEOF()) {
 		variadicFormatImpl(builder, parser, parameters);
 	}

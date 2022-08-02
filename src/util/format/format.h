@@ -28,7 +28,8 @@ struct Parameter {
 template<typename T>
 void formatParameterValue(Builder& builder, const void* value)
 {
-	_format(builder, *static_cast<const T*>(value));
+	Formatter<T> formatter;
+	formatter.format(builder, *static_cast<const T*>(value));
 }
 
 // Type erasure improves both compile time and binary size significantly

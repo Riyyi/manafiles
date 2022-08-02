@@ -6,6 +6,7 @@
 
 #include <algorithm> // replace
 #include <cstddef>   // size_t
+#include <limits>    // numeric_limits
 #include <string>
 #include <string_view>
 
@@ -53,7 +54,9 @@ void Parser::checkFormatParameterConsistency()
 		if (peek0 == '{') {
 			braceOpen++;
 
-			VERIFY(peek1 == '}' || peek1 == ':', "invalid parameter reference");
+			if (peek1 >= '0' && peek1 <= '9') {
+				m_mode = ArgumentIndexingMode::Manual;
+			}
 		}
 		if (peek0 == '}') {
 			braceClose++;
@@ -63,13 +66,13 @@ void Parser::checkFormatParameterConsistency()
 	}
 	m_index = 0;
 
-	VERIFY(!(braceOpen < braceClose), "extra open braces in format string");
+	// VERIFY(!(braceOpen < braceClose), "extra open braces in format string");
 
-	VERIFY(!(braceOpen > braceClose), "extra closing braces in format string");
+	// VERIFY(!(braceOpen > braceClose), "extra closing braces in format string");
 
-	VERIFY(!(braceOpen < m_parameterCount), "format string does not reference all passed parameters");
+	// VERIFY(!(braceOpen < m_parameterCount), "format string does not reference all passed parameters");
 
-	VERIFY(!(braceOpen > m_parameterCount), "format string references nonexistent parameter");
+	// VERIFY(!(braceOpen > m_parameterCount), "format string references nonexistent parameter");
 }
 
 std::string_view Parser::consumeLiteral()
@@ -101,44 +104,63 @@ std::string_view Parser::consumeLiteral()
 	return m_input.substr(begin);
 }
 
-bool Parser::consumeSpecifier(std::string_view& specifier)
+std::optional<size_t> Parser::consumeIndex()
 {
 	if (!consumeSpecific('{')) {
-		return false;
+		VERIFY_NOT_REACHED();
+		return {};
 	}
 
-	if (!consumeSpecific(':')) {
-		VERIFY(consumeSpecific('}'), "invalid parameter reference");
-		specifier = "";
+	switch (m_mode) {
+	case ArgumentIndexingMode::Automatic: {
+		VERIFY(consumeSpecific('}') || consumeSpecific(':'), "expecting '}' or ':', not '%c'", peek());
+		return {};
 	}
-	else {
+	case ArgumentIndexingMode::Manual: {
 		const auto begin = tell();
 
-		// Go until AFTER the closing brace
-		while (peek(-1) != '}') {
-			consume();
+		while (!isEOF()) {
+			char peek0 = peek();
+			if (peek0 == '}' || peek0 == ':') {
+				break;
+			}
+
+			VERIFY(peek0 >= '0' && peek0 <= '9', "expecting number, not '%c'", peek0);
+
+			ignore();
 		}
 
-		specifier = m_input.substr(begin, tell() - begin - 1);
-	}
+		size_t result = stringToNumber(m_input.substr(begin, tell() - begin));
 
-	return true;
+		if (peek() == ':') {
+			ignore();
+		}
+
+		return result;
+	}
+	};
+
+	VERIFY_NOT_REACHED();
 }
 
-void Parser::applySpecifier(Builder& builder, std::string_view specifier)
+size_t Parser::stringToNumber(std::string_view value)
 {
-	if (specifier[0] == '.') {
-		size_t value = 0;
+	size_t result = 0;
 
-		for (size_t i = 1; i < specifier.length(); ++i) {
-			if (specifier[i] < '0' || specifier[i] > '9') {
-				return;
+	for (size_t i = 1; i < value.length(); ++i) {
+		if (value[i] < '0' || value[i] > '9') {
+			VERIFY_NOT_REACHED();
+		}
+		result *= 10;
+		result += value[i] - '0'; // Subtract ASCII 48 to get the number
+	}
+
+	return result;
+}
+
 			}
-			value *= 10;
-			value += specifier[i] - '0'; // Subtract ASCII 48 to get the number
 		}
 
-		builder.setPrecision(value);
 	}
 }
 

@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <cstddef>   // size_t
+#include <cstddef> // size_t
+#include <optional>
 #include <string_view>
 
 #include "util/genericlexer.h"
@@ -17,17 +18,24 @@ class Builder;
 
 class Parser final : public GenericLexer {
 public:
+	enum class ArgumentIndexingMode {
+		Automatic, // {} ,{}
+		Manual,    // {0},{1}
+	};
+
 	Parser(std::string_view format, size_t parameterCount);
 	virtual ~Parser();
 
 	void checkFormatParameterConsistency();
 
 	std::string_view consumeLiteral();
-	bool consumeSpecifier(std::string_view& specifier);
+	std::optional<size_t> consumeIndex();
 
-	void applySpecifier(Builder& builder, std::string_view specifier);
+	size_t stringToNumber(std::string_view value);
+
 
 private:
+	ArgumentIndexingMode m_mode { ArgumentIndexingMode::Automatic };
 	size_t m_parameterCount { 0 };
 };
 

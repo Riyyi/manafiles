@@ -16,8 +16,7 @@ namespace Util::Format {
 class Builder {
 public:
 	explicit Builder(std::stringstream& builder)
-		: m_precision(6)
-		, m_builder(builder)
+		: m_builder(builder)
 	{
 	}
 
@@ -27,20 +26,16 @@ public:
 	void putU32(uint32_t number) const { m_builder << number; } // unsigned int
 	void putI64(int64_t number) const { m_builder << number; }  // long int
 	void putU64(size_t number) const { m_builder << number; }   // long unsigned int
-	void putF32(float number, size_t precision = -1) const;
-	void putF64(double number, size_t precision = -1) const;
+	void putF32(float number, size_t precision = 6) const;
+	void putF64(double number, size_t precision = 6) const;
 	void putCharacter(char character) const { m_builder.write(&character, 1); }
 	void putString(const std::string_view string) const { m_builder.write(string.data(), string.length()); }
 	void putPointer(const void* pointer) const { m_builder << pointer; }
-
-	void resetSpecifiers();
-	void setPrecision(size_t precision = 6) { m_precision = precision; };
 
 	const std::stringstream& builder() const { return m_builder; }
 	std::stringstream& builder() { return m_builder; }
 
 private:
-	size_t m_precision { 6 };
 	std::stringstream& m_builder;
 };
 

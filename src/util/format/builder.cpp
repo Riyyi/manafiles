@@ -28,7 +28,7 @@ void Builder::putLiteral(std::string_view literal)
 
 void Builder::putF32(float number, size_t precision) const
 {
-	precision = (precision > std::numeric_limits<float>::digits10) ? m_precision : precision;
+	precision = (precision > std::numeric_limits<float>::digits10) ? 6 : precision;
 
 	std::stringstream stream;
 	stream
@@ -41,7 +41,7 @@ void Builder::putF32(float number, size_t precision) const
 
 void Builder::putF64(double number, size_t precision) const
 {
-	precision = (precision > std::numeric_limits<double>::digits10) ? m_precision : precision;
+	precision = (precision > std::numeric_limits<double>::digits10) ? 6 : precision;
 
 	std::stringstream stream;
 	stream
@@ -50,11 +50,6 @@ void Builder::putF64(double number, size_t precision) const
 		<< std::defaultfloat << std::setprecision(6);
 	std::string string = stream.str();
 	m_builder << string;
-}
-
-void Builder::resetSpecifiers()
-{
-	setPrecision();
 }
 
 } // namespace Util::Format
