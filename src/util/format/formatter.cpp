@@ -47,13 +47,23 @@ void Formatter<size_t>::format(Builder& builder, size_t value) const
 template<>
 void Formatter<float>::format(Builder& builder, float value) const
 {
-	builder.putF32(value);
+	if (specifier.precision < 0) {
+		builder.putF32(value);
+	}
+	else {
+		builder.putF32(value, specifier.precision);
+	}
 }
 
 template<>
 void Formatter<double>::format(Builder& builder, double value) const
 {
-	builder.putF64(value);
+	if (specifier.precision < 0) {
+		builder.putF64(value);
+	}
+	else {
+		builder.putF64(value, specifier.precision);
+	}
 }
 
 // Char
