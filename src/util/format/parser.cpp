@@ -113,7 +113,7 @@ std::optional<size_t> Parser::consumeIndex()
 
 	switch (m_mode) {
 	case ArgumentIndexingMode::Automatic: {
-		VERIFY(consumeSpecific('}') || consumeSpecific(':'), "expecting '}' or ':', not '%c'", peek());
+		VERIFY(consumeSpecific(':') || peek() == '}', "expecting ':' or '}', not '%c'", peek());
 		return {};
 	}
 	case ArgumentIndexingMode::Manual: {
