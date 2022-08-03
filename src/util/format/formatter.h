@@ -149,7 +149,7 @@ struct Formatter<T*> {
 	void format(Builder& builder, T* value) const
 	{
 		value == nullptr
-			? builder.putString("0x0")
+			? builder.putString("nullptr")
 			: builder.putPointer(static_cast<const void*>(value));
 	}
 };

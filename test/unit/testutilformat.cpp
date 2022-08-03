@@ -26,7 +26,7 @@ TEST_CASE(FormatBasicTypes)
 	EXPECT_EQ(result, "");
 
 	result = Util::format("{}", nullptr);
-	EXPECT_EQ(result, "(nil)");
+	EXPECT_EQ(result, "nullptr");
 
 	int* number = new int(3);
 	result = Util::format("{}", number);

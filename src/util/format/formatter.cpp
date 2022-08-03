@@ -97,7 +97,7 @@ void Formatter<const char*>::format(Builder& builder, const char* value) const
 {
 	Formatter<std::string_view>::format(
 		builder,
-		value != nullptr ? std::string_view { value, strlen(value) } : "(nil)");
+		value != nullptr ? std::string_view { value, strlen(value) } : "nullptr");
 }
 
 // Pointer
