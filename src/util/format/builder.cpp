@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstddef> // size_t
-#include <iomanip> // setprecision
-#include <ios>     // defaultfloat, fixed
-#include <limits>  // numeric_limits
-#include <sstream> // stringstream
+#include <algorithm> // min
+#include <cstddef>   // size_t
+#include <iomanip>   // setprecision
+#include <ios>       // defaultfloat, fixed
+#include <limits>    // numeric_limits
+#include <sstream>   // stringstream
 #include <string>
 #include <string_view>
 
@@ -26,9 +27,9 @@ void Builder::putLiteral(std::string_view literal)
 	}
 }
 
-void Builder::putF32(float number, size_t precision) const
+void Builder::putF32(float number, uint8_t precision) const
 {
-	precision = (precision > std::numeric_limits<float>::digits10) ? 6 : precision;
+	precision = std::min(precision, static_cast<uint8_t>(std::numeric_limits<float>::digits10));
 
 	std::stringstream stream;
 	stream
@@ -39,9 +40,9 @@ void Builder::putF32(float number, size_t precision) const
 	m_builder << string;
 }
 
-void Builder::putF64(double number, size_t precision) const
+void Builder::putF64(double number, uint8_t precision) const
 {
-	precision = (precision > std::numeric_limits<double>::digits10) ? 6 : precision;
+	precision = std::min(precision, static_cast<uint8_t>(std::numeric_limits<double>::digits10));
 
 	std::stringstream stream;
 	stream
