@@ -43,7 +43,7 @@ public:
 	void putF32(float number, uint8_t precision = 6) const;
 	void putF64(double number, uint8_t precision = 6) const;
 	void putCharacter(char character) const { m_builder.write(&character, 1); }
-	void putString(const std::string_view string) const { m_builder.write(string.data(), string.length()); }
+	void putString(std::string_view string, size_t width = 0, Align align = Align::Left, char fill = ' ') const;
 	void putPointer(const void* pointer) const { m_builder << pointer; }
 
 	const std::stringstream& builder() const { return m_builder; }

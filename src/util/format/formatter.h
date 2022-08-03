@@ -54,7 +54,7 @@ struct Specifier {
 
 	bool alternativeForm = false;
 	bool zeroPadding = false;
-	int width = 0;
+	size_t width = 0;
 	int8_t precision = -1;
 
 	PresentationType type = PresentationType::None;

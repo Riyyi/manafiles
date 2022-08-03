@@ -60,10 +60,10 @@ void Formatter<double>::format(Builder& builder, double value) const
 {
 	if (specifier.precision < 0) {
 		builder.putF64(value);
+		return;
 	}
-	else {
-		builder.putF64(value, specifier.precision);
-	}
+
+	builder.putF64(value, specifier.precision);
 }
 
 // Char
@@ -82,15 +82,22 @@ void Formatter<bool>::format(Builder& builder, bool value) const
 
 // String
 
-void Formatter<const char*>::format(Builder& builder, const char* value) const
-{
-	builder.putString(value != nullptr ? std::string_view { value, strlen(value) } : "(nil)");
-}
-
 template<>
 void Formatter<std::string_view>::format(Builder& builder, std::string_view value) const
 {
-	builder.putString(value);
+	if (specifier.align == Builder::Align::None) {
+		builder.putString(value, specifier.width);
+		return;
+	}
+
+	builder.putString(value, specifier.width, specifier.align, specifier.fill);
+}
+
+void Formatter<const char*>::format(Builder& builder, const char* value) const
+{
+	Formatter<std::string_view>::format(
+		builder,
+		value != nullptr ? std::string_view { value, strlen(value) } : "(nil)");
 }
 
 // Pointer

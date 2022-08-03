@@ -274,7 +274,7 @@ void Parser::parseSpecifier(Specifier& specifier, SpecifierType type)
 			// We parse until after the closing '}', so take this into account
 			widthEnd = tell() - 1;
 		}
-		specifier.width = static_cast<int>(stringToNumber(m_input.substr(widthBegin, widthEnd - widthBegin)));
+		specifier.width = stringToNumber(m_input.substr(widthBegin, widthEnd - widthBegin));
 	}
 
 	if (precisionBegin != std::numeric_limits<size_t>::max()) {
