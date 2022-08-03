@@ -67,16 +67,16 @@ struct Formatter {
 	constexpr void parse(Parser& parser)
 	{
 		if (std::is_integral_v<T>) {
-			parser.parseSpecifier(specifier, Parser::SpecifierType::Integral);
+			parser.parseSpecifier(specifier, Parser::ParameterType::Integral);
 		}
 		else if (std::is_floating_point_v<T>) {
-			parser.parseSpecifier(specifier, Parser::SpecifierType::FloatingPoint);
+			parser.parseSpecifier(specifier, Parser::ParameterType::FloatingPoint);
 		}
 		else if (std::is_same_v<T, char>) {
-			parser.parseSpecifier(specifier, Parser::SpecifierType::Char);
+			parser.parseSpecifier(specifier, Parser::ParameterType::Char);
 		}
 		else if (std::is_same_v<T, std::string_view>) {
-			parser.parseSpecifier(specifier, Parser::SpecifierType::String);
+			parser.parseSpecifier(specifier, Parser::ParameterType::String);
 		}
 	}
 
@@ -143,7 +143,7 @@ struct Formatter<T*> {
 
 	constexpr void parse(Parser& parser)
 	{
-		parser.parseSpecifier(specifier, Parser::SpecifierType::Pointer);
+		parser.parseSpecifier(specifier, Parser::ParameterType::Pointer);
 	}
 
 	void format(Builder& builder, T* value) const

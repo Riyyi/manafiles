@@ -158,7 +158,7 @@ std::optional<size_t> Parser::consumeIndex()
 	VERIFY_NOT_REACHED();
 }
 
-void Parser::parseSpecifier(Specifier& specifier, SpecifierType type)
+void Parser::parseSpecifier(Specifier& specifier, ParameterType type)
 {
 	if (consumeSpecific('}') || isEOF()) {
 		return;
@@ -204,7 +204,7 @@ void Parser::parseSpecifier(Specifier& specifier, SpecifierType type)
 		// Sign is only valid for numeric types
 		if (peek0 == '+' || peek0 == '-' || peek0 == ' ') {
 			VERIFY(state < State::AfterSign, "unexpected '%c' at this position", peek0);
-			VERIFY(type == SpecifierType::Integral || type == SpecifierType::FloatingPoint,
+			VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
 			       "sign option is only valid for numeric types");
 			state = State::AfterSign;
 			specifier.sign = static_cast<Builder::Sign>(peek0);
@@ -213,7 +213,7 @@ void Parser::parseSpecifier(Specifier& specifier, SpecifierType type)
 		// Alternative form is only valid for numeric types
 		if (peek0 == '#') {
 			VERIFY(state < State::AfterAlternativeForm, "unexpected '#' at this position");
-			VERIFY(type == SpecifierType::Integral || type == SpecifierType::FloatingPoint,
+			VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
 			       "'#' option is only valid for numeric types");
 			state = State::AfterAlternativeForm;
 			specifier.alternativeForm = true;
@@ -223,7 +223,7 @@ void Parser::parseSpecifier(Specifier& specifier, SpecifierType type)
 		if (peek0 == '0') {
 			if (state < State::AfterWidth) {
 				VERIFY(state < State::AfterZeroPadding, "unexpected '0' at this position");
-				VERIFY(type == SpecifierType::Integral || type == SpecifierType::FloatingPoint,
+				VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
 				       "zero padding option is only valid for numeric types");
 				state = State::AfterZeroPadding;
 				specifier.zeroPadding = true;

@@ -24,7 +24,7 @@ public:
 		Manual,    // {0},{1}
 	};
 
-	enum class SpecifierType {
+	enum class ParameterType {
 		Integral,
 		FloatingPoint,
 		Char,
@@ -41,7 +41,7 @@ public:
 	std::string_view consumeLiteral();
 	std::optional<size_t> consumeIndex();
 
-	void parseSpecifier(Specifier& specifier, SpecifierType type);
+	void parseSpecifier(Specifier& specifier, ParameterType type);
 
 private:
 	ArgumentIndexingMode m_mode { ArgumentIndexingMode::Automatic };
