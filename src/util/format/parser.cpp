@@ -147,10 +147,8 @@ size_t Parser::stringToNumber(std::string_view value)
 {
 	size_t result = 0;
 
-	for (size_t i = 1; i < value.length(); ++i) {
-		if (value[i] < '0' || value[i] > '9') {
-			VERIFY_NOT_REACHED();
-		}
+	for (size_t i = 0; i < value.length(); ++i) {
+		VERIFY(value[i] >= '0' && value[i] <= '9', "unexpected '%c'", value[i]);
 		result *= 10;
 		result += value[i] - '0'; // Subtract ASCII 48 to get the number
 	}
