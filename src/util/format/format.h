@@ -21,13 +21,14 @@ class Parser;
 
 struct Parameter {
 	const void* value;
-	void (*format)(Builder& builder, const void* value);
+	void (*format)(Builder& builder, Parser& parser, const void* value);
 };
 
 template<typename T>
-void formatParameterValue(Builder& builder, const void* value)
+void formatParameterValue(Builder& builder, Parser& parser, const void* value)
 {
 	Formatter<T> formatter;
+	formatter.parse(parser);
 	formatter.format(builder, *static_cast<const T*>(value));
 }
 

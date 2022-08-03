@@ -15,6 +15,7 @@
 namespace Util::Format {
 
 class Builder;
+struct Specifier;
 
 class Parser final : public GenericLexer {
 public:
@@ -23,16 +24,24 @@ public:
 		Manual,    // {0},{1}
 	};
 
+	enum class SpecifierType {
+		Integral,
+		FloatingPoint,
+		Char,
+		String,
+		Pointer,
+	};
+
 	Parser(std::string_view format, size_t parameterCount);
 	virtual ~Parser();
 
 	void checkFormatParameterConsistency();
+	size_t stringToNumber(std::string_view value);
 
 	std::string_view consumeLiteral();
 	std::optional<size_t> consumeIndex();
 
-	size_t stringToNumber(std::string_view value);
-
+	void parseSpecifier(Specifier& specifier, SpecifierType type);
 
 private:
 	ArgumentIndexingMode m_mode { ArgumentIndexingMode::Automatic };

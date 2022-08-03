@@ -15,6 +15,20 @@ namespace Util::Format {
 
 class Builder {
 public:
+	enum class Align : uint8_t {
+		None,
+		Left = 60,   // '<'
+		Right = 62,  // '>'
+		Center = 94, // '^'
+	};
+
+	enum class Sign : uint8_t {
+		None,
+		Negative = 45, // '-'
+		Both = 43,     // '+'
+		Space = 32,    // ' '
+	};
+
 	explicit Builder(std::stringstream& builder)
 		: m_builder(builder)
 	{
