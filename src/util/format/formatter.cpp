@@ -85,11 +85,6 @@ void Formatter<bool>::format(Builder& builder, bool value) const
 template<>
 void Formatter<std::string_view>::format(Builder& builder, std::string_view value) const
 {
-	if (specifier.align == Builder::Align::None) {
-		builder.putString(value, specifier.width);
-		return;
-	}
-
 	builder.putString(value, specifier.width, specifier.align, specifier.fill);
 }
 

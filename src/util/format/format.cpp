@@ -31,7 +31,7 @@ void variadicFormatImpl(Builder& builder, Parser& parser, TypeErasedParameters& 
 
 	// Get parameter at index, or next
 	size_t index = indexMaybe.has_value() ? indexMaybe.value() : parameters.tell();
-	VERIFY(index < parameters.size(), "argument not found at index '%zu':'%zu'", index, parameters.size());
+	VERIFY(index < parameters.size(), "argument not found at index '%zu'", index);
 	auto& parameter = parameters.parameter(index);
 
 	// Format the parameter

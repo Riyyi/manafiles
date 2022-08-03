@@ -63,6 +63,7 @@ void Builder::putString(std::string_view string, size_t width, Align align, char
 	}
 
 	switch (align) {
+	case Align::None:
 	case Align::Left:
 		m_builder.write(string.data(), length);
 		m_builder << std::string(width - length, fill);
