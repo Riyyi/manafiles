@@ -28,6 +28,7 @@ public:
 		Integral,
 		FloatingPoint,
 		Char,
+		CString,
 		String,
 		Pointer,
 	};
@@ -42,6 +43,8 @@ public:
 	std::optional<size_t> consumeIndex();
 
 	void parseSpecifier(Specifier& specifier, ParameterType type);
+	constexpr void checkSpecifierIntegralType(const Specifier& specifier);
+	constexpr void checkSpecifierType(const Specifier& specifier, ParameterType type);
 
 private:
 	ArgumentIndexingMode m_mode { ArgumentIndexingMode::Automatic };

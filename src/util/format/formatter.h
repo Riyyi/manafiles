@@ -124,6 +124,7 @@ struct Formatter<std::string> : Formatter<std::string_view> {
 
 template<>
 struct Formatter<const char*> : Formatter<std::string_view> {
+	void parse(Parser& parser);
 	void format(Builder& builder, const char* value) const;
 };
 

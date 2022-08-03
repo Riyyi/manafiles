@@ -284,6 +284,73 @@ void Parser::parseSpecifier(Specifier& specifier, ParameterType type)
 		}
 		specifier.precision = static_cast<int8_t>(stringToNumber(m_input.substr(precisionBegin, precisionEnd - precisionBegin)));
 	}
+
+	checkSpecifierType(specifier, type);
+}
+
+constexpr void Parser::checkSpecifierIntegralType(const Specifier& specifier)
+{
+	switch (specifier.type) {
+	case PresentationType::None:
+	case PresentationType::Binary:
+	case PresentationType::BinaryUppercase:
+	case PresentationType::Decimal:
+	case PresentationType::Octal:
+	case PresentationType::Hex:
+	case PresentationType::HexUppercase:
+	case PresentationType::Character:
+		break;
+	default:
+		VERIFY("invalid type spcifier");
+	};
+}
+
+constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterType type)
+{
+	switch (type) {
+	case ParameterType::Integral:
+		checkSpecifierIntegralType(specifier);
+		break;
+	case ParameterType::FloatingPoint:
+		switch (specifier.type) {
+		case PresentationType::Hexfloat:
+		case PresentationType::HexfloatUppercase:
+		case PresentationType::Exponent:
+		case PresentationType::ExponentUppercase:
+		case PresentationType::FixedPoint:
+		case PresentationType::FixedPointUppercase:
+		case PresentationType::General:
+		case PresentationType::GeneralUppercase:
+			break;
+		default:
+			VERIFY("invalid type spcifier");
+		}
+		break;
+	case ParameterType::Char:
+		if (specifier.type != PresentationType::None
+		    && specifier.type != PresentationType::Character) {
+			checkSpecifierIntegralType(specifier);
+		}
+		break;
+	case ParameterType::CString:
+		VERIFY(specifier.type == PresentationType::None
+		           || specifier.type == PresentationType::String
+		           || specifier.type == PresentationType::Pointer,
+		       "invalid type specifier");
+		break;
+	case ParameterType::String:
+		VERIFY(specifier.type == PresentationType::None
+		           || specifier.type == PresentationType::String,
+		       "invalid type specifier");
+		break;
+	case ParameterType::Pointer:
+		VERIFY(specifier.type == PresentationType::None
+		           || specifier.type == PresentationType::Pointer,
+		       "invalid type specifier");
+		break;
+	default:
+		VERIFY_NOT_REACHED();
+	}
 }
 
 } // namespace Util::Format

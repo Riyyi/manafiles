@@ -88,11 +88,20 @@ void Formatter<std::string_view>::format(Builder& builder, std::string_view valu
 	builder.putString(value, specifier.width, specifier.align, specifier.fill);
 }
 
+void Formatter<const char*>::parse(Parser& parser)
+{
+	parser.parseSpecifier(specifier, Parser::ParameterType::CString);
+}
+
 void Formatter<const char*>::format(Builder& builder, const char* value) const
 {
-	Formatter<std::string_view>::format(
-		builder,
-		value != nullptr ? std::string_view { value, strlen(value) } : "nullptr");
+	if (specifier.type == PresentationType::Pointer) {
+		Formatter<const void*> formatter { specifier };
+		formatter.format(builder, static_cast<const void*>(value));
+		return;
+	}
+
+	builder.putString(value != nullptr ? std::string_view { value, strlen(value) } : "nullptr");
 }
 
 // Pointer
