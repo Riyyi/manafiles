@@ -28,28 +28,36 @@ void Builder::putLiteral(std::string_view literal)
 	}
 }
 
-void Builder::putU64(size_t value, char fill, Align align, Sign sign, size_t width, bool isNegative) const
+void Builder::putU64(size_t value, char fill, Align align, Sign sign, bool zeroPadding, size_t width, bool isNegative) const
 {
 	std::string string = (std::stringstream {} << value).str();
 
-	printf("sign {%c}\n", (char)sign);
 	// Sign
+	std::string signCharacter = "";
 	switch (sign) {
 	case Sign::None:
 	case Sign::Negative:
 		if (isNegative) {
-			string.insert(0, 1, '-');
+			signCharacter = '-';
 		}
 		break;
 	case Sign::Both:
-		string.insert(0, 1, (isNegative) ? '-' : '+');
+		signCharacter = (isNegative) ? '-' : '+';
 		break;
 	case Sign::Space:
-		string.insert(0, 1, (isNegative) ? '-' : ' ');
+		signCharacter = (isNegative) ? '-' : ' ';
 		break;
 	default:
 		VERIFY_NOT_REACHED();
 	};
+	if (align != Align::None || !zeroPadding) {
+		string.insert(0, signCharacter);
+	}
+
+	// Zero padding
+	if (zeroPadding) {
+		fill = '0';
+	}
 
 	size_t length = string.length();
 	if (width < length) {
@@ -69,9 +77,18 @@ void Builder::putU64(size_t value, char fill, Align align, Sign sign, size_t wid
 		m_builder << std::string(width - half - length, fill);
 		break;
 	}
-	case Align::None:
 	case Align::Right:
 		m_builder << std::string(width - length, fill);
+		m_builder.write(string.data(), length);
+		break;
+	case Align::None:
+		if (zeroPadding) {
+			m_builder << signCharacter;
+			if (signCharacter.empty()) {
+				m_builder << '0';
+			}
+		}
+		m_builder << std::string(width - length - zeroPadding, fill);
 		m_builder.write(string.data(), length);
 		break;
 	default:
@@ -79,11 +96,11 @@ void Builder::putU64(size_t value, char fill, Align align, Sign sign, size_t wid
 	};
 }
 
-void Builder::putI64(int64_t value, char fill, Align align, Sign sign, size_t width) const
+void Builder::putI64(int64_t value, char fill, Align align, Sign sign, bool zeroPadding, size_t width) const
 {
 	bool isNegative = value < 0;
 	value = isNegative ? -value : value;
-	putU64(static_cast<uint64_t>(value), fill, align, sign, width, isNegative);
+	putU64(static_cast<uint64_t>(value), fill, align, sign, zeroPadding, width, isNegative);
 }
 
 void Builder::putF64(double number, uint8_t precision) const
