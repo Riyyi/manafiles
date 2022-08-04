@@ -46,7 +46,7 @@ void Formatter<const char*>::parse(Parser& parser)
 void Formatter<const char*>::format(Builder& builder, const char* value) const
 {
 	if (specifier.type == PresentationType::Pointer) {
-		Formatter<const void*> formatter { specifier };
+		Formatter<const void*> formatter { .specifier = specifier };
 		formatter.format(builder, static_cast<const void*>(value));
 		return;
 	}

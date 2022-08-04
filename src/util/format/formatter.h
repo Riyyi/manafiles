@@ -95,7 +95,7 @@ struct Formatter<T> {
 		if (specifier.type == PresentationType::Character) {
 			assert(value >= 0 && value <= 127);
 
-			Formatter<std::string_view> formatter { specifier };
+			Formatter<std::string_view> formatter { .specifier = specifier };
 			formatter.specifier.type = PresentationType::String;
 			return formatter.format(builder, { reinterpret_cast<const char*>(&value), 1 });
 		}
