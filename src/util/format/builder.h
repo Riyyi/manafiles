@@ -42,6 +42,7 @@ public:
 	            char fill = ' ',
 	            Align align = Align::Right,
 	            Sign sign = Sign::Negative,
+	            bool alternativeForm = false,
 	            bool zeroPadding = false,
 	            size_t width = 0,
 	            bool isNegative = false) const;
@@ -52,6 +53,7 @@ public:
 	            char fill = ' ',
 	            Align align = Align::Right,
 	            Sign sign = Sign::Negative,
+	            bool alternativeForm = false,
 	            bool zeroPadding = false,
 	            size_t width = 0) const;
 

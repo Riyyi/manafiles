@@ -68,6 +68,7 @@ void Builder::putU64(size_t value,
                      char fill,
                      Align align,
                      Sign sign,
+                     bool alternativeForm,
                      bool zeroPadding,
                      size_t width,
                      bool isNegative) const
@@ -94,6 +95,25 @@ void Builder::putU64(size_t value,
 	};
 	if (align != Align::None || !zeroPadding) {
 		string.insert(0, signCharacter);
+	}
+
+	// Alternative form
+	if (alternativeForm) {
+		switch (base) {
+		case 2:
+			string.insert(0, (uppercase) ? "0B" : "0b");
+			break;
+		case 8:
+			break;
+			string.insert(0, 1, '0');
+		case 10:
+			break;
+		case 16:
+			string.insert(0, (uppercase) ? "0X" : "0x");
+			break;
+		default:
+			VERIFY_NOT_REACHED();
+		}
 	}
 
 	// Zero padding
@@ -144,12 +164,13 @@ void Builder::putI64(int64_t value,
                      char fill,
                      Align align,
                      Sign sign,
+                     bool alternativeForm,
                      bool zeroPadding,
                      size_t width) const
 {
 	bool isNegative = value < 0;
 	value = isNegative ? -value : value;
-	putU64(static_cast<uint64_t>(value), base, uppercase, fill, align, sign, zeroPadding, width, isNegative);
+	putU64(static_cast<uint64_t>(value), base, uppercase, fill, align, sign, alternativeForm, zeroPadding, width, isNegative);
 }
 
 void Builder::putF64(double number, uint8_t precision) const

@@ -127,12 +127,12 @@ struct Formatter<T> {
 		if constexpr (std::is_unsigned_v<T>) {
 			builder.putU64(
 				value, base, uppercase, specifier.fill, specifier.align, specifier.sign,
-				specifier.zeroPadding, specifier.width);
+				specifier.alternativeForm, specifier.zeroPadding, specifier.width);
 		}
 		else {
 			builder.putI64(
 				value, base, uppercase, specifier.fill, specifier.align, specifier.sign,
-				specifier.zeroPadding, specifier.width);
+				specifier.alternativeForm, specifier.zeroPadding, specifier.width);
 		}
 	}
 };
