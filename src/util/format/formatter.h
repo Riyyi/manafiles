@@ -92,6 +92,14 @@ struct Formatter<T> {
 
 	void format(Builder& builder, T value) const
 	{
+		if (specifier.type == PresentationType::Character) {
+			assert(value >= 0 && value <= 127);
+
+			Formatter<std::string_view> formatter { specifier };
+			formatter.specifier.type = PresentationType::String;
+			return formatter.format(builder, { reinterpret_cast<const char*>(&value), 1 });
+		}
+
 		uint8_t base = 0;
 		bool uppercase = false;
 		switch (specifier.type) {
