@@ -60,7 +60,6 @@ public:
 	void putF64(double number, uint8_t precision = 6) const;
 	void putCharacter(char character) const { m_builder.write(&character, 1); }
 	void putString(std::string_view string, char fill = ' ', Align align = Align::Left, size_t width = 0) const;
-	void putPointer(const void* pointer) const { m_builder << pointer; }
 
 	const std::stringstream& builder() const { return m_builder; }
 	std::stringstream& builder() { return m_builder; }

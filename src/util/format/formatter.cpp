@@ -58,9 +58,14 @@ void Formatter<const char*>::format(Builder& builder, const char* value) const
 
 // Pointer
 
+void Formatter<std::nullptr_t>::parse(Parser& parser)
+{
+	parser.parseSpecifier(specifier, Parser::ParameterType::Pointer);
+}
+
 void Formatter<std::nullptr_t>::format(Builder& builder, std::nullptr_t) const
 {
-	Formatter<const void*>::format(builder, 0);
+	Formatter<std::string_view>::format(builder, "nullptr");
 }
 
 } // namespace Util::Format

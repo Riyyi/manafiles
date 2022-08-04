@@ -8,7 +8,7 @@
 
 #include <cassert>
 #include <cstddef> // size_t
-#include <cstdint> // int8_t, int32_t, int64_t, uint8_t, uint32_t
+#include <cstdint> // int8_t, int32_t, int64_t, uint8_t, uint32_t, uintptr_t
 #include <map>
 #include <string>
 #include <string_view>
@@ -193,7 +193,7 @@ struct Formatter<char[N]> : Formatter<const char*> {
 // Pointer
 
 template<typename T>
-struct Formatter<T*> {
+struct Formatter<T*> : Formatter<uintptr_t> {
 	Specifier specifier;
 
 	constexpr void parse(Parser& parser)
@@ -203,14 +203,14 @@ struct Formatter<T*> {
 
 	void format(Builder& builder, T* value) const
 	{
-		value == nullptr
-			? builder.putString("nullptr")
-			: builder.putPointer(static_cast<const void*>(value));
+		builder.putU64(reinterpret_cast<uintptr_t>(value), 16, false, specifier.fill, specifier.align,
+		               Builder::Sign::None, true, false, specifier.width);
 	}
 };
 
 template<>
-struct Formatter<std::nullptr_t> : Formatter<const void*> {
+struct Formatter<std::nullptr_t> : Formatter<std::string_view> {
+	void parse(Parser& parser);
 	void format(Builder& builder, std::nullptr_t) const;
 };
 
