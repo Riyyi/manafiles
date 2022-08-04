@@ -6,6 +6,7 @@
 
 #include <algorithm> // min
 #include <cstddef>   // size_t
+#include <cstdint>   // uint8_t, uint16_t, uint32_t, uint64_t
 #include <iomanip>   // setprecision
 #include <ios>       // defaultfloat, fixed
 #include <limits>    // numeric_limits
@@ -28,9 +29,42 @@ void Builder::putLiteral(std::string_view literal)
 	}
 }
 
-void Builder::putU64(size_t value, char fill, Align align, Sign sign, bool zeroPadding, size_t width, bool isNegative) const
+static constexpr std::string numberToString(size_t value, uint8_t base, bool uppercase)
 {
-	std::string string = (std::stringstream {} << value).str();
+	std::string result;
+
+	if (value > std::numeric_limits<uint32_t>::max()) {
+		result.reserve(64);
+	}
+	else if (value > std::numeric_limits<uint16_t>::max()) {
+		result.reserve(32);
+	}
+
+	constexpr const auto& lookupLowercase = "0123456789abcdef";
+	constexpr const auto& lookupUppercase = "0123456789ABCDEF";
+
+	if (value == 0) {
+		result = '0';
+	}
+	else if (uppercase) {
+		while (value > 0) {
+			result.insert(0, 1, lookupUppercase[value % base]);
+			value /= base;
+		}
+	}
+	else {
+		while (value > 0) {
+			result.insert(0, 1, lookupLowercase[value % base]);
+			value /= base;
+		}
+	}
+
+	return result;
+}
+
+void Builder::putU64(size_t value, uint8_t base, bool uppercase, char fill, Align align, Sign sign, bool zeroPadding, size_t width, bool isNegative) const
+{
+	std::string string = numberToString(value, base, uppercase);
 
 	// Sign
 	std::string signCharacter = "";
@@ -96,11 +130,11 @@ void Builder::putU64(size_t value, char fill, Align align, Sign sign, bool zeroP
 	};
 }
 
-void Builder::putI64(int64_t value, char fill, Align align, Sign sign, bool zeroPadding, size_t width) const
+void Builder::putI64(int64_t value, uint8_t base, bool uppercase, char fill, Align align, Sign sign, bool zeroPadding, size_t width) const
 {
 	bool isNegative = value < 0;
 	value = isNegative ? -value : value;
-	putU64(static_cast<uint64_t>(value), fill, align, sign, zeroPadding, width, isNegative);
+	putU64(static_cast<uint64_t>(value), base, uppercase, fill, align, sign, zeroPadding, width, isNegative);
 }
 
 void Builder::putF64(double number, uint8_t precision) const

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstddef> // size_t
 #include <cstdint> // int8_t, int32_t, int64_t, uint8_t, uint32_t
 #include <map>
@@ -91,14 +92,38 @@ struct Formatter<T> {
 
 	void format(Builder& builder, T value) const
 	{
-		if (std::is_signed_v<T>) {
-			builder.putI64(
-				value, specifier.fill, specifier.align, specifier.sign,
+		uint8_t base = 0;
+		bool uppercase = false;
+		switch (specifier.type) {
+		case PresentationType::BinaryUppercase:
+			uppercase = true;
+		case PresentationType::Binary:
+			base = 2;
+			break;
+		case PresentationType::Octal:
+			base = 8;
+			break;
+		case PresentationType::None:
+		case PresentationType::Decimal:
+			base = 10;
+			break;
+		case PresentationType::HexUppercase:
+			uppercase = true;
+		case PresentationType::Hex:
+			base = 16;
+			break;
+		default:
+			assert(false);
+		};
+
+		if constexpr (std::is_unsigned_v<T>) {
+			builder.putU64(
+				value, base, uppercase, specifier.fill, specifier.align, specifier.sign,
 				specifier.zeroPadding, specifier.width);
 		}
-		if (std::is_unsigned_v<T>) {
-			builder.putU64(
-				value, specifier.fill, specifier.align, specifier.sign,
+		else {
+			builder.putI64(
+				value, base, uppercase, specifier.fill, specifier.align, specifier.sign,
 				specifier.zeroPadding, specifier.width);
 		}
 	}

@@ -36,8 +36,8 @@ public:
 
 	void putLiteral(std::string_view literal);
 
-	void putU64(size_t value, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, bool zeroPadding = false, size_t width = 0, bool isNegative = false) const;
-	void putI64(int64_t value, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, bool zeroPadding = false, size_t width = 0) const;
+	void putU64(size_t value, uint8_t base = 10, bool uppercase = false, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, bool zeroPadding = false, size_t width = 0, bool isNegative = false) const;
+	void putI64(int64_t value, uint8_t base = 10, bool uppercase = false, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, bool zeroPadding = false, size_t width = 0) const;
 	void putF64(double number, uint8_t precision = 6) const;
 	void putCharacter(char character) const { m_builder.write(&character, 1); }
 	void putString(std::string_view string, char fill = ' ', Align align = Align::Left, size_t width = 0) const;
