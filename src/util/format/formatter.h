@@ -93,11 +93,11 @@ struct Formatter<T> {
 	{
 		if (std::is_signed_v<T>) {
 			builder.putI64(
-				value, specifier.width, specifier.align, specifier.fill, specifier.sign);
+				value, specifier.fill, specifier.align, specifier.sign, specifier.width);
 		}
 		if (std::is_unsigned_v<T>) {
 			builder.putU64(
-				value, specifier.width, specifier.align, specifier.fill, specifier.sign);
+				value, specifier.fill, specifier.align, specifier.sign, specifier.width);
 		}
 	}
 };

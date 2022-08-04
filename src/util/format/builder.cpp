@@ -28,7 +28,7 @@ void Builder::putLiteral(std::string_view literal)
 	}
 }
 
-void Builder::putU64(size_t value, size_t width, Align align, char fill, Sign sign, bool isNegative) const
+void Builder::putU64(size_t value, char fill, Align align, Sign sign, size_t width, bool isNegative) const
 {
 	std::string string = (std::stringstream {} << value).str();
 
@@ -79,11 +79,11 @@ void Builder::putU64(size_t value, size_t width, Align align, char fill, Sign si
 	};
 }
 
-void Builder::putI64(int64_t value, size_t width, Align align, char fill, Sign sign) const
+void Builder::putI64(int64_t value, char fill, Align align, Sign sign, size_t width) const
 {
-	auto const isNegative = value < 0;
-    value = isNegative ? -value : value;
-    putU64(static_cast<uint64_t>(value), width, align, fill, sign, isNegative);
+	bool isNegative = value < 0;
+	value = isNegative ? -value : value;
+	putU64(static_cast<uint64_t>(value), fill, align, sign, width, isNegative);
 }
 
 void Builder::putF64(double number, uint8_t precision) const
@@ -99,7 +99,7 @@ void Builder::putF64(double number, uint8_t precision) const
 	m_builder << string;
 }
 
-void Builder::putString(std::string_view string, size_t width, Align align, char fill) const
+void Builder::putString(std::string_view string, char fill, Align align, size_t width) const
 {
 	size_t length = string.length();
 	if (width < length) {

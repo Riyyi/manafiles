@@ -35,7 +35,7 @@ void Formatter<bool>::format(Builder& builder, bool value) const
 template<>
 void Formatter<std::string_view>::format(Builder& builder, std::string_view value) const
 {
-	builder.putString(value, specifier.width, specifier.align, specifier.fill);
+	builder.putString(value, specifier.fill, specifier.align, specifier.width);
 }
 
 void Formatter<const char*>::parse(Parser& parser)
@@ -51,7 +51,9 @@ void Formatter<const char*>::format(Builder& builder, const char* value) const
 		return;
 	}
 
-	builder.putString(value != nullptr ? std::string_view { value, strlen(value) } : "nullptr");
+	Formatter<std::string_view>::format(
+		builder,
+		value != nullptr ? std::string_view { value, strlen(value) } : "nullptr");
 }
 
 // Pointer

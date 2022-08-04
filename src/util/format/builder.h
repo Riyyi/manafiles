@@ -36,11 +36,11 @@ public:
 
 	void putLiteral(std::string_view literal);
 
-	void putU64(size_t value, size_t width = 0, Align align = Align::Right, char fill = ' ', Sign sign = Sign::Negative, bool isNegative = false) const;
-	void putI64(int64_t value, size_t width = 0, Align align = Align::Right, char fill = ' ', Sign sign = Sign::Negative) const;
+	void putU64(size_t value, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, size_t width = 0, bool isNegative = false) const;
+	void putI64(int64_t value, char fill = ' ', Align align = Align::Right, Sign sign = Sign::Negative, size_t width = 0) const;
 	void putF64(double number, uint8_t precision = 6) const;
 	void putCharacter(char character) const { m_builder.write(&character, 1); }
-	void putString(std::string_view string, size_t width = 0, Align align = Align::Left, char fill = ' ') const;
+	void putString(std::string_view string, char fill = ' ', Align align = Align::Left, size_t width = 0) const;
 	void putPointer(const void* pointer) const { m_builder << pointer; }
 
 	const std::stringstream& builder() const { return m_builder; }
