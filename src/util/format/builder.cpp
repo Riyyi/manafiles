@@ -62,7 +62,15 @@ static constexpr std::string numberToString(size_t value, uint8_t base, bool upp
 	return result;
 }
 
-void Builder::putU64(size_t value, uint8_t base, bool uppercase, char fill, Align align, Sign sign, bool zeroPadding, size_t width, bool isNegative) const
+void Builder::putU64(size_t value,
+                     uint8_t base,
+                     bool uppercase,
+                     char fill,
+                     Align align,
+                     Sign sign,
+                     bool zeroPadding,
+                     size_t width,
+                     bool isNegative) const
 {
 	std::string string = numberToString(value, base, uppercase);
 
@@ -130,7 +138,14 @@ void Builder::putU64(size_t value, uint8_t base, bool uppercase, char fill, Alig
 	};
 }
 
-void Builder::putI64(int64_t value, uint8_t base, bool uppercase, char fill, Align align, Sign sign, bool zeroPadding, size_t width) const
+void Builder::putI64(int64_t value,
+                     uint8_t base,
+                     bool uppercase,
+                     char fill,
+                     Align align,
+                     Sign sign,
+                     bool zeroPadding,
+                     size_t width) const
 {
 	bool isNegative = value < 0;
 	value = isNegative ? -value : value;
