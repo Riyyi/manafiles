@@ -92,10 +92,12 @@ struct Formatter<T> {
 	void format(Builder& builder, T value) const
 	{
 		if (std::is_signed_v<T>) {
-			builder.putI64(value);
+			builder.putI64(
+				value, specifier.width, specifier.align, specifier.fill, specifier.sign);
 		}
 		if (std::is_unsigned_v<T>) {
-			builder.putU64(value);
+			builder.putU64(
+				value, specifier.width, specifier.align, specifier.fill, specifier.sign);
 		}
 	}
 };
