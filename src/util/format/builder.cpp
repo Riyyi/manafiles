@@ -28,19 +28,6 @@ void Builder::putLiteral(std::string_view literal)
 	}
 }
 
-void Builder::putF32(float number, uint8_t precision) const
-{
-	precision = std::min(precision, static_cast<uint8_t>(std::numeric_limits<float>::digits10));
-
-	std::stringstream stream;
-	stream
-		<< std::fixed << std::setprecision(precision)
-		<< number
-		<< std::defaultfloat << std::setprecision(6);
-	std::string string = stream.str();
-	m_builder << string;
-}
-
 void Builder::putF64(double number, uint8_t precision) const
 {
 	precision = std::min(precision, static_cast<uint8_t>(std::numeric_limits<double>::digits10));

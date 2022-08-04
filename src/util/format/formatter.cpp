@@ -16,56 +16,6 @@
 
 namespace Util::Format {
 
-// Integral
-
-template<>
-void Formatter<int32_t>::format(Builder& builder, int32_t value) const
-{
-	builder.putI32(value);
-}
-
-template<>
-void Formatter<uint32_t>::format(Builder& builder, uint32_t value) const
-{
-	builder.putU32(value);
-}
-
-template<>
-void Formatter<int64_t>::format(Builder& builder, int64_t value) const
-{
-	builder.putI64(value);
-}
-
-template<>
-void Formatter<size_t>::format(Builder& builder, size_t value) const
-{
-	builder.putU64(value);
-}
-
-// Floating point
-
-template<>
-void Formatter<float>::format(Builder& builder, float value) const
-{
-	if (specifier.precision < 0) {
-		builder.putF32(value);
-	}
-	else {
-		builder.putF32(value, specifier.precision);
-	}
-}
-
-template<>
-void Formatter<double>::format(Builder& builder, double value) const
-{
-	if (specifier.precision < 0) {
-		builder.putF64(value);
-		return;
-	}
-
-	builder.putF64(value, specifier.precision);
-}
-
 // Char
 
 template<>

@@ -17,6 +17,7 @@
 
 #include "util/format/builder.h"
 #include "util/format/parser.h"
+#include "util/meta/concepts.h"
 
 namespace Util::Format {
 
@@ -66,13 +67,7 @@ struct Formatter {
 
 	constexpr void parse(Parser& parser)
 	{
-		if (std::is_integral_v<T>) {
-			parser.parseSpecifier(specifier, Parser::ParameterType::Integral);
-		}
-		else if (std::is_floating_point_v<T>) {
-			parser.parseSpecifier(specifier, Parser::ParameterType::FloatingPoint);
-		}
-		else if (std::is_same_v<T, char>) {
+		if (std::is_same_v<T, char>) {
 			parser.parseSpecifier(specifier, Parser::ParameterType::Char);
 		}
 		else if (std::is_same_v<T, std::string_view>) {
@@ -80,30 +75,52 @@ struct Formatter {
 		}
 	}
 
-	void format(Builder& builder, T value) const { (void)builder, (void)value; }
+	void format(Builder&, T) const {}
 };
 
 // Integral
 
-template<>
-void Formatter<int32_t>::format(Builder& builder, int32_t value) const;
+template<Integral T>
+struct Formatter<T> {
+	Specifier specifier;
 
-template<>
-void Formatter<uint32_t>::format(Builder& builder, uint32_t value) const;
+	void parse(Parser& parser)
+	{
+		parser.parseSpecifier(specifier, Parser::ParameterType::Integral);
+	}
 
-template<>
-void Formatter<int64_t>::format(Builder& builder, int64_t value) const;
-
-template<>
-void Formatter<size_t>::format(Builder& builder, size_t value) const; // uint64_t
+	void format(Builder& builder, T value) const
+	{
+		if (std::is_signed_v<T>) {
+			builder.putI64(value);
+		}
+		if (std::is_unsigned_v<T>) {
+			builder.putU64(value);
+		}
+	}
+};
 
 // Floating point
 
-template<>
-void Formatter<float>::format(Builder& builder, float value) const;
+template<FloatingPoint T>
+struct Formatter<T> {
+	Specifier specifier;
 
-template<>
-void Formatter<double>::format(Builder& builder, double value) const;
+	void parse(Parser& parser)
+	{
+		parser.parseSpecifier(specifier, Parser::ParameterType::FloatingPoint);
+	}
+
+	void format(Builder& builder, T value) const
+	{
+		if (specifier.precision < 0) {
+			builder.putF64(value);
+			return;
+		}
+
+		builder.putF64(value, specifier.precision);
+	}
+};
 
 // Char
 
