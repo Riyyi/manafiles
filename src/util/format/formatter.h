@@ -68,7 +68,10 @@ struct Formatter {
 
 	constexpr void parse(Parser& parser)
 	{
-		if (std::is_same_v<T, char>) {
+		if constexpr (std::is_same_v<T, char>) {
+			parser.parseSpecifier(specifier, Parser::ParameterType::Char);
+		}
+		else if (std::is_same_v<T, bool>) {
 			parser.parseSpecifier(specifier, Parser::ParameterType::Char);
 		}
 		else if (std::is_same_v<T, std::string_view>) {
