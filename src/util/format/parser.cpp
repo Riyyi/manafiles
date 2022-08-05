@@ -200,8 +200,6 @@ void Parser::parseSpecifier(Specifier& specifier, ParameterType type)
 		// Sign is only valid for numeric types
 		if (peek0 == '+' || peek0 == '-' || peek0 == ' ') {
 			VERIFY(state < State::AfterSign, "unexpected '%c' at this position", peek0);
-			VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
-			       "sign option is only valid for numeric types");
 			state = State::AfterSign;
 			specifier.sign = static_cast<Builder::Sign>(peek0);
 		}
@@ -209,8 +207,6 @@ void Parser::parseSpecifier(Specifier& specifier, ParameterType type)
 		// Alternative form is only valid for numeric types
 		if (peek0 == '#') {
 			VERIFY(state < State::AfterAlternativeForm, "unexpected '#' at this position");
-			VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
-			       "'#' option is only valid for numeric types");
 			state = State::AfterAlternativeForm;
 			specifier.alternativeForm = true;
 		}
@@ -219,8 +215,6 @@ void Parser::parseSpecifier(Specifier& specifier, ParameterType type)
 		if (peek0 == '0') {
 			if (state < State::AfterWidth) {
 				VERIFY(state < State::AfterZeroPadding, "unexpected '0' at this position");
-				VERIFY(type == ParameterType::Integral || type == ParameterType::FloatingPoint,
-				       "zero padding option is only valid for numeric types");
 				state = State::AfterZeroPadding;
 				specifier.zeroPadding = true;
 			}
@@ -290,28 +284,81 @@ constexpr void Parser::checkSpecifierIntegralType(const Specifier& specifier)
 	case PresentationType::None:
 	case PresentationType::Binary:
 	case PresentationType::BinaryUppercase:
+	case PresentationType::Character:
 	case PresentationType::Decimal:
 	case PresentationType::Octal:
 	case PresentationType::Hex:
 	case PresentationType::HexUppercase:
-	case PresentationType::Character:
 		break;
 	default:
-		VERIFY("invalid type spcifier");
+		VERIFY(false, "invalid type specifier");
 	};
+
+	// Invalid: precision
+	VERIFY(specifier.precision == -1, "invalid specifier option");
 }
 
-constexpr void Parser::checkSpecifierPointerType(const Specifier& specifier)
+constexpr void Parser::checkSpecifierFloatingPointType(const Specifier& specifier)
 {
-	VERIFY(specifier.type == PresentationType::None || specifier.type == PresentationType::Pointer,
-	       "invalid type specifier");
+	switch (specifier.type) {
+	case PresentationType::Hexfloat:
+	case PresentationType::HexfloatUppercase:
+	case PresentationType::Exponent:
+	case PresentationType::ExponentUppercase:
+	case PresentationType::FixedPoint:
+	case PresentationType::FixedPointUppercase:
+	case PresentationType::General:
+	case PresentationType::GeneralUppercase:
+		break;
+	default:
+		VERIFY(false, "invalid type specifier");
+	}
+}
 
-	//   Valid: fill, align, width
+constexpr void Parser::checkSpecifierCharType(const Specifier& specifier)
+{
+	checkSpecifierIntegralType(specifier);
+
+	//   Valid:  fill, align, width
+	// Invalid: sign, alternativeForm, zeroPadding, precision
+	if (specifier.type == PresentationType::None
+	    || specifier.type == PresentationType::Character) {
+		VERIFY(specifier.sign == Builder::Sign::None, "invalid specifier option");
+		VERIFY(specifier.alternativeForm == false, "invalid specifier option");
+		VERIFY(specifier.zeroPadding == false, "invalid specifier option");
+	}
+	// Precision checked in Integral
+}
+
+constexpr void Parser::checkSpecifierCStringType(const Specifier& specifier)
+{
+	switch (specifier.type) {
+	case PresentationType::None:
+	case PresentationType::String:
+	case PresentationType::Pointer:
+		break;
+	default:
+		VERIFY(false, "invalid type specifier");
+	}
+
+	//   Valid:  fill, align, width
 	// Invalid: sign, alternativeForm, zeroPadding, precision
 	VERIFY(specifier.sign == Builder::Sign::None, "invalid specifier option");
 	VERIFY(specifier.alternativeForm == false, "invalid specifier option");
 	VERIFY(specifier.zeroPadding == false, "invalid specifier option");
 	VERIFY(specifier.precision == -1, "invalid specifier option");
+}
+
+constexpr void Parser::checkSpecifierStringType(const Specifier& specifier)
+{
+	checkSpecifierCStringType(specifier);
+	VERIFY(specifier.type != PresentationType::Pointer, "invalid type specifier");
+}
+
+constexpr void Parser::checkSpecifierPointerType(const Specifier& specifier)
+{
+	checkSpecifierCStringType(specifier);
+	VERIFY(specifier.type != PresentationType::String, "invalid type specifier");
 }
 
 constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterType type)
@@ -321,36 +368,16 @@ constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterT
 		checkSpecifierIntegralType(specifier);
 		break;
 	case ParameterType::FloatingPoint:
-		switch (specifier.type) {
-		case PresentationType::Hexfloat:
-		case PresentationType::HexfloatUppercase:
-		case PresentationType::Exponent:
-		case PresentationType::ExponentUppercase:
-		case PresentationType::FixedPoint:
-		case PresentationType::FixedPointUppercase:
-		case PresentationType::General:
-		case PresentationType::GeneralUppercase:
-			break;
-		default:
-			VERIFY("invalid type spcifier");
-		}
+		checkSpecifierFloatingPointType(specifier);
 		break;
 	case ParameterType::Char:
-		if (specifier.type != PresentationType::None
-		    && specifier.type != PresentationType::Character) {
-			checkSpecifierIntegralType(specifier);
-		}
+		checkSpecifierCharType(specifier);
 		break;
 	case ParameterType::CString:
-		VERIFY(specifier.type == PresentationType::None
-		           || specifier.type == PresentationType::String
-		           || specifier.type == PresentationType::Pointer,
-		       "invalid type specifier");
+		checkSpecifierCStringType(specifier);
 		break;
 	case ParameterType::String:
-		VERIFY(specifier.type == PresentationType::None
-		           || specifier.type == PresentationType::String,
-		       "invalid type specifier");
+		checkSpecifierStringType(specifier);
 		break;
 	case ParameterType::Pointer:
 		checkSpecifierPointerType(specifier);
