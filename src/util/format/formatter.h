@@ -194,23 +194,21 @@ struct Formatter<char[N]> : Formatter<const char*> {
 
 template<typename T>
 struct Formatter<T*> : Formatter<uintptr_t> {
-	Specifier specifier;
-
 	constexpr void parse(Parser& parser)
 	{
 		parser.parseSpecifier(specifier, Parser::ParameterType::Pointer);
+		specifier.alternativeForm = true;
+		specifier.type = PresentationType::Hex;
 	}
 
 	void format(Builder& builder, T* value) const
 	{
-		builder.putU64(reinterpret_cast<uintptr_t>(value), 16, false, specifier.fill, specifier.align,
-		               Builder::Sign::None, true, false, specifier.width);
+		Formatter<uintptr_t>::format(builder, reinterpret_cast<uintptr_t>(value));
 	}
 };
 
 template<>
-struct Formatter<std::nullptr_t> : Formatter<std::string_view> {
-	void parse(Parser& parser);
+struct Formatter<std::nullptr_t> : Formatter<const void*> {
 	void format(Builder& builder, std::nullptr_t) const;
 };
 

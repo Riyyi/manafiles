@@ -46,9 +46,10 @@ void Formatter<const char*>::parse(Parser& parser)
 void Formatter<const char*>::format(Builder& builder, const char* value) const
 {
 	if (specifier.type == PresentationType::Pointer) {
-		Formatter<const void*> formatter { .specifier = specifier };
-		formatter.format(builder, static_cast<const void*>(value));
-		return;
+		Formatter<uintptr_t> formatter { .specifier = specifier };
+		formatter.specifier.alternativeForm = true;
+		formatter.specifier.type = PresentationType::Hex;
+		return formatter.format(builder, reinterpret_cast<uintptr_t>(value));
 	}
 
 	Formatter<std::string_view>::format(
@@ -58,14 +59,9 @@ void Formatter<const char*>::format(Builder& builder, const char* value) const
 
 // Pointer
 
-void Formatter<std::nullptr_t>::parse(Parser& parser)
-{
-	parser.parseSpecifier(specifier, Parser::ParameterType::Pointer);
-}
-
 void Formatter<std::nullptr_t>::format(Builder& builder, std::nullptr_t) const
 {
-	Formatter<std::string_view>::format(builder, "nullptr");
+	Formatter<const void*>::format(builder, 0);
 }
 
 } // namespace Util::Format
