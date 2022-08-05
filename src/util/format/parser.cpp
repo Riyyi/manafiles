@@ -33,10 +33,6 @@ Parser::~Parser()
 
 void Parser::checkFormatParameterConsistency()
 {
-	size_t length = m_input.length();
-
-	VERIFY(length >= m_parameterCount * 2, "format string does not reference all parameters");
-
 	size_t braceOpen = 0;
 	size_t braceClose = 0;
 	while (!isEOF()) {
@@ -68,13 +64,13 @@ void Parser::checkFormatParameterConsistency()
 	}
 	m_index = 0;
 
-	// VERIFY(!(braceOpen < braceClose), "extra open braces in format string");
+	VERIFY(!(braceOpen < braceClose), "extra open braces in format string");
+	VERIFY(!(braceOpen > braceClose), "extra closing braces in format string");
 
-	// VERIFY(!(braceOpen > braceClose), "extra closing braces in format string");
-
-	// VERIFY(!(braceOpen < m_parameterCount), "format string does not reference all passed parameters");
-
-	// VERIFY(!(braceOpen > m_parameterCount), "format string references nonexistent parameter");
+	if (m_mode == ArgumentIndexingMode::Automatic) {
+		VERIFY(!(braceOpen < m_parameterCount), "format string does not reference all passed parameters");
+		VERIFY(!(braceOpen > m_parameterCount), "format string references nonexistent parameter");
+	}
 }
 
 size_t Parser::stringToNumber(std::string_view value)
