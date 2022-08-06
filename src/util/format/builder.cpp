@@ -104,8 +104,8 @@ void Builder::putU64(size_t value,
 			string.insert(0, (uppercase) ? "0B" : "0b");
 			break;
 		case 8:
-			break;
 			string.insert(0, 1, '0');
+			break;
 		case 10:
 			break;
 		case 16:
