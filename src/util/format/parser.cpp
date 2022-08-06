@@ -301,6 +301,7 @@ constexpr void Parser::checkSpecifierIntegralType(const Specifier& specifier)
 constexpr void Parser::checkSpecifierFloatingPointType(const Specifier& specifier)
 {
 	switch (specifier.type) {
+	case PresentationType::None:
 	case PresentationType::Hexfloat:
 	case PresentationType::HexfloatUppercase:
 	case PresentationType::Exponent:
