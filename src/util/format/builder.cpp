@@ -73,85 +73,87 @@ void Builder::putU64(size_t value,
                      size_t width,
                      bool isNegative) const
 {
-	std::string string = numberToString(value, base, uppercase);
+	std::string number = numberToString(value, base, uppercase);
 
 	// Sign
-	std::string signCharacter = "";
+	std::string prefix = "";
 	switch (sign) {
 	case Sign::None:
 	case Sign::Negative:
 		if (isNegative) {
-			signCharacter = '-';
+			prefix = '-';
 		}
 		break;
 	case Sign::Both:
-		signCharacter = (isNegative) ? '-' : '+';
+		prefix = (isNegative) ? '-' : '+';
 		break;
 	case Sign::Space:
-		signCharacter = (isNegative) ? '-' : ' ';
+		prefix = (isNegative) ? '-' : ' ';
 		break;
 	default:
 		VERIFY_NOT_REACHED();
 	};
-	if (align != Align::None || !zeroPadding) {
-		string.insert(0, signCharacter);
-	}
 
 	// Alternative form
 	if (alternativeForm) {
 		switch (base) {
 		case 2:
-			string.insert(0, (uppercase) ? "0B" : "0b");
+			prefix += (uppercase) ? "0B" : "0b";
 			break;
 		case 8:
-			string.insert(0, 1, '0');
+			prefix += '0';
 			break;
 		case 10:
 			break;
 		case 16:
-			string.insert(0, (uppercase) ? "0X" : "0x");
+			prefix += (uppercase) ? "0X" : "0x";
 			break;
 		default:
 			VERIFY_NOT_REACHED();
 		}
 	}
 
-	// Zero padding
-	if (zeroPadding) {
+	if (!zeroPadding) {
+		number.insert(0, prefix);
+	}
+	else {
+		if (align != Builder::Align::None) {
+			number.insert(0, prefix);
+		}
 		fill = '0';
 	}
 
-	size_t length = string.length();
+	size_t length = number.length();
 	if (width < length) {
-		m_builder.write(string.data(), length);
+		m_builder.write(number.data(), length);
 		return;
 	}
 
 	switch (align) {
 	case Align::Left:
-		m_builder.write(string.data(), length);
+		m_builder.write(number.data(), length);
 		m_builder << std::string(width - length, fill);
 		break;
 	case Align::Center: {
 		size_t half = (width - length) / 2;
 		m_builder << std::string(half, fill);
-		m_builder.write(string.data(), length);
+		m_builder.write(number.data(), length);
 		m_builder << std::string(width - half - length, fill);
 		break;
 	}
 	case Align::Right:
 		m_builder << std::string(width - length, fill);
-		m_builder.write(string.data(), length);
+		m_builder.write(number.data(), length);
 		break;
 	case Align::None:
 		if (zeroPadding) {
-			m_builder << signCharacter;
-			if (signCharacter.empty()) {
-				m_builder << '0';
-			}
+			m_builder << prefix;
+			m_builder << std::string(width - length - prefix.length(), fill);
 		}
-		m_builder << std::string(width - length - zeroPadding, fill);
-		m_builder.write(string.data(), length);
+		else {
+			m_builder << std::string(width - length, fill);
+		}
+		m_builder.write(number.data(), length);
 		break;
 	default:
 		VERIFY_NOT_REACHED();
