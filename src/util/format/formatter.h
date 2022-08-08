@@ -8,7 +8,7 @@
 
 #include <cassert>
 #include <cstddef> // size_t
-#include <cstdint> // int8_t, int32_t, int64_t, uint8_t, uint32_t, uintptr_t
+#include <cstdint> // int8_t, uint8_t, uintptr_t
 #include <map>
 #include <string>
 #include <string_view>
@@ -66,7 +66,7 @@ template<typename T>
 struct Formatter {
 	Specifier specifier;
 
-	constexpr void parse(Parser& parser)
+	void parse(Parser& parser)
 	{
 		if constexpr (std::is_same_v<T, char>) {
 			parser.parseSpecifier(specifier, Parser::ParameterType::Char);
@@ -197,7 +197,7 @@ struct Formatter<char[N]> : Formatter<const char*> {
 
 template<typename T>
 struct Formatter<T*> : Formatter<uintptr_t> {
-	constexpr void parse(Parser& parser)
+	void parse(Parser& parser)
 	{
 		parser.parseSpecifier(specifier, Parser::ParameterType::Pointer);
 		specifier.alternativeForm = true;
@@ -219,47 +219,85 @@ struct Formatter<std::nullptr_t> : Formatter<const void*> {
 
 template<typename T>
 struct Formatter<std::vector<T>> : Formatter<T> {
+	Specifier specifier;
+
+	void parse(Parser& parser)
+	{
+		parser.parseSpecifier(specifier, Parser::ParameterType::Container);
+	}
+
 	void format(Builder& builder, const std::vector<T>& value) const
 	{
-		builder.putString("{\n");
+		std::string indent = std::string(specifier.width, specifier.fill);
+
+		builder.putCharacter('{');
+		if (specifier.alternativeForm) {
+			builder.putCharacter('\n');
+		}
 		for (auto it = value.cbegin(); it != value.cend(); ++it) {
-			builder.putString("    ");
+			builder.putString(indent);
+
 			Formatter<T>::format(builder, *it);
 
 			// Add comma, except after the last element
 			if (it != std::prev(value.end(), 1)) {
 				builder.putCharacter(',');
 			}
-			builder.putCharacter('\n');
+			else if (!specifier.alternativeForm) {
+				builder.putString(indent);
+			}
+
+			if (specifier.alternativeForm) {
+				builder.putCharacter('\n');
+			}
 		}
 		builder.putCharacter('}');
 	}
 };
 
-#define UTIL_FORMAT_FORMAT_AS_MAP(type)                              \
-	template<typename K, typename V>                                 \
-	struct Formatter<type<K, V>>                                     \
-		: Formatter<K>                                               \
-		, Formatter<V> {                                             \
-		void format(Builder& builder, const type<K, V>& value) const \
-		{                                                            \
-			builder.putString("{\n");                                \
-			auto last = value.end();                                 \
-			for (auto it = value.begin(); it != last; ++it) {        \
-				builder.putString(R"(    ")");                       \
-				Formatter<K>::format(builder, it->first);            \
-				builder.putString(R"(": )");                         \
-				Formatter<V>::format(builder, it->second);           \
-                                                                     \
-				/* Add comma, except after the last element */       \
-				if (std::next(it) != last) {                         \
-					builder.putCharacter(',');                       \
-				}                                                    \
-                                                                     \
-				builder.putCharacter('\n');                          \
-			}                                                        \
-			builder.putCharacter('}');                               \
-		}                                                            \
+#define UTIL_FORMAT_FORMAT_AS_MAP(type)                                         \
+	template<typename K, typename V>                                            \
+	struct Formatter<type<K, V>>                                                \
+		: Formatter<K>                                                          \
+		, Formatter<V> {                                                        \
+		Specifier specifier;                                                    \
+                                                                                \
+		void parse(Parser& parser)                                              \
+		{                                                                       \
+			parser.parseSpecifier(specifier, Parser::ParameterType::Container); \
+		}                                                                       \
+                                                                                \
+		void format(Builder& builder, const type<K, V>& value) const            \
+		{                                                                       \
+			std::string indent = std::string(specifier.width, specifier.fill);  \
+                                                                                \
+			builder.putCharacter('{');                                          \
+			if (specifier.alternativeForm) {                                    \
+				builder.putCharacter('\n');                                     \
+			}                                                                   \
+			auto last = value.end();                                            \
+			for (auto it = value.begin(); it != last; ++it) {                   \
+				builder.putString(indent);                                      \
+				builder.putCharacter('"');                                      \
+				Formatter<K>::format(builder, it->first);                       \
+				builder.putCharacter('"');                                      \
+				builder.putString((specifier.width > 0) ? ": " : ":");          \
+				Formatter<V>::format(builder, it->second);                      \
+                                                                                \
+				/* Add comma, except after the last element */                  \
+				if (std::next(it) != last) {                                    \
+					builder.putCharacter(',');                                  \
+				}                                                               \
+				else if (!specifier.alternativeForm) {                          \
+					builder.putString(indent);                                  \
+				}                                                               \
+                                                                                \
+				if (specifier.alternativeForm) {                                \
+					builder.putCharacter('\n');                                 \
+				}                                                               \
+			}                                                                   \
+			builder.putCharacter('}');                                          \
+		}                                                                       \
 	}
 
 UTIL_FORMAT_FORMAT_AS_MAP(std::map);
