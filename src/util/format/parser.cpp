@@ -383,6 +383,8 @@ constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterT
 	case ParameterType::Pointer:
 		checkSpecifierPointerType(specifier);
 		break;
+	case ParameterType::Container:
+		break;
 	default:
 		VERIFY_NOT_REACHED();
 	}

@@ -31,6 +31,7 @@ public:
 		CString,
 		String,
 		Pointer,
+		Container,
 	};
 
 	Parser(std::string_view format, size_t parameterCount);
