@@ -23,29 +23,29 @@
 namespace Util::Format {
 
 enum class PresentationType : uint8_t {
-	None, // Defaults are any of: 'dgcsp', depending on the type
+	None,
 	// Interger
-	Binary = 98,          // 'b'
-	BinaryUppercase = 66, // 'B'
-	Decimal = 100,        // 'd'
-	Octal = 111,          // 'o'
-	Hex = 120,            // 'x'
-	HexUppercase = 88,    // 'X'
+	Binary = 'b',
+	BinaryUppercase = 'B',
+	Decimal = 'd',
+	Octal = 'o',
+	Hex = 'x',
+	HexUppercase = 'X',
 	// Floating-point
-	Hexfloat = 97,            // 'a'
-	HexfloatUppercase = 65,   // 'A'
-	Exponent = 101,           // 'e'
-	ExponentUppercase = 69,   // 'E'
-	FixedPoint = 102,         // 'f'
-	FixedPointUppercase = 70, // 'F'
-	General = 103,            // 'g'
-	GeneralUppercase = 71,    // 'G'
+	Hexfloat = 'a',
+	HexfloatUppercase = 'A',
+	Exponent = 'e',
+	ExponentUppercase = 'E',
+	FixedPoint = 'f',
+	FixedPointUppercase = 'F',
+	General = 'g',
+	GeneralUppercase = 'G',
 	// Character
-	Character = 99, // 'c'
+	Character = 'c',
 	// String
-	String = 115, // 's'
+	String = 's',
 	// Pointer
-	Pointer = 112, // 'p'
+	Pointer = 'p',
 };
 
 struct Specifier {

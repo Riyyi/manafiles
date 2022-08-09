@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <cstddef> // size_t
-#include <cstdint> // int32_t, uint32_t, int64_t,
+#include <cstdint> // uint8_t
 #include <cstring> // strlen
 #include <string>
 #include <string_view>
