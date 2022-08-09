@@ -320,7 +320,7 @@ constexpr void Parser::checkSpecifierCharType(const Specifier& specifier)
 {
 	checkSpecifierIntegralType(specifier);
 
-	//   Valid:  fill, align, width
+	//   Valid:  fill + align, width
 	// Invalid: sign, alternativeForm, zeroPadding, precision
 	if (specifier.type == PresentationType::None
 	    || specifier.type == PresentationType::Character) {
@@ -342,7 +342,7 @@ constexpr void Parser::checkSpecifierCStringType(const Specifier& specifier)
 		VERIFY(false, "invalid type specifier");
 	}
 
-	//   Valid:  fill, align, width
+	//   Valid:  fill + align, width
 	// Invalid: sign, alternativeForm, zeroPadding, precision
 	VERIFY(specifier.sign == Builder::Sign::None, "invalid specifier option");
 	VERIFY(specifier.alternativeForm == false, "invalid specifier option");
@@ -360,6 +360,23 @@ constexpr void Parser::checkSpecifierPointerType(const Specifier& specifier)
 {
 	checkSpecifierCStringType(specifier);
 	VERIFY(specifier.type != PresentationType::String, "invalid type specifier");
+}
+
+constexpr void Parser::checkSpecifierContainerType(const Specifier& specifier)
+{
+	switch (specifier.type) {
+	case PresentationType::None:
+	case PresentationType::Container:
+		break;
+	default:
+		VERIFY(false, "invalid type specifier");
+	}
+
+	//   Valid: fill + align, alternativeForm, width
+	// Invalid: sign, zeroPadding, precision
+	VERIFY(specifier.sign == Builder::Sign::None, "invalid specifier option");
+	VERIFY(specifier.zeroPadding == false, "invalid specifier option");
+	VERIFY(specifier.precision == -1, "invalid specifier option");
 }
 
 constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterType type)
@@ -384,6 +401,7 @@ constexpr void Parser::checkSpecifierType(const Specifier& specifier, ParameterT
 		checkSpecifierPointerType(specifier);
 		break;
 	case ParameterType::Container:
+		checkSpecifierContainerType(specifier);
 		break;
 	default:
 		VERIFY_NOT_REACHED();

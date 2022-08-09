@@ -50,6 +50,7 @@ public:
 	constexpr void checkSpecifierCStringType(const Specifier& specifier);
 	constexpr void checkSpecifierStringType(const Specifier& specifier);
 	constexpr void checkSpecifierPointerType(const Specifier& specifier);
+	constexpr void checkSpecifierContainerType(const Specifier& specifier);
 	constexpr void checkSpecifierType(const Specifier& specifier, ParameterType type);
 
 private:

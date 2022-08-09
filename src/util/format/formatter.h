@@ -46,6 +46,8 @@ enum class PresentationType : uint8_t {
 	String = 's',
 	// Pointer
 	Pointer = 'p',
+	// Container
+	Container = 'C',
 };
 
 struct Specifier {
