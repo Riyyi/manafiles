@@ -1,0 +1,3 @@
+[submodule "vendor/ruc"]
+	path = vendor/ruc
+	url = https://github.com/Riyyi/ruc
