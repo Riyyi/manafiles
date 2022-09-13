@@ -10,9 +10,9 @@
 #include <pwd.h>   // passwd
 #include <string>
 
-#include "util/singleton.h"
+#include "ruc/singleton.h"
 
-class Machine : public Util::Singleton<Machine> {
+class Machine : public ruc::Singleton<Machine> {
 public:
 	Machine(s);
 	virtual ~Machine();

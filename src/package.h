@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "util/singleton.h"
+#include "ruc/singleton.h"
 
-class Package : public Util::Singleton<Package> {
+class Package : public ruc::Singleton<Package> {
 public:
 	Package(s);
 	virtual ~Package();

@@ -18,8 +18,8 @@
 #include "config.h"
 #include "dotfile.h"
 #include "machine.h"
-#include "util/file.h"
-#include "util/meta/assert.h"
+#include "ruc/file.h"
+#include "ruc/meta/assert.h"
 
 Dotfile::Dotfile(s)
 {
@@ -373,7 +373,7 @@ void Dotfile::sync(SyncType type,
 
 void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 {
-	Util::File dotfile(path);
+	ruc::File dotfile(path);
 
 	const std::string search[3] = {
 		"distro=",

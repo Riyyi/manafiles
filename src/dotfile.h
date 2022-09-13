@@ -13,9 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "util/singleton.h"
+#include "ruc/singleton.h"
 
-class Dotfile : public Util::Singleton<Dotfile> {
+class Dotfile : public ruc::Singleton<Dotfile> {
 public:
 	Dotfile(s);
 	virtual ~Dotfile();

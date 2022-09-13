@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "config.h"
-#include "util/json/json.h"
-#include "util/meta/assert.h"
+#include "ruc/json/json.h"
+#include "ruc/meta/assert.h"
 
 Config::Config(s)
 	: m_workingDirectory(std::filesystem::current_path())
@@ -51,7 +51,7 @@ void Config::parseConfigFile()
 		return;
 	}
 
-	Util::Json json;
+	ruc::Json json;
 
 	std::ifstream file(m_config);
 	if (!file.is_open()) {
@@ -72,17 +72,17 @@ void Config::parseConfigFile()
 
 // -----------------------------------------
 
-void toJson(Util::Json& json, const Settings& settings)
+void toJson(ruc::Json& json, const Settings& settings)
 {
-	json = Util::Json {
+	json = ruc::Json {
 		{ "ignorePatterns", settings.ignorePatterns },
 		{ "systemPatterns", settings.systemPatterns }
 	};
 }
 
-void fromJson(const Util::Json& json, Settings& settings)
+void fromJson(const ruc::Json& json, Settings& settings)
 {
-	VERIFY(json.type() == Util::Json::Type::Object);
+	VERIFY(json.type() == ruc::Json::Type::Object);
 
 	if (json.exists("ignorePatterns")) {
 		json.at("ignorePatterns").getTo(settings.ignorePatterns);

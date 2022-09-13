@@ -16,9 +16,9 @@
 
 #include "machine.h"
 #include "package.h"
-#include "util/file.h"
-#include "util/shell.h"
-#include "util/system.h"
+#include "ruc/file.h"
+#include "ruc/shell.h"
+#include "ruc/system.h"
 
 Package::Package(s)
 {
@@ -80,7 +80,7 @@ void Package::store()
 		return;
 	}
 
-	auto packageFile = Util::File::create("./packages");
+	auto packageFile = ruc::File::create("./packages");
 	packageFile.clear();
 	packageFile.append(packagesOrEmpty.value());
 	packageFile.flush();
@@ -126,15 +126,15 @@ void Package::installOrAurInstall(InstallType type)
 
 	std::string command = "";
 
-	Util::System $;
+	ruc::System $;
 	if (m_distro == Distro::Arch) {
 		// Grab everything off enabled official repositories that is in the list
 		auto repoList = $("pacman -Ssq") | $("grep -xf ./packages");
 
 		if (type == InstallType::AurInstall) {
 			// Determine which packages in the list are from the AUR
-			// NOTE: Util::System does not support commands with newlines
-			auto aurList = Util::Shell()("grep -vx '" + repoList.output() + "' ./packages");
+			// NOTE: ruc::System does not support commands with newlines
+			auto aurList = ruc::Shell()("grep -vx '" + repoList.output() + "' ./packages");
 			command = aurHelper.value() + " -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
@@ -224,7 +224,7 @@ std::optional<std::string> Package::getPackageList()
 
 	std::string packages;
 
-	Util::System $;
+	ruc::System $;
 	if (m_distro == Distro::Arch) {
 		auto basePackages = $("pactree -u base").tail(2, true);
 		auto develPackages = $("pacman -Qqg base-devel");

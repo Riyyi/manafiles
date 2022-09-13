@@ -11,8 +11,8 @@
 #include "config.h"
 #include "dotfile.h"
 #include "package.h"
-#include "util/argparser.h"
-#include "util/timer.h"
+#include "ruc/argparser.h"
+#include "ruc/timer.h"
 
 int main(int argc, const char* argv[])
 {
@@ -28,7 +28,7 @@ int main(int argc, const char* argv[])
 
 	std::vector<std::string> targets {};
 
-	Util::ArgParser argParser;
+	ruc::ArgParser argParser;
 	argParser.addOption(fileOperation, 'F', "file", nullptr, nullptr);
 	argParser.addOption(packageOperation, 'P', "package", nullptr, nullptr);
 	argParser.addOption(helpOperation, 'h', "help", nullptr, nullptr);
@@ -39,7 +39,7 @@ int main(int argc, const char* argv[])
 	argParser.addOption(pushOrStore, 's', "push", nullptr, nullptr);
 	argParser.addOption(verbose, 'v', "verbose", nullptr, nullptr);
 
-	argParser.addArgument(targets, "targets", nullptr, nullptr, Util::ArgParser::Required::No);
+	argParser.addArgument(targets, "targets", nullptr, nullptr, ruc::ArgParser::Required::No);
 	argParser.parse(argc, argv);
 
 	if (fileOperation + packageOperation + helpOperation > 1) {
@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
 	}
 
 #ifndef NDEBUG
-	Util::Timer t;
+	ruc::Timer t;
 #endif
 
 	Config::the().setVerbose(verbose);
@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
 	}
 
 #ifndef NDEBUG
-		printf("%fms\n", t.elapsedNanoseconds() / 1000000.0);
+	printf("%fms\n", t.elapsedNanoseconds() / 1000000.0);
 #endif
 
 	return 0;

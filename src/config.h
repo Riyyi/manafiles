@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "util/json/json.h"
-#include "util/singleton.h"
+#include "ruc/json/json.h"
+#include "ruc/singleton.h"
 
 struct Settings {
 	std::vector<std::string> ignorePatterns {
@@ -31,7 +31,7 @@ struct Settings {
 	};
 };
 
-class Config : public Util::Singleton<Config> {
+class Config : public ruc::Singleton<Config> {
 public:
 	Config(s);
 	virtual ~Config();
@@ -65,5 +65,5 @@ private:
 
 // Json arbitrary type conversion functions
 
-void toJson(Util::Json& object, const Settings& settings);
-void fromJson(const Util::Json& object, Settings& settings);
+void toJson(ruc::Json& object, const Settings& settings);
+void fromJson(const ruc::Json& object, Settings& settings);

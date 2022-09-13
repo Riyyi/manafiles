@@ -9,7 +9,7 @@
 #include <unistd.h> // gethostname, getlogin
 
 #include "machine.h"
-#include "util/file.h"
+#include "ruc/file.h"
 
 Machine::Machine(s)
 {
@@ -26,7 +26,7 @@ Machine::~Machine()
 
 void Machine::fetchDistro()
 {
-	Util::File osRelease("/etc/os-release");
+	ruc::File osRelease("/etc/os-release");
 	std::istringstream stream(osRelease.data());
 	for (std::string line; std::getline(stream, line);) {
 		if (line.find("ID=") == 0) {
