@@ -4,6 +4,9 @@
 # Set project name
 set(PROJECT "manafiles")
 
+# Unit tests
+option(MANAFILES_BUILD_TESTS "Build the Manafiles test programs" ON)
+
 # ------------------------------------------
 
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
@@ -50,29 +53,23 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ------------------------------------------
-# Configure source
+# Library
 
-# Define include files
-include_directories(
-	"src"
-	"test"
-)
+set(RUC_BUILD_TESTS OFF)
+add_subdirectory("vendor/ruc")
+
+# ------------------------------------------
+# Application target
 
 # Define source files
 file(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp")
 set(PROJECT_SOURCES ${PROJECT_SOURCES})
 
-# Define test source files
-file(GLOB_RECURSE TEST_SOURCES "test/*.cpp")
-file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
-set(TEST_SOURCES ${TEST_SOURCES} ${MAIN_SOURCES})
-list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
-
-# ------------------------------------------
-# Application target
-
 add_executable(${PROJECT} ${PROJECT_SOURCES})
-target_link_libraries(${PROJECT})
+target_include_directories(${PROJECT} PRIVATE
+	"src"
+	"vendor/ruc/src")
+target_link_libraries(${PROJECT} ruc)
 
 install(TARGETS ${PROJECT}
 	DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -88,8 +85,21 @@ add_dependencies(run ${PROJECT})
 # ------------------------------------------
 # Unit test target
 
-add_executable(test ${TEST_SOURCES})
-target_link_libraries(test)
+if (MANAFILES_BUILD_TESTS)
+	# Define test source files
+	file(GLOB_RECURSE TEST_SOURCES "test/*.cpp")
+	set(TEST_SOURCES ${TEST_SOURCES} ${PROJECT_SOURCES})
+	list(REMOVE_ITEM TEST_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
+
+	add_executable(${PROJECT}-unit-test ${TEST_SOURCES})
+	target_include_directories(${PROJECT}-unit-test PRIVATE
+		"src"
+		"test"
+		"vendor/ruc/src"
+		"vendor/ruc/test")
+	target_link_libraries(${PROJECT}-unit-test ruc)
+	target_link_libraries(${PROJECT}-unit-test ruc-test)
+endif()
 
 # ------------------------------------------
 # Man page target
