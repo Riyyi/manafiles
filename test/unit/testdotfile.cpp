@@ -17,10 +17,10 @@
 #include "dotfile.h"
 #include "machine.h"
 #include "macro.h"
+#include "ruc/file.h"
+#include "ruc/system.h"
 #include "testcase.h"
 #include "testsuite.h"
-#include "util/file.h"
-#include "util/system.h"
 
 const bool root = !geteuid() ? true : false;
 const std::filesystem::path homeDirectory = "/home/" + Machine::the().username();
@@ -43,7 +43,7 @@ void createTestDotfiles(const std::vector<std::string>& fileNames, const std::ve
 			std::filesystem::create_directories(directory);
 		}
 
-		auto file = Util::File::create(fileName);
+		auto file = ruc::File::create(fileName);
 		if (file.data().size() == 0) {
 			file.append(fileContents.at(i).c_str()).flush();
 		}
@@ -374,8 +374,8 @@ TEST_CASE(AddDotfiles)
 		EXPECT(std::filesystem::exists(file), continue);
 		EXPECT(std::filesystem::exists(file.substr(homeDirectorySize + 1)), continue);
 
-		Util::File lhs(file);
-		Util::File rhs(file.substr(homeDirectorySize + 1));
+		ruc::File lhs(file);
+		ruc::File rhs(file.substr(homeDirectorySize + 1));
 		EXPECT_EQ(lhs.data(), rhs.data());
 	}
 
@@ -430,8 +430,8 @@ TEST_CASE(PullDotfiles)
 		EXPECT(std::filesystem::exists(homeFileNames.at(i)), continue);
 		EXPECT(std::filesystem::exists(fileNames.at(i)), continue);
 
-		Util::File lhs(homeFileNames.at(i));
-		Util::File rhs(fileNames.at(i));
+		ruc::File lhs(homeFileNames.at(i));
+		ruc::File rhs(fileNames.at(i));
 		EXPECT_EQ(lhs.data(), rhs.data());
 	}
 
@@ -463,8 +463,8 @@ TEST_CASE(PushDotfiles)
 		EXPECT(std::filesystem::exists(file), continue);
 		EXPECT(std::filesystem::exists(homeDirectory / file), continue);
 
-		Util::File lhs(file);
-		Util::File rhs(homeDirectory / file);
+		ruc::File lhs(file);
+		ruc::File rhs((homeDirectory / file).string());
 		EXPECT_EQ(lhs.data(), rhs.data());
 	}
 
@@ -857,7 +857,7 @@ test data /**/ uncomment
 		EXPECT(std::filesystem::exists(file), continue);
 		EXPECT(std::filesystem::exists(homeDirectory / file), continue);
 
-		Util::File lhs(homeDirectory / file);
+		ruc::File lhs((homeDirectory / file).string());
 		EXPECT_EQ(lhs.data(), pushedFileContents.at(i));
 	}
 
@@ -889,8 +889,8 @@ TEST_CASE(PullSystemDotfiles)
 	Dotfile::the().pull({ "etc/group" });
 	Config::the().setSystemPatterns({});
 
-	Util::File lhs("/etc/group");
-	Util::File rhs(Config::the().workingDirectory() / "etc/group");
+	ruc::File lhs("/etc/group");
+	ruc::File rhs((Config::the().workingDirectory() / "etc/group").string());
 	EXPECT_EQ(lhs.data(), rhs.data());
 
 	std::filesystem::remove_all(Config::the().workingDirectory() / "etc");
@@ -909,7 +909,7 @@ TEST_CASE(AddSymlinkDotfiles)
 
 	EXPECT(std::filesystem::is_symlink(symlinkFileName));
 	EXPECT_EQ(std::filesystem::read_symlink(symlinkFileName).string(), fileInHome);
-	EXPECT_EQ(Util::File(symlinkFileName).data(), "the file contents");
+	EXPECT_EQ(ruc::File(symlinkFileName.string()).data(), "the file contents");
 
 	removeTestDotfiles({ symlinkInHome, fileInHome });
 }
@@ -928,7 +928,7 @@ TEST_CASE(PullSymlinkDotfiles)
 
 	EXPECT(std::filesystem::is_symlink(symlinkFileName));
 	EXPECT_EQ(std::filesystem::read_symlink(symlinkFileName).string(), fileInHome);
-	EXPECT_EQ(Util::File(symlinkFileName).data(), "the file contents");
+	EXPECT_EQ(ruc::File(symlinkFileName.string()).data(), "the file contents");
 
 	removeTestDotfiles({ symlinkInHome, fileInHome });
 }
@@ -946,7 +946,7 @@ TEST_CASE(PushSymlinkDotfiles)
 
 	EXPECT(std::filesystem::is_symlink(symlinkInHome));
 	EXPECT_EQ(std::filesystem::read_symlink(symlinkInHome).string(), fileInHome);
-	EXPECT_EQ(Util::File(symlinkInHome).data(), "the file contents");
+	EXPECT_EQ(ruc::File(symlinkInHome.string()).data(), "the file contents");
 
 	removeTestDotfiles({ symlinkInHome, fileInHome });
 }
