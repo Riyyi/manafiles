@@ -16,7 +16,7 @@ Config file and package tracking utility.
 
 If you are using *Arch Linux*, you can install the AUR package [[https://aur.archlinux.org/packages/manafiles-git/][manafiles-git]].
 
-Alternatively, you will have to [[#building][build from source]].
+Alternatively, you will have to [[#compiling][build from source]].
 
 *** Configuration
 
@@ -98,9 +98,9 @@ If *all* of the given configurations match, manafiles will make sure that the
 contents of the block are uncommented. If *any* of them do *not* match, then
 manafiles will make sure that the contents of the block are commented.
 
-** Building
+** Compiling
 
-*** Build dependencies
+*** Dependencies
 
 - ~gcc-libs~
 - (make) ~cmake~
@@ -112,17 +112,46 @@ manafiles will make sure that the contents of the block are commented.
 
 The optional requirements are for the package tracking functionality.
 
-*** Build compilation
+*** Building
+
+To get the sources from the repository, run the following commands:
+
+#+BEGIN_SRC shell-script
+$ git clone https://github.com/riyyi/manafiles
+$ cd manafiles
+$ git submodule init
+$ git submodule update
+#+END_SRC
+
+or
+
+#+BEGIN_SRC shell-script
+$ git clone --recursive https://github.com/riyyi/manafiles
+$ cd manafiles
+#+END_SRC
+
+**** Compiling
+
+To compile, run the following commands:
 
 #+BEGIN_SRC shell-script
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make
+# Optional. This will install the manafiles executable in /usr/bin
+$ sudo make install
 #+END_SRC
 
-*** Build installation
+*** Uninstalling
+
+To uninstall, run the following commands:
+
+*Warning*: ~make uninstall~ will try to delete all files listed in the
+~install_manifest.txt~ file inside your ~build~ folder. Make sure you first
+check that it won't delete any important files.
 
 #+BEGIN_SRC shell-script
-$ sudo make install
+$ cd build
+$ sudo make uninstall
 #+END_SRC
