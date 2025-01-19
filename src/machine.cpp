@@ -1,21 +1,25 @@
 /*
- * Copyright (C) 2022 Riyyi
+ * Copyright (C) 2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
 
-#include <pwd.h>    // getpwnam
-#include <sstream>  // istringstream
-#include <unistd.h> // gethostname, getlogin
+#include <cstdint>    // int8_t
+#include <filesystem> // std::filesystem::path
+#include <pwd.h>      // getpwnam
+#include <sstream>    // istringstream
+#include <unistd.h>   // gethostname, getlogin
+
+#include "ruc/file.h"
 
 #include "machine.h"
-#include "ruc/file.h"
 
 Machine::Machine(s)
 {
 	fetchDistro();
 	fetchHostname();
 	fetchUsername();
+	fetchSession();
 }
 
 Machine::~Machine()
@@ -59,5 +63,79 @@ void Machine::fetchUsername()
 	m_passwd = getpwnam(username);
 	if (m_passwd == nullptr) {
 		perror("\033[31;1mError:\033[0m getpwnam");
+	}
+}
+
+void Machine::fetchSession()
+{
+	// Determine if this is an Xorg or Wayland session
+	int8_t likelyWayland = 0;
+
+	// Detect via environment variable
+	std::string env;
+	env = std::string(std::getenv("XDG_SESSION_TYPE"));
+	if (env == "wayland") {
+		likelyWayland++;
+	}
+	else if (env == "x11") {
+		likelyWayland--;
+	}
+	env = std::string(std::getenv("WAYLAND_DISPLAY"));
+	if (env.find("wayland-", 0) == 0) {
+		likelyWayland++;
+	}
+
+	// Detect via Wayland socket
+	auto socket = std::filesystem::path("/run/user") / std::to_string(uid());
+	if (std::filesystem::exists(socket) && std::filesystem::is_directory(socket)) {
+		for (const auto& entry : std::filesystem::directory_iterator(socket)) {
+			if (entry.path().filename().string().find("wayland-", 0) == 0) {
+				likelyWayland++;
+				break;
+			}
+		}
+	}
+
+	// Detect via Xorg socket
+	if (std::filesystem::exists("/tmp/.X11-unix")) {
+		likelyWayland--;
+	}
+
+	// Detect via running processes, /proc/<id>/comm
+	std::filesystem::path processes = "/proc";
+	if (std::filesystem::exists(processes) && std::filesystem::is_directory(processes)) {
+		for (const auto& entry : std::filesystem::directory_iterator(processes)) {
+			if (std::filesystem::is_directory(entry)) {
+
+				std::filesystem::path comm = entry.path() / "comm";
+				if (!std::filesystem::exists(comm)) {
+					continue;
+				}
+
+				// Read the contents of the "comm" file
+				std::ifstream stream(comm);
+				std::string command;
+				std::getline(stream, command);
+
+				if (command == "Xwayland" || command == "hyprland" || command == "sway") {
+					likelyWayland++;
+					break;
+				}
+
+				if (command == "Xorg" || command == "xinit" || command == "bspwm") {
+					likelyWayland--;
+					break;
+				}
+			}
+		}
+	}
+
+	// If we detected at least 2 ways, we can be fairly certain
+	m_session = "";
+	if (likelyWayland <= -2) {
+		m_session = "xorg";
+	}
+	else if (likelyWayland >= 2) {
+		m_session = "wayland";
 	}
 }

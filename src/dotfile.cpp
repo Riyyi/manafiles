@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Riyyi
+ * Copyright (C) 2021-2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -15,11 +15,12 @@
 #include <unistd.h>     // geteuid, getlogin, setegid, seteuid
 #include <vector>
 
+#include "ruc/file.h"
+#include "ruc/meta/assert.h"
+
 #include "config.h"
 #include "dotfile.h"
 #include "machine.h"
-#include "ruc/file.h"
-#include "ruc/meta/assert.h"
 
 Dotfile::Dotfile(s)
 {
@@ -375,15 +376,16 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 {
 	ruc::File dotfile(path);
 
-	const std::string search[3] = {
+	const std::string search[4] = {
 		"distro=",
 		"hostname=",
 		"user=",
+		"session=",
 	};
 
 	// State of the loop
 	bool isFiltering = false;
-	std::string filter[3];
+	std::string filter[4];
 	std::string commentCharacter;
 	std::string commentTerminationCharacter;
 	size_t positionInFile = 0;
@@ -420,7 +422,7 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 		if (line.find(">>>") != std::string::npos) {
 			// Find machine info
 			size_t find = 0;
-			for (size_t i = 0; i < 3; ++i) {
+			for (size_t i = 0; i < 4; ++i) {
 				find = line.find(search[i]) + search[i].size();
 				if (find < search[i].size()) {
 					continue;
@@ -450,6 +452,7 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 			filter[0] = "";
 			filter[1] = "";
 			filter[2] = "";
+			filter[3] = "";
 			commentCharacter.clear();
 			commentTerminationCharacter.clear();
 			continue;
@@ -468,6 +471,10 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 			continue;
 		}
 		else if (filter[2] != Machine::the().username() && !filter[2].empty()) {
+			commentOrUncommentLine(line, true);
+			continue;
+		}
+		else if (filter[3] != Machine::the().session() && !filter[3].empty()) {
 			commentOrUncommentLine(line, true);
 			continue;
 		}

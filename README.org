@@ -86,17 +86,25 @@ or uncomments them depending on the machine's configuration. Such a block looks
 like this:
 
 #+BEGIN_SRC shell-script
-# >>> distro=arch hostname=arch-desktop user=anon
+# >>> distro=arch hostname=arch-desktop user=anon session=xorg
 export PATH="$PATH:$HOME/.local/bin"
 # <<<
 #+END_SRC
 
-This block uses all of the supported configurations, ~distro~, ~hostname~ and
- ~user~. These can be used in any combination and order.
+This block uses all of the supported configurations, ~distro~, ~hostname~,
+~user~ and ~session~. These can be used in any combination and order.
 
 If *all* of the given configurations match, manafiles will make sure that the
 contents of the block are uncommented. If *any* of them do *not* match, then
 manafiles will make sure that the contents of the block are commented.
+
+***** Usable values for the configurations
+
+| distro | session |
+|--------+---------|
+| arch   | xorg    |
+| debian | wayland |
+| ubuntu |         |
 
 ** Compiling
 
