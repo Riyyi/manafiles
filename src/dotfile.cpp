@@ -115,7 +115,12 @@ bool Dotfile::match(const std::string& path, const std::vector<std::string>& pat
 	std::string pathString = path.substr(cutFrom);
 
 	for (const auto& pattern : patterns) {
+		// A dot matches everything in the current working directory
+		if (pattern == ".") {
+			return true;
+		}
 
+		// Exact match is obviously true
 		if (pathString == pattern) {
 			return true;
 		}
