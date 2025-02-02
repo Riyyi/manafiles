@@ -72,17 +72,23 @@ void Machine::fetchSession()
 	int8_t likelyWayland = 0;
 
 	// Detect via environment variable
-	std::string env;
-	env = std::string(std::getenv("XDG_SESSION_TYPE"));
-	if (env == "wayland") {
-		likelyWayland++;
+	const char* env;
+	env = std::getenv("XDG_SESSION_TYPE");
+	if (env != nullptr) {
+		auto session = std::string(env);
+		if (session == "wayland") {
+			likelyWayland++;
+		}
+		else if (session == "x11") {
+			likelyWayland--;
+		}
 	}
-	else if (env == "x11") {
-		likelyWayland--;
-	}
-	env = std::string(std::getenv("WAYLAND_DISPLAY"));
-	if (env.find("wayland-", 0) == 0) {
-		likelyWayland++;
+	env = std::getenv("WAYLAND_DISPLAY");
+	if (env != nullptr) {
+		auto display = std::string(env);
+		if (display.find("wayland-", 0) == 0) {
+			likelyWayland++;
+		}
 	}
 
 	// Detect via Wayland socket
@@ -117,12 +123,12 @@ void Machine::fetchSession()
 				std::string command;
 				std::getline(stream, command);
 
-				if (command == "Xwayland" || command == "hyprland" || command == "sway") {
+				if (command == "Xwayland" || command == "sway" || command == "hyprland") {
 					likelyWayland++;
 					break;
 				}
 
-				if (command == "Xorg" || command == "xinit" || command == "bspwm") {
+				if (command == "Xorg" || command == "xinit" || command == "i3" || command == "bspwm") {
 					likelyWayland--;
 					break;
 				}
