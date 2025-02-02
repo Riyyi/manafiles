@@ -1,11 +1,10 @@
 /*
- * Copyright (C) 2022 Riyyi
+ * Copyright (C) 2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
 
 #include <cstddef>    // size_t
-#include <cstdint>    // uint32_t
 #include <cstdio>     // stderr
 #include <filesystem> // path
 #include <string>
@@ -13,12 +12,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ruc/file.h"
+
 #include "config.h"
 #include "dotfile.h"
 #include "machine.h"
 #include "macro.h"
-#include "ruc/file.h"
-#include "ruc/system.h"
 #include "testcase.h"
 #include "testsuite.h"
 
@@ -28,7 +27,7 @@ const size_t homeDirectorySize = homeDirectory.string().size();
 
 void createTestDotfiles(const std::vector<std::string>& fileNames, const std::vector<std::string>& fileContents, bool asRoot = false)
 {
-	EXPECT(fileNames.size() == fileContents.size(), return );
+	EXPECT(fileNames.size() == fileContents.size(), return);
 
 	if (root && !asRoot) {
 		setegid(Machine::the().gid());
@@ -503,7 +502,7 @@ TEST_CASE(PushDotfilesWithIgnorePattern)
 TEST_CASE(PushDotfilesSelectivelyComment)
 {
 	std::vector<std::string> fileNames;
-	for (size_t i = 0; i < 36; ++i) {
+	for (size_t i = 0; i < 44; ++i) {
 		fileNames.push_back("__test-file-" + std::to_string(i + 1));
 	}
 
@@ -678,6 +677,43 @@ test data /**/ comment
 	  /*	  test data /**/ uncomment	  */
 	  /* <<< */
 )",
+
+		// Comment <!---->
+		"<!-- >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " -->" + R"(
+test data <!----> comment
+<!-- <<< -->
+)",
+		"  <!-- >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + " -->" + R"(
+  test data <!----> comment
+  <!-- <<< -->
+)",
+		"	<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + " -->" + R"(
+	test data <!----> comment
+	<!-- <<< -->
+)",
+		"	  <!-- >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	  test data <!----> comment
+	  <!-- <<< -->
+)",
+
+		// Uncomment <!---->
+		"<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+<!-- test data <!----> uncomment -->
+<!-- <<< -->
+)",
+		"  <!-- >>> distro="
+			+ distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+  <!--  test data <!----> uncomment  -->
+  <!-- <<< -->
+)",
+		"	<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	<!--	test data <!----> uncomment	-->
+	<!-- <<< -->
+)",
+		"	  <!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	  <!--	  test data <!----> uncomment	  -->
+	  <!-- <<< -->
+)",
 	};
 
 	std::vector<std::string> pushedFileContents = {
@@ -846,6 +882,42 @@ test data /**/ uncomment
 	  test data /**/ uncomment
 	  /* <<< */
 )",
+
+		// Comment <!---->
+		"<!-- >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " -->" + R"(
+<!-- test data <!----> comment -->
+<!-- <<< -->
+)",
+		"  <!-- >>> distro=" + distro + " hostname=" + placeholder + " user=" + username + " -->" + R"(
+  <!-- test data <!----> comment -->
+  <!-- <<< -->
+)",
+		"	<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + placeholder + " -->" + R"(
+	<!-- test data <!----> comment -->
+	<!-- <<< -->
+)",
+		"	  <!-- >>> distro=" + placeholder + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	  <!-- test data <!----> comment -->
+	  <!-- <<< -->
+)",
+
+		// Uncomment <!---->
+		"<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+test data <!----> uncomment
+<!-- <<< -->
+)",
+		"  <!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+  test data <!----> uncomment
+  <!-- <<< -->
+)",
+		"	<!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	test data <!----> uncomment
+	<!-- <<< -->
+)",
+		"	  <!-- >>> distro=" + distro + " hostname=" + hostname + " user=" + username + " -->" + R"(
+	  test data <!----> uncomment
+	  <!-- <<< -->
+)",
 	};
 
 	createTestDotfiles(fileNames, fileContents);
@@ -866,7 +938,7 @@ test data /**/ uncomment
 
 TEST_CASE(AddSystemDotfiles)
 {
-	EXPECT(geteuid() == 0, return );
+	EXPECT(geteuid() == 0, return);
 
 	Config::the().setSystemPatterns({ "/etc/", "/usr/lib/" });
 	Dotfile::the().add({ "/etc/group", "/usr/lib/os-release" });
@@ -881,7 +953,7 @@ TEST_CASE(AddSystemDotfiles)
 
 TEST_CASE(PullSystemDotfiles)
 {
-	EXPECT(geteuid() == 0, return );
+	EXPECT(geteuid() == 0, return);
 
 	createTestDotfiles({ "etc/group" }, { "" }, true);
 

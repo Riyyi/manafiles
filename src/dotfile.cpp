@@ -405,16 +405,27 @@ void Dotfile::selectivelyCommentOrUncomment(const std::string& path)
 
 		size_t lineLength = line.size();
 		size_t commentStart = line.find(commentCharacter, indentation);
-		size_t commentEnd = line.find(commentTerminationCharacter, commentStart);
-		bool hasComment = commentStart != std::string::npos && commentEnd != std::string::npos;
+		size_t commentEnd = line.rfind(commentTerminationCharacter);
+		bool hasComment = commentStart != std::string::npos && (commentTerminationCharacter.empty() || commentEnd != std::string::npos);
 
+		// Lines that have a comment at the *end* of the line aren't considered commented lines
+		if (hasComment && line.find_first_not_of(" \t") < commentStart) {
+			hasComment = false;
+		}
+
+		// Uncomment line
 		if (hasComment && !addComment) {
 			size_t contentStart = line.find_first_not_of(" \t", commentStart + commentCharacter.size());
 			size_t contentLength = commentEnd - contentStart;
 
+			// Trim trailing whitespace
+			std::string content = line.substr(contentStart, contentLength);
+			content = content.substr(0, content.find_last_not_of(" \t") + 1);
+
 			line = line.substr(0, indentation)
-			       + line.substr(contentStart, contentLength);
+			       + content;
 		}
+		// Comment line
 		else if (!hasComment && addComment) {
 			size_t contentStart = line.find_first_not_of(" \t");
 			size_t contentLength = line.size() - contentStart;
