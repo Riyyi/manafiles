@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Riyyi
+ * Copyright (C) 2021-2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -8,11 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "ruc/argparser.h"
+#include "ruc/timer.h"
+
 #include "config.h"
 #include "dotfile.h"
 #include "package.h"
-#include "ruc/argparser.h"
-#include "ruc/timer.h"
 
 int main(int argc, const char* argv[])
 {
@@ -23,7 +24,7 @@ int main(int argc, const char* argv[])
 	bool addOrAur = false;
 	bool install = false;
 	bool pull = false;
-	bool pushOrStore = false;
+	bool pushOrSearch = false;
 	bool verbose = false;
 
 	std::vector<std::string> targets {};
@@ -36,7 +37,7 @@ int main(int argc, const char* argv[])
 	argParser.addOption(addOrAur, 'a', "add", nullptr, nullptr);
 	argParser.addOption(install, 'i', "install", nullptr, nullptr);
 	argParser.addOption(pull, 'l', "pull", nullptr, nullptr);
-	argParser.addOption(pushOrStore, 's', "push", nullptr, nullptr);
+	argParser.addOption(pushOrSearch, 's', "push", nullptr, nullptr);
 	argParser.addOption(verbose, 'v', "verbose", nullptr, nullptr);
 
 	argParser.addArgument(targets, "targets", nullptr, nullptr, ruc::ArgParser::Required::No);
@@ -60,32 +61,29 @@ int main(int argc, const char* argv[])
 		if (pull) {
 			Dotfile::the().pull(targets);
 		}
-		if (pushOrStore) {
+		if (pushOrSearch) {
 			Dotfile::the().push(targets);
 		}
-		if (!addOrAur && !pull && !pushOrStore) {
+		if (!addOrAur && !pull && !pushOrSearch) {
 			Dotfile::the().list(targets);
 		}
 	}
 	else if (packageOperation) {
 		if (addOrAur) {
-			Package::the().aurInstall();
+			Package::the().aurInstall(targets);
 		}
 		if (install) {
-			Package::the().install();
+			Package::the().install(targets);
 		}
-		if (pushOrStore) {
-			Package::the().store();
-		}
-		if (!addOrAur && !install && !pushOrStore) {
-			Package::the().list(targets);
+		if (!addOrAur && !install) {
+			Package::the().list(targets, pushOrSearch);
 		}
 	}
 	else if (helpOperation) {
-		// TODO open manpage
+		// TODO: open manpage
 	}
 	else {
-		// TODO open manpage
+		// TODO: open manpage
 	}
 
 #ifndef NDEBUG

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Riyyi
+ * Copyright (C) 2021-2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "ruc/singleton.h"
+
+#define PACKAGE_FILE "./packages"
 
 class Package : public ruc::Singleton<Package> {
 public:
@@ -29,14 +31,13 @@ public:
 		AurInstall,
 	};
 
-	void aurInstall();
-	void install();
-	void list(const std::vector<std::string>& targets = {});
-	void store();
+	void aurInstall(const std::vector<std::string>& targets = {});
+	void install(const std::vector<std::string>& targets = {});
+	void list(const std::vector<std::string>& targets = {}, bool partialMatch = false);
 
 private:
 	std::optional<std::string> fetchAurHelper();
-	void installOrAurInstall(InstallType type);
+	void installOrAurInstall(InstallType type, const std::string& file);
 
 	bool findDependency(const std::string& search);
 	bool distroDetect();

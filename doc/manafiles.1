@@ -1,4 +1,4 @@
-.TH MANAFILES 1 "2022-01-29" "manafiles 0.5" "User Commands"
+.TH MANAFILES 1 "2025-02-02" "manafiles 0.6" "User Commands"
 
 .SH NAME
 manafiles \- config file and package tracking utility
@@ -31,7 +31,7 @@ See File Options below.
 .TP
 .BR \-P ", " \-\-package
 Operate on packages. \
-This operation allows you to track installed packages and reinstall them. \
+This operation allows tracking installed packages and reinstalling them. \
 In the first case, if no package names are provided in the command line, all packages will be selected. \
 See Package Options below.
 
@@ -67,8 +67,10 @@ Install all AUR packages of the stored list.
 Install all official packages of the stored list.
 
 .TP
-.BR \-s ", " \-\-store
-Stores a list of all installed packages on the system.
+.BR \-s ", " \-\-search
+Search each locally-installed package for names via a partial match. \
+When including multiple search terms, all packages with names matching any of those terms are returned. \
+If the \fB-s\fR option is ommited, packages names are filtered via a full match.
 
 .SH EXAMPLES
 Usage examples:

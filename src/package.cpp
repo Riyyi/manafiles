@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Riyyi
+ * Copyright (C) 2021-2022,2025 Riyyi
  *
  * SPDX-License-Identifier: MIT
  */
@@ -14,11 +14,11 @@
 #include <string>  // getline
 #include <vector>
 
-#include "machine.h"
-#include "package.h"
-#include "ruc/file.h"
 #include "ruc/shell.h"
 #include "ruc/system.h"
+
+#include "machine.h"
+#include "package.h"
 
 Package::Package(s)
 {
@@ -30,17 +30,27 @@ Package::~Package()
 
 // -----------------------------------------
 
-void Package::aurInstall()
+void Package::aurInstall(const std::vector<std::string>& targets)
 {
-	installOrAurInstall(InstallType::AurInstall);
+	if (targets.size() > 1) {
+		fprintf(stderr, "\033[31;1mPackage:\033[0m only 1 file can be read packages from at a time\n");
+		return;
+	}
+
+	installOrAurInstall(InstallType::AurInstall, targets.size() != 0 ? targets.front() : PACKAGE_FILE);
 }
 
-void Package::install()
+void Package::install(const std::vector<std::string>& targets)
 {
-	installOrAurInstall(InstallType::Install);
+	if (targets.size() > 1) {
+		fprintf(stderr, "\033[31;1mPackage:\033[0m only 1 file can be read packages from at a time\n");
+		return;
+	}
+
+	installOrAurInstall(InstallType::Install, targets.size() != 0 ? targets.front() : PACKAGE_FILE);
 }
 
-void Package::list(const std::vector<std::string>& targets)
+void Package::list(const std::vector<std::string>& targets, bool partialMatch)
 {
 	auto packagesOrEmpty = getPackageList();
 
@@ -62,7 +72,7 @@ void Package::list(const std::vector<std::string>& targets)
 	std::string line;
 	while (std::getline(stream, line)) {
 		for (const auto& target : targets) {
-			if (line.find(target) != std::string::npos) {
+			if (line == target || (partialMatch && line.find(target) != std::string::npos)) {
 				packages.append(line + '\n');
 				break;
 			}
@@ -70,20 +80,6 @@ void Package::list(const std::vector<std::string>& targets)
 	}
 
 	printf("%s", packages.c_str());
-}
-
-void Package::store()
-{
-	auto packagesOrEmpty = getPackageList();
-
-	if (!packagesOrEmpty.has_value()) {
-		return;
-	}
-
-	auto packageFile = ruc::File::create("./packages");
-	packageFile.clear();
-	packageFile.append(packagesOrEmpty.value());
-	packageFile.flush();
 }
 
 // -----------------------------------------
@@ -105,7 +101,7 @@ std::optional<std::string> Package::fetchAurHelper()
 	return {};
 }
 
-void Package::installOrAurInstall(InstallType type)
+void Package::installOrAurInstall(InstallType type, const std::string& file)
 {
 	distroDetect();
 	distroDependencies();
@@ -129,12 +125,12 @@ void Package::installOrAurInstall(InstallType type)
 	ruc::System $;
 	if (m_distro == Distro::Arch) {
 		// Grab everything off enabled official repositories that is in the list
-		auto repoList = $("pacman -Ssq") | $("grep -xf ./packages");
+		auto repoList = $("pacman -Ssq") | $("grep -xf " + file);
 
 		if (type == InstallType::AurInstall) {
 			// Determine which packages in the list are from the AUR
 			// NOTE: ruc::System does not support commands with newlines
-			auto aurList = ruc::Shell()("grep -vx '" + repoList.output() + "' ./packages");
+			auto aurList = ruc::Shell()("grep -vx '" + repoList.output() + "' " + file);
 			command = aurHelper.value() + " -Sy --devel --needed --noconfirm " + aurList.output();
 		}
 		else {
@@ -143,7 +139,7 @@ void Package::installOrAurInstall(InstallType type)
 	}
 	else if (m_distro == Distro::Debian) {
 		// Grab everything off enabled official repositories that is in the list
-		auto repoList = $("apt-cache search .").cut(1, ' ') | $("grep -xf ./packages");
+		auto repoList = $("apt-cache search .").cut(1, ' ') | $("grep -xf " + file);
 		command = "apt install " + repoList.output();
 	}
 
